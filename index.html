@@ -73,12 +73,10 @@
             <div id="auth-section" class="relative">
                 <button id="login-ui" onclick="googleLogin()" class="bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-lg shadow-accent/20">Login</button>
                 
-                <!-- Logged in UI -->
                 <div id="user-info-wrapper" class="hidden flex items-center gap-2 cursor-pointer p-1 rounded-xl hover:bg-gray-100 dark:hover:bg-darkCard transition-all" onclick="toggleUserDropdown(event)">
                     <span id="display-name" class="hidden md:inline text-xs font-bold text-gray-600 dark:text-gray-300"></span>
                     <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent">
                     
-                    <!-- Dropdown Menu -->
                     <div id="user-dropdown" class="dropdown-menu overflow-hidden">
                         <button onclick="openProfile(currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
@@ -204,7 +202,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, increment, onSnapshot, serverTimestamp, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, increment, onSnapshot, serverTimestamp, query, where, orderBy, limit, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -259,12 +257,19 @@
 
         if (isUser) {
             document.getElementById('user-avatar').src = user.photoURL;
-            document.getElementById('display-name').innerText = user.displayName.split(' ')[0]; // Show first name only
+            document.getElementById('display-name').innerText = user.displayName.split(' ')[0];
+            
+            // Listen to User Bookmarks correctly using Doc Snapshot
             onSnapshot(doc(db, BOOKMARKS_PATH, user.uid), (docSnap) => {
-                userBookmarks = docSnap.exists() ? (docSnap.data().postIds || []) : [];
+                if(docSnap.exists()) {
+                    userBookmarks = docSnap.data().postIds || [];
+                } else {
+                    userBookmarks = [];
+                }
                 updateBookmarkIcon();
                 if(currentFilter === 'bookmarks') render();
             });
+
             onSnapshot(collection(db, NOTI_PATH, user.uid, 'items'), (snap) => {
                 userNotis = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
                 renderNotifications();
@@ -277,16 +282,13 @@
     
     window.googleLogout = async () => { 
         if(!confirm('আপনি কি লগ আউট করতে চান?')) return;
-        try { 
-            await signOut(auth); 
-            location.reload(); // Refresh to clear states
-        } catch(e){} 
+        try { await signOut(auth); location.reload(); } catch(e){} 
     };
 
     window.toggleUserDropdown = (e) => {
         e.stopPropagation();
         document.getElementById('user-dropdown').classList.toggle('dropdown-active');
-        document.getElementById('notification-dropdown').classList.add('hidden'); // Close other
+        document.getElementById('notification-dropdown').classList.add('hidden');
     };
 
     window.closeAllDropdowns = (e) => {
@@ -307,7 +309,7 @@
         e.stopPropagation();
         const drop = document.getElementById('notification-dropdown');
         drop.classList.toggle('hidden');
-        document.getElementById('user-dropdown').classList.remove('dropdown-active'); // Close other
+        document.getElementById('user-dropdown').classList.remove('dropdown-active');
         if(!drop.classList.contains('hidden')) markNotisAsRead();
     };
 
@@ -434,7 +436,6 @@
 
     window.closeProfile = () => { document.getElementById('profile-view').style.display = 'none'; };
 
-    // --- Admin Actions ---
     window.adminApprovePost = async (id) => {
         if(!isAdmin) return;
         await updateDoc(doc(db, BASE_PATH, id), { status: 'approved' });
@@ -509,7 +510,6 @@
         const post = allData.find(c => c.id === activeThreadId);
         if(!post) return;
         
-        // Update Admin Buttons in header
         document.getElementById('admin-delete-btn').classList.toggle('hidden', !isAdmin);
         document.getElementById('admin-feature-btn').classList.toggle('hidden', !isAdmin);
         const featureIcon = document.getElementById('feature-icon-svg');
@@ -565,14 +565,38 @@
     window.showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 3000); };
 
     window.toggleBookmark = async () => { 
-        if (!currentUser) return;
+        if (!currentUser) return googleLogin();
+        
         const exists = userBookmarks.includes(activeThreadId);
-        const newList = exists ? userBookmarks.filter(id => id !== activeThreadId) : [...userBookmarks, activeThreadId];
-        await setDoc(doc(db, BOOKMARKS_PATH, currentUser.uid), { postIds: newList });
-        showToast(exists ? 'বুকমার্ক সরানো হয়েছে' : 'বুকমার্ক করা হয়েছে');
+        let newList;
+        if(exists) {
+            newList = userBookmarks.filter(id => id !== activeThreadId);
+        } else {
+            newList = [...userBookmarks, activeThreadId];
+        }
+        
+        try {
+            // Updated Path to follow standard artifact rules
+            await setDoc(doc(db, BOOKMARKS_PATH, currentUser.uid), { 
+                postIds: newList,
+                updatedAt: serverTimestamp()
+            });
+            showToast(exists ? 'বুকমার্ক সরানো হয়েছে' : 'বুকমার্ক করা হয়েছে');
+        } catch (error) {
+            console.error("Bookmark Error:", error);
+            showToast('বুকমার্ক করতে সমস্যা হয়েছে');
+        }
     };
 
-    function updateBookmarkIcon() { const icon = document.getElementById('bookmark-icon'); const btn = document.getElementById('bookmark-btn'); if(!icon || !activeThreadId) return; const isBookmarked = userBookmarks.includes(activeThreadId); icon.setAttribute('fill', isBookmarked ? 'currentColor' : 'none'); btn.classList.toggle('text-accent', isBookmarked); btn.classList.toggle('text-gray-400', !isBookmarked); }
+    function updateBookmarkIcon() { 
+        const icon = document.getElementById('bookmark-icon'); 
+        const btn = document.getElementById('bookmark-btn'); 
+        if(!icon || !activeThreadId) return; 
+        const isBookmarked = userBookmarks.includes(activeThreadId); 
+        icon.setAttribute('fill', isBookmarked ? 'currentColor' : 'none'); 
+        btn.classList.toggle('text-accent', isBookmarked); 
+        btn.classList.toggle('text-gray-400', !isBookmarked); 
+    }
 
     const toBN = (n) => n.toString().replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
     function formatTime(ts) { if(!ts) return 'এখন'; const s = Math.floor((new Date() - new Date(ts.seconds * 1000))/1000); if(s < 60) return 'এইমাত্র'; if(s < 3600) return toBN(Math.floor(s/60)) + 'মি আগে'; if(s < 86400) return toBN(Math.floor(s/3600)) + 'ঘন্টা আগে'; return new Date(ts.seconds*1000).toLocaleDateString('bn-BD', {day:'numeric', month:'short'}); }
