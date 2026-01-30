@@ -57,7 +57,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
                     <span id="noti-badge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-darkCard hidden"></span>
                 </button>
-                <div id="notification-dropdown" class="absolute right-0 mt-2 w-72 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-2xl shadow-2xl z-[100] hidden">
+                <div id="notification-dropdown" class="absolute right-0 mt-2 w-72 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-2xl shadow-2xl z-[250] hidden">
                     <div class="p-3 border-b dark:border-darkBorder flex items-center justify-between">
                         <span class="text-xs font-black uppercase">নোটিফিকেশন</span>
                         <button onclick="clearAllNotifications()" class="text-[10px] text-accent font-bold hover:underline">সব মুছুন</button>
@@ -234,6 +234,7 @@
     let replyingToId = null;
     let replyingToName = null;
 
+    // Main Data Listener
     onSnapshot(collection(db, BASE_PATH), (snapshot) => {
         allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
@@ -241,6 +242,7 @@
         if(activeThreadId) updateDetails();
     });
 
+    // Auth State Listener
     onAuthStateChanged(auth, (user) => {
         window.currentUser = user;
         window.isAdmin = user?.email === ADMIN_EMAIL;
@@ -259,19 +261,17 @@
             document.getElementById('user-avatar').src = user.photoURL;
             document.getElementById('display-name').innerText = user.displayName.split(' ')[0];
             
-            // Listen to User Bookmarks correctly using Doc Snapshot
+            // Real-time Bookmarks Listener
             onSnapshot(doc(db, BOOKMARKS_PATH, user.uid), (docSnap) => {
-                if(docSnap.exists()) {
-                    userBookmarks = docSnap.data().postIds || [];
-                } else {
-                    userBookmarks = [];
-                }
+                userBookmarks = docSnap.exists() ? (docSnap.data().postIds || []) : [];
                 updateBookmarkIcon();
                 if(currentFilter === 'bookmarks') render();
             });
 
+            // Real-time Notifications Listener
             onSnapshot(collection(db, NOTI_PATH, user.uid, 'items'), (snap) => {
-                userNotis = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+                userNotis = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
                 renderNotifications();
             });
         }
@@ -301,10 +301,12 @@
     window.setFilter = (filter) => {
         currentFilter = filter;
         document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('filter-active'));
-        document.getElementById(`filter-${filter}`).classList.add('filter-active');
+        const targetBtn = document.getElementById(`filter-${filter}`);
+        if(targetBtn) targetBtn.classList.add('filter-active');
         render();
     };
 
+    // --- Notifications Logic ---
     window.toggleNotifications = (e) => {
         e.stopPropagation();
         const drop = document.getElementById('notification-dropdown');
@@ -315,18 +317,26 @@
 
     async function markNotisAsRead() {
         if(!currentUser) return;
-        document.getElementById('noti-badge').classList.add('hidden');
         userNotis.forEach(async (n) => {
             if(!n.read) await updateDoc(doc(db, NOTI_PATH, currentUser.uid, 'items', n.id), { read: true });
         });
     }
 
     async function addNotification(targetUserId, senderName, senderPhoto, postId, postText, type) {
-        if(!targetUserId || targetUserId === currentUser.uid) return;
-        await addDoc(collection(db, NOTI_PATH, targetUserId, 'items'), {
-            senderName, senderPhoto, postId, postSnippet: postText.substring(0, 30) + '...',
-            type, read: false, at: serverTimestamp()
-        });
+        if(!targetUserId || !currentUser || targetUserId === currentUser.uid) return;
+        try {
+            await addDoc(collection(db, NOTI_PATH, targetUserId, 'items'), {
+                senderName, 
+                senderPhoto, 
+                postId, 
+                postSnippet: postText.substring(0, 40) + '...',
+                type, 
+                read: false, 
+                at: serverTimestamp()
+            });
+        } catch (e) {
+            console.error("Noti Send Error:", e);
+        }
     }
 
     function renderNotifications() {
@@ -334,10 +344,12 @@
         const badge = document.getElementById('noti-badge');
         const unreadCount = userNotis.filter(n => !n.read).length;
         badge.classList.toggle('hidden', unreadCount === 0);
+        
         if(userNotis.length === 0) {
             list.innerHTML = `<div class="p-8 text-center text-gray-400 text-[10px]">কোনো নোটিফিকেশন নেই</div>`;
             return;
         }
+        
         list.innerHTML = userNotis.map(n => `
             <div onclick="openFromNoti('${n.postId}')" class="p-3 flex gap-3 hover:bg-gray-50 dark:hover:bg-darkBg border-b dark:border-darkBorder cursor-pointer ${!n.read ? 'bg-blue-50/20 dark:bg-blue-900/10' : ''}">
                 <img src="${n.senderPhoto}" class="w-8 h-8 rounded-lg">
@@ -354,7 +366,7 @@
     };
 
     window.clearAllNotifications = async () => {
-        if(!currentUser) return;
+        if(!currentUser || !confirm('সব নোটিফিকেশন মুছতে চান?')) return;
         for (const n of userNotis) {
             await deleteDoc(doc(db, NOTI_PATH, currentUser.uid, 'items', n.id));
         }
@@ -385,29 +397,40 @@
     window.postReply = async () => {
         const rawMsg = document.getElementById('reply-input').value.trim();
         if(!rawMsg || !currentUser || !activeThreadId) return;
+        
         const parentPost = allData.find(d => d.id === activeThreadId);
-        await addDoc(collection(db, BASE_PATH), {
-            name: currentUser.displayName, msg: rawMsg, 
-            parentId: activeThreadId, replyToId: replyingToId || null,
+        
+        const docRef = await addDoc(collection(db, BASE_PATH), {
+            name: currentUser.displayName, 
+            msg: rawMsg, 
+            parentId: activeThreadId, 
+            replyToId: replyingToId || null,
             replyToName: replyingToName || null,
-            photoURL: currentUser.photoURL, userId: currentUser.uid, at: serverTimestamp()
+            photoURL: currentUser.photoURL, 
+            userId: currentUser.uid, 
+            at: serverTimestamp()
         });
+
+        // Send Notification
         if(replyingToId) {
             const targetComment = allData.find(d => d.id === replyingToId);
             if(targetComment) addNotification(targetComment.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'reply');
         } else {
             addNotification(parentPost.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'comment');
         }
+
         document.getElementById('reply-input').value = '';
         cancelReplyTag();
     };
 
+    // --- Profile & Admin Logic ---
     window.openProfile = (uid) => {
         const userDocs = allData.filter(d => d.userId === uid);
         const user = userDocs.length > 0 ? userDocs[0] : { name: 'ইউজার', photoURL: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' };
         const userPosts = userDocs.filter(d => !d.parentId);
         const userComments = userDocs.filter(d => d.parentId);
         const totalVotes = userPosts.reduce((acc, curr) => acc + (curr.votes || 0), 0);
+        
         document.getElementById('profile-content').innerHTML = `
             <div class="flex flex-col items-center mb-8">
                 <img src="${user.photoURL}" class="w-20 h-20 rounded-2xl mb-4 border-2 border-accent">
@@ -429,7 +452,11 @@
                 </div>
             </div>
             <div class="space-y-3">
-                ${userPosts.slice(0, 10).map(p => `<div onclick="closeProfile(); openDetails('${p.id}')" class="p-3 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl cursor-pointer hover:border-accent"><p class="text-xs font-semibold line-clamp-2">${p.msg}</p><span class="text-[9px] text-gray-400 font-bold">${formatTime(p.at)}</span></div>`).join('') || '<p class="text-center text-gray-400 text-xs py-10">কোনো আলোচনা নেই</p>'}
+                ${userPosts.slice(0, 10).map(p => `
+                    <div onclick="closeProfile(); openDetails('${p.id}')" class="p-3 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl cursor-pointer hover:border-accent">
+                        <p class="text-xs font-semibold line-clamp-2">${p.msg}</p>
+                        <span class="text-[9px] text-gray-400 font-bold">${formatTime(p.at)}</span>
+                    </div>`).join('') || '<p class="text-center text-gray-400 text-xs py-10">কোনো আলোচনা নেই</p>'}
             </div>`;
         document.getElementById('profile-view').style.display = 'block';
     };
@@ -462,6 +489,7 @@
         showToast('মন্তব্য মোছা হয়েছে');
     };
 
+    // --- Core Rendering ---
     function render() {
         const container = document.getElementById('posts-container');
         let posts = allData.filter(c => !c.parentId);
@@ -474,7 +502,10 @@
         if(currentFilter === 'popular') posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
         else posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
 
-        if(posts.length === 0) { container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`; return; }
+        if(posts.length === 0) { 
+            container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`; 
+            return; 
+        }
 
         container.innerHTML = posts.map(c => `
             <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border ${c.isFeatured ? 'featured-card border-featured' : 'dark:border-darkBorder'}">
@@ -517,6 +548,7 @@
 
         const allReplies = allData.filter(r => r.parentId === activeThreadId).sort((a,b) => (a.at?.seconds || 0) - (b.at?.seconds || 0));
         const rootComments = allReplies.filter(r => !r.replyToId);
+        
         const renderComment = (comment, isReply = false) => {
             const nestedReplies = allReplies.filter(r => r.replyToId === comment.id);
             return `
@@ -540,6 +572,7 @@
                     ${nestedReplies.map(nr => renderComment(nr, true)).join('')}
                 </div>`;
         };
+        
         document.getElementById('details-content').innerHTML = `
             <div class="mb-6">
                 <div class="flex items-center gap-3 mb-4">
@@ -554,38 +587,58 @@
             </div>`;
     }
 
-    window.prepareReply = (id, userName) => { replyingToId = id; replyingToName = userName; const tagUi = document.getElementById('reply-tag-ui'); const tagText = document.getElementById('replying-to-text'); tagText.innerText = `${userName} কে উত্তর দিচ্ছেন`; tagUi.classList.remove('hidden'); document.getElementById('reply-input').focus(); };
-    window.cancelReplyTag = () => { replyingToId = null; replyingToName = null; document.getElementById('reply-tag-ui').classList.add('hidden'); };
-    window.handleVote = async (id, val) => { if(!currentUser) return googleLogin(); await updateDoc(doc(db, BASE_PATH, id), { votes: increment(val) }); };
+    // --- Helper Functions ---
+    window.prepareReply = (id, userName) => { 
+        replyingToId = id; 
+        replyingToName = userName; 
+        const tagUi = document.getElementById('reply-tag-ui'); 
+        const tagText = document.getElementById('replying-to-text'); 
+        tagText.innerText = `${userName} কে উত্তর দিচ্ছেন`; 
+        tagUi.classList.remove('hidden'); 
+        document.getElementById('reply-input').focus(); 
+    };
+
+    window.cancelReplyTag = () => { 
+        replyingToId = null; 
+        replyingToName = null; 
+        document.getElementById('reply-tag-ui').classList.add('hidden'); 
+    };
+
+    window.handleVote = async (id, val) => { 
+        if(!currentUser) return googleLogin(); 
+        await updateDoc(doc(db, BASE_PATH, id), { votes: increment(val) }); 
+    };
     
-    window.openDetails = (id) => { activeThreadId = id; cancelReplyTag(); document.getElementById('details-view').style.display = 'block'; updateDetails(); updateBookmarkIcon(); };
+    window.openDetails = (id) => { 
+        activeThreadId = id; 
+        cancelReplyTag(); 
+        document.getElementById('details-view').style.display = 'block'; 
+        updateDetails(); 
+        updateBookmarkIcon(); 
+    };
+
     window.closeView = () => { document.getElementById('details-view').style.display = 'none'; activeThreadId = null; };
 
     window.togglePostModal = (show) => { document.getElementById('post-modal-overlay').style.display = show ? 'flex' : 'none'; };
-    window.showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 3000); };
+
+    window.showToast = (msg) => { 
+        const t = document.getElementById('toast'); 
+        t.innerText = msg; 
+        t.style.opacity = '1'; 
+        setTimeout(() => t.style.opacity = '0', 3000); 
+    };
 
     window.toggleBookmark = async () => { 
         if (!currentUser) return googleLogin();
-        
         const exists = userBookmarks.includes(activeThreadId);
-        let newList;
-        if(exists) {
-            newList = userBookmarks.filter(id => id !== activeThreadId);
-        } else {
-            newList = [...userBookmarks, activeThreadId];
-        }
-        
+        const newList = exists ? userBookmarks.filter(id => id !== activeThreadId) : [...userBookmarks, activeThreadId];
         try {
-            // Updated Path to follow standard artifact rules
             await setDoc(doc(db, BOOKMARKS_PATH, currentUser.uid), { 
                 postIds: newList,
                 updatedAt: serverTimestamp()
-            });
+            }, { merge: true });
             showToast(exists ? 'বুকমার্ক সরানো হয়েছে' : 'বুকমার্ক করা হয়েছে');
-        } catch (error) {
-            console.error("Bookmark Error:", error);
-            showToast('বুকমার্ক করতে সমস্যা হয়েছে');
-        }
+        } catch (e) { showToast('সমস্যা হয়েছে'); }
     };
 
     function updateBookmarkIcon() { 
@@ -599,7 +652,14 @@
     }
 
     const toBN = (n) => n.toString().replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
-    function formatTime(ts) { if(!ts) return 'এখন'; const s = Math.floor((new Date() - new Date(ts.seconds * 1000))/1000); if(s < 60) return 'এইমাত্র'; if(s < 3600) return toBN(Math.floor(s/60)) + 'মি আগে'; if(s < 86400) return toBN(Math.floor(s/3600)) + 'ঘন্টা আগে'; return new Date(ts.seconds*1000).toLocaleDateString('bn-BD', {day:'numeric', month:'short'}); }
+    function formatTime(ts) { 
+        if(!ts) return 'এখন'; 
+        const s = Math.floor((new Date() - new Date(ts.seconds * 1000))/1000); 
+        if(s < 60) return 'এইমাত্র'; 
+        if(s < 3600) return toBN(Math.floor(s/60)) + 'মি আগে'; 
+        if(s < 86400) return toBN(Math.floor(s/3600)) + 'ঘন্টা আগে'; 
+        return new Date(ts.seconds*1000).toLocaleDateString('bn-BD', {day:'numeric', month:'short'}); 
+    }
 
     const setDarkMode = (dark) => {
         document.documentElement.classList.toggle('dark', dark);
