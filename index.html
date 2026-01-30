@@ -35,11 +35,12 @@
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
         .fab-post { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; background-color: #3498db; color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; box-shadow: 0 8px 16px rgba(52, 152, 219, 0.3); cursor: pointer; z-index: 90; transition: all 0.3s; }
         .filter-active { background-color: rgba(52, 152, 219, 0.1); color: #3498db; }
-        .reply-node { margin-left: 2rem; border-left: 2px solid #3498db44; padding-left: 0.75rem; }
         .user-link:hover { text-decoration: underline; cursor: pointer; color: #3498db; }
         .dropdown-menu { display: none; position: absolute; right: 0; top: 100%; margin-top: 0.5rem; width: 160px; background: white; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 200; }
         .dark .dropdown-menu { background: #15191c; border-color: #2d333b; }
         .dropdown-active { display: block !important; }
+        .voted-up { color: #3498db !important; }
+        .voted-down { color: #ef4444 !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100" onclick="closeAllDropdowns(event)">
@@ -225,6 +226,7 @@
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
     const BOOKMARKS_PATH = 'blog_comments/pages/bookmarks';
     const NOTI_PATH = 'blog_comments/pages/notifications';
+    const VOTES_SUB_PATH = 'votes_log'; // নতুন সাব-কালেকশন লিমিটেড ভোটের জন্য
     const ADMIN_EMAIL = "phys.arif@gmail.com";
 
     window.currentUser = null;
@@ -234,10 +236,10 @@
     let currentFilter = 'latest';
     let userBookmarks = [];
     let userNotis = [];
+    let userVotes = {}; // অবজেক্ট হিসেবে ইউজারের দেওয়া ভোট স্টোর করবে: {postId: 1/-1}
     let replyingToId = null;
     let replyingToName = null;
     
-    // এডিট স্টেটস
     let editPostId = null;
     let editCommentId = null;
 
@@ -266,15 +268,24 @@
             document.getElementById('user-avatar').src = user.photoURL;
             document.getElementById('display-name').innerText = user.displayName.split(' ')[0];
             
+            // বুকমার্ক লোড
             onSnapshot(doc(db, BOOKMARKS_PATH, user.uid), (docSnap) => {
                 userBookmarks = docSnap.exists() ? (docSnap.data().postIds || []) : [];
                 updateBookmarkIcon();
                 if(currentFilter === 'bookmarks') render();
             });
 
+            // নোটিফিকেশন লোড
             onSnapshot(collection(db, NOTI_PATH, user.uid, 'items'), (snap) => {
                 userNotis = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
                 renderNotifications();
+            });
+
+            // ইউজারের ভোট লগ লোড
+            onSnapshot(collection(db, 'user_votes', user.uid, 'log'), (snap) => {
+                userVotes = {};
+                snap.forEach(d => { userVotes[d.id] = d.data().type; });
+                render(); // ভোট স্ট্যাটাস কালার আপডেট করার জন্য
             });
         }
         render();
@@ -361,7 +372,6 @@
         }
     }
 
-    // পোস্ট সাবমিশন এবং এডিট
     window.submitPost = async () => {
         const msg = document.getElementById('user-comment').value.trim();
         if(!msg || !currentUser) return;
@@ -390,7 +400,6 @@
         togglePostModal(true);
     };
 
-    // মন্তব্য সাবমিশন এবং এডিট
     window.postReply = async () => {
         const rawMsg = document.getElementById('reply-input').value.trim();
         if(!rawMsg || !currentUser || !activeThreadId) return;
@@ -505,13 +514,19 @@
 
         if(posts.length === 0) { container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`; return; }
 
-        container.innerHTML = posts.map(c => `
+        container.innerHTML = posts.map(c => {
+            const currentVoteType = userVotes[c.id] || 0;
+            return `
             <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border ${c.isFeatured ? 'featured-card border-featured' : 'dark:border-darkBorder'}">
                 <div class="flex gap-4">
                     <div class="flex flex-col items-center gap-2 bg-gray-50 dark:bg-darkBg p-2 rounded-lg min-w-[42px] h-fit">
-                        <button onclick="handleVote('${c.id}', 1)" class="text-gray-400 hover:text-accent"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
-                        <span class="font-bold text-xs text-accent">${toBN(c.votes || 0)}</span>
-                        <button onclick="handleVote('${c.id}', -1)" class="text-gray-400 hover:text-red-500"><svg class="w-5 h-5 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
+                        <button onclick="handleVote('${c.id}', 1)" class="transition-colors ${currentVoteType === 1 ? 'voted-up' : 'text-gray-400 hover:text-accent'}">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg>
+                        </button>
+                        <span class="font-bold text-xs ${currentVoteType !== 0 ? (currentVoteType === 1 ? 'text-accent' : 'text-red-500') : 'text-gray-500'}">${toBN(c.votes || 0)}</span>
+                        <button onclick="handleVote('${c.id}', -1)" class="transition-colors ${currentVoteType === -1 ? 'voted-down' : 'text-gray-400 hover:text-red-500'}">
+                            <svg class="w-5 h-5 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg>
+                        </button>
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <div class="flex items-center justify-between mb-1 text-[10px] font-bold text-gray-400 uppercase">
@@ -527,7 +542,7 @@
                         </div>
                     </div>
                 </div>
-            </div>`).join('');
+            </div>`}).join('');
     }
 
     function updateDetails() {
@@ -586,7 +601,34 @@
 
     window.prepareReply = (id, userName) => { replyingToId = id; replyingToName = userName; const tagUi = document.getElementById('reply-tag-ui'); document.getElementById('replying-to-text').innerText = `${userName} কে উত্তর দিচ্ছেন`; tagUi.classList.remove('hidden'); document.getElementById('reply-input').focus(); };
     window.cancelReplyTag = () => { replyingToId = null; replyingToName = null; editCommentId = null; document.getElementById('reply-tag-ui').classList.add('hidden'); document.getElementById('reply-send-btn').innerText = "পাঠান"; };
-    window.handleVote = async (id, val) => { if(!currentUser) return googleLogin(); await updateDoc(doc(db, BASE_PATH, id), { votes: increment(val) }); };
+
+    // লিমিটেড ভোটিং লজিক
+    window.handleVote = async (postId, requestedType) => {
+        if(!currentUser) return googleLogin();
+        
+        const existingVoteType = userVotes[postId] || 0;
+        const voteLogRef = doc(db, 'user_votes', currentUser.uid, 'log', postId);
+        const postRef = doc(db, BASE_PATH, postId);
+
+        let voteIncrement = 0;
+
+        if (existingVoteType === 0) {
+            // নতুন ভোট
+            voteIncrement = requestedType;
+            await setDoc(voteLogRef, { type: requestedType, at: serverTimestamp() });
+        } else if (existingVoteType === requestedType) {
+            // একই টাইপ আবার ক্লিক করলে ভোট রিমুভ হবে (Undo)
+            voteIncrement = -requestedType;
+            await deleteDoc(voteLogRef);
+        } else {
+            // টাইপ পরিবর্তন (Upvote থেকে Downvote বা উল্টো)
+            voteIncrement = requestedType * 2; // -1 থেকে +1 যেতে ডিফারেন্স ২
+            await updateDoc(voteLogRef, { type: requestedType, at: serverTimestamp() });
+        }
+
+        await updateDoc(postRef, { votes: increment(voteIncrement) });
+        showToast(requestedType === 1 ? 'Upvoted!' : 'Downvoted!');
+    };
     
     window.openDetails = (id) => { activeThreadId = id; cancelReplyTag(); document.getElementById('details-view').style.display = 'block'; updateDetails(); updateBookmarkIcon(); };
     window.closeView = () => { document.getElementById('details-view').style.display = 'none'; activeThreadId = null; };
