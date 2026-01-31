@@ -6,6 +6,7 @@
     <title>নতুন লেখা - লেখক ফোরাম</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -23,8 +24,10 @@
     </script>
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
-        textarea { resize: none; }
-        .publish-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .ql-container { font-family: 'Hind Siliguri', sans-serif; font-size: 1.125rem; border: none !important; }
+        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; }
+        .dark .ql-editor.ql-blank::before { color: #9ca3af; }
+        .dark .ql-snow .ql-stroke { stroke: #fff; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -37,27 +40,37 @@
             </button>
             <h1 class="text-xl font-bold">নতুন পোস্ট</h1>
         </div>
-        <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg shadow-accent/20 hover:bg-opacity-90 transition-all">
-            পাবলিশ
-        </button>
-    </div>
-
-    <div id="auth-check" class="mb-6 flex items-center gap-3 p-3 bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder">
-        <img id="current-user-img" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full">
-        <div>
-            <p id="current-user-name" class="text-sm font-bold">লগইন করা নেই</p>
-            <p class="text-[10px] text-gray-400">আপনার প্রোফাইল থেকে পোস্ট করা হচ্ছে</p>
+        <div class="flex gap-2">
+            <button id="preview-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkCard rounded-full text-sm font-bold">প্রিভিউ</button>
+            <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg hover:bg-opacity-90 transition-all">পাবলিশ</button>
         </div>
     </div>
 
-    <div class="relative">
-        <textarea id="post-content" placeholder="আজ আপনি কী ভাবছেন? আপনার মনের কথা এখানে লিখুন..." 
-            class="w-full h-64 p-4 bg-transparent border-none focus:ring-0 text-lg leading-relaxed placeholder-gray-400"
-            maxlength="2000"></textarea>
+    <div class="mb-4">
+        <select id="post-category" class="bg-white dark:bg-darkCard border dark:border-darkBorder rounded-lg px-3 py-2 text-sm w-full outline-none">
+            <option value="সাধারণ">ক্যাটাগরি বেছে নিন</option>
+            <option value="কবিতা">কবিতা</option>
+            <option value="গল্প">গল্প</option>
+            <option value="প্রবন্ধ">প্রবন্ধ</option>
+            <option value="অন্যান্য">অন্যান্য</option>
+        </select>
     </div>
 
-    <div class="text-right mt-2">
+    <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden">
+        <div id="editor" style="height: 350px;"></div>
+    </div>
+
+    <div class="flex justify-between mt-2">
+        <span id="draft-status" class="text-[10px] text-green-500"></span>
         <span id="char-count" class="text-xs text-gray-400">০ / ২০০০</span>
+    </div>
+
+    <div id="preview-modal" class="fixed inset-0 bg-black/80 hidden z-[110] p-4 flex items-center justify-center">
+        <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-2xl p-6 max-h-[80vh] overflow-y-auto">
+            <h2 class="text-lg font-bold mb-4 border-b pb-2">পোস্ট প্রিভিউ</h2>
+            <div id="preview-content" class="prose dark:prose-invert"></div>
+            <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-6 w-full py-2 bg-accent text-white rounded-lg">বন্ধ করুন</button>
+        </div>
     </div>
 </main>
 
@@ -68,6 +81,7 @@
     </div>
 </div>
 
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
@@ -87,34 +101,58 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
+    // Quill Initialization (Feature 4)
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'আপনার মনের কথা এখানে লিখুন...',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['clean']
+            ]
+        }
+    });
+
     let currentUser = null;
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
-            document.getElementById('current-user-img').src = user.photoURL;
-            document.getElementById('current-user-name').innerText = user.displayName;
+            // লোড ড্রাফট (Feature 2)
+            const savedDraft = localStorage.getItem('post_draft');
+            if (savedDraft) quill.root.innerHTML = savedDraft;
         } else {
             alert('পোস্ট করতে আগে লগইন করুন!');
             location.href = 'index.html';
         }
     });
 
-    const textarea = document.getElementById('post-content');
-    const charCount = document.getElementById('char-count');
+    // অটো ড্রাফট সেভ (Feature 2)
+    quill.on('text-change', () => {
+        const content = quill.root.innerHTML;
+        const text = quill.getText().trim();
+        localStorage.setItem('post_draft', content);
+        document.getElementById('draft-status').innerText = "ড্রাফট সেভ হয়েছে";
+        document.getElementById('char-count').innerText = `${text.length} / ২০০০`;
+    });
+
+    // প্রিভিউ ফাংশন (Feature 6)
+    document.getElementById('preview-btn').onclick = () => {
+        document.getElementById('preview-content').innerHTML = quill.root.innerHTML;
+        document.getElementById('preview-modal').classList.remove('hidden');
+    };
+
     const submitBtn = document.getElementById('submit-post');
     const loader = document.getElementById('loading-overlay');
 
-    // Live character counter
-    textarea.addEventListener('input', () => {
-        const length = textarea.value.length;
-        charCount.innerText = `${length} / ২০০০`;
-    });
-
     submitBtn.onclick = async () => {
-        const msg = textarea.value.trim();
+        const msgHtml = quill.root.innerHTML;
+        const msgText = quill.getText().trim();
+        const category = document.getElementById('post-category').value;
 
-        if (!msg) {
+        if (!msgText || msgText === "") {
             alert('কিছু তো লিখুন!');
             return;
         }
@@ -125,27 +163,28 @@
 
         try {
             await addDoc(collection(db, BASE_PATH), {
-                msg: msg,
+                msg: msgHtml,
+                category: category,
                 name: currentUser.displayName,
                 email: currentUser.email,
                 uid: currentUser.uid,
                 photoURL: currentUser.photoURL,
                 at: serverTimestamp(),
                 votes: 0,
-                status: 'pending' // Admin checking এর জন্য pending রাখা হলো
+                status: 'pending'
             });
 
-            alert('পোস্টটি জমা দেওয়া হয়েছে! এডমিনের অনুমোদনের পর এটি দেখা যাবে।');
+            localStorage.removeItem('post_draft'); // সফল হলে ড্রাফট মুছে ফেলা
+            alert('পোস্টটি জমা দেওয়া হয়েছে!');
             location.href = 'index.html';
         } catch (error) {
-            console.error("Error adding document: ", error);
+            console.error("Error: ", error);
             alert('দুঃখিত, পোস্টটি সেভ করা যায়নি।');
         } finally {
             loader.classList.add('hidden');
         }
     };
 
-    // Auto Dark Mode
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark');
     }
