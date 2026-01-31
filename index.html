@@ -145,7 +145,8 @@
                 <span class="font-bold text-sm">বিস্তারিত আলোচনা</span>
             </div>
             <div class="flex items-center gap-1">
-                <button id="admin-delete-btn" onclick="adminDeletePost()" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg hidden">
+                <!-- ডিলিট বাটন (এডমিন এবং অথর উভয়ের জন্য) -->
+                <button id="post-delete-btn" onclick="handleDeletePost()" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg hidden">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                 </button>
                 <button id="admin-feature-btn" onclick="adminToggleFeature()" class="p-2 text-featured hover:bg-yellow-50 dark:hover:bg-yellow-900/10 rounded-lg hidden">
@@ -474,11 +475,23 @@
         showToast('অ্যাপ্রুভ করা হয়েছে');
     };
 
-    window.adminDeletePost = async (id = activeThreadId) => {
-        if(!isAdmin || !confirm('আপনি কি নিশ্চিত?')) return;
-        await deleteDoc(doc(db, BASE_PATH, id));
-        showToast('মুছে ফেলা হয়েছে');
-        if(id === activeThreadId) closeView();
+    // পোস্ট ডিলিট হ্যান্ডলার (এডমিন এবং ইউজার উভয়ের জন্য)
+    window.handleDeletePost = async () => {
+        const post = allData.find(d => d.id === activeThreadId);
+        if(!post) return;
+        
+        const isOwner = currentUser && post.userId === currentUser.uid;
+        if(!isAdmin && !isOwner) return;
+
+        if(!confirm('আপনি কি এই আলোচনাটি মুছে ফেলতে চান?')) return;
+        
+        try {
+            await deleteDoc(doc(db, BASE_PATH, activeThreadId));
+            showToast('আলোচনা মুছে ফেলা হয়েছে');
+            closeView();
+        } catch(e) {
+            showToast('কিছু সমস্যা হয়েছে');
+        }
     };
 
     window.adminToggleFeature = async () => {
@@ -534,9 +547,12 @@
         const post = allData.find(c => c.id === activeThreadId);
         if(!post) return;
         
-        document.getElementById('admin-delete-btn').classList.toggle('hidden', !isAdmin);
+        const isOwner = currentUser && post.userId === currentUser.uid;
+        
+        // ডিলিট বাটন দেখানো (এডমিন অথবা নিজের পোস্ট হলে)
+        document.getElementById('post-delete-btn').classList.toggle('hidden', !(isAdmin || isOwner));
         document.getElementById('admin-feature-btn').classList.toggle('hidden', !isAdmin);
-        document.getElementById('edit-post-btn').classList.toggle('hidden', !(isAdmin || (currentUser && post.userId === currentUser.uid)));
+        document.getElementById('edit-post-btn').classList.toggle('hidden', !(isAdmin || isOwner));
         
         const featureIcon = document.getElementById('feature-icon-svg');
         featureIcon.setAttribute('fill', post.isFeatured ? 'currentColor' : 'none');
