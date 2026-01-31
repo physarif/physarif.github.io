@@ -621,7 +621,34 @@ if(approveBtn) {
 
     window.prepareReply = (id, userName) => { replyingToId = id; replyingToName = userName; const tagUi = document.getElementById('reply-tag-ui'); document.getElementById('replying-to-text').innerText = `${userName} কে উত্তর দিচ্ছেন`; tagUi.classList.remove('hidden'); document.getElementById('reply-input').focus(); };
     window.cancelReplyTag = () => { replyingToId = null; replyingToName = null; editCommentId = null; document.getElementById('reply-tag-ui').classList.add('hidden'); document.getElementById('reply-send-btn').innerText = "পাঠান"; };
-    window.handleVote = async (id, val) => { if(!currentUser) return googleLogin(); await updateDoc(doc(db, BASE_PATH, id), { votes: increment(val) }); };
+    window.handleVote = async (id, val) => {
+    if (!currentUser) return googleLogin();
+
+    const postRef = doc(db, BASE_PATH, id);
+    const postSnap = await getDoc(postRef);
+    
+    if (!postSnap.exists()) return;
+
+    const data = postSnap.data();
+    // যারা অলরেডি ভোট দিয়েছে তাদের তালিকা (Array)
+    const voters = data.voters || [];
+
+    if (voters.includes(currentUser.uid)) {
+        showToast('আপনি ইতিমধ্যে ভোট দিয়েছেন!');
+        return;
+    }
+
+    try {
+        await updateDoc(postRef, {
+            votes: increment(val),
+            voters: [...voters, currentUser.uid] // নতুন ইউজারের আইডি লিস্টে যোগ করা
+        });
+        showToast('ভোট সফল হয়েছে');
+    } catch (e) {
+        showToast('ভোট দিতে সমস্যা হয়েছে');
+    }
+};
+
     
     window.openDetails = (id) => { activeThreadId = id; cancelReplyTag(); document.getElementById('details-view').style.display = 'block'; updateDetails(); updateBookmarkIcon(); };
     window.closeView = () => { document.getElementById('details-view').style.display = 'none'; activeThreadId = null; };
