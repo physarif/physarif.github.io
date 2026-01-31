@@ -111,47 +111,46 @@
                     ফিচারড
                 </button>
 
-                <div class="w-full">
-                    <button id="filter-categories" onclick="toggleCategoryFilter(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left w-full whitespace-nowrap">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                        ক্যাটাগরি
-                        <svg class="w-3 h-3 ml-auto transition-transform" id="cat-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </button>
-                    <div id="category-cloud" class="hidden overflow-hidden transition-all duration-300 flex flex-wrap gap-1.5 p-2 mt-1 bg-gray-100 dark:bg-darkCard rounded-xl">
-                        <button onclick="setFilter('category', 'General')" class="cat-chip px-3 py-1 bg-white dark:bg-darkBg text-[11px] font-bold rounded-full border dark:border-darkBorder hover:border-accent">জেনারেল</button>
-                        <button onclick="setFilter('category', 'Tech')" class="cat-chip px-3 py-1 bg-white dark:bg-darkBg text-[11px] font-bold rounded-full border dark:border-darkBorder hover:border-accent">টেক</button>
-                        <button onclick="setFilter('category', 'Literature')" class="cat-chip px-3 py-1 bg-white dark:bg-darkBg text-[11px] font-bold rounded-full border dark:border-darkBorder hover:border-accent">সাহিত্য</button>
-                        <button onclick="setFilter('category', 'Politics')" class="cat-chip px-3 py-1 bg-white dark:bg-darkBg text-[11px] font-bold rounded-full border dark:border-darkBorder hover:border-accent">রাজনীতি</button>
-                        <button onclick="setFilter('category', 'Others')" class="cat-chip px-3 py-1 bg-white dark:bg-darkBg text-[11px] font-bold rounded-full border dark:border-darkBorder hover:border-accent">অন্যান্য</button>
-                    </div>
-                </div>
-
-                <div id="auth-filters" class="hidden flex lg:flex-col gap-1 w-full">
-                    <button id="filter-bookmarks" onclick="setFilter('bookmarks')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left w-full whitespace-nowrap">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-                        বুকমার্কস
-                    </button>
-                    <button id="filter-pending" onclick="setFilter('pending')" class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left w-full whitespace-nowrap relative">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                            পেন্ডিং
-                        </div>
-                        <span id="pending-badge" class="hidden bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold"></span>
-                    </button>
+            <div class="relative w-full">
+                <button id="filter-categories" onclick="toggleCategoryFilter(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left w-full whitespace-nowrap hover:bg-gray-100 dark:hover:bg-darkCard">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                    ক্যাটাগরি
+                    <svg class="w-3 h-3 ml-auto transition-transform" id="cat-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="category-dropdown" class="hidden absolute top-full left-0 mt-1 w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl shadow-xl z-[110]">
+                    <button onclick="setFilter('category', 'General')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg first:rounded-t-xl">জেনারেল</button>
+                    <button onclick="setFilter('category', 'Tech')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg">টেক</button>
+                    <button onclick="setFilter('category', 'Literature')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg">সাহিত্য</button>
+                    <button onclick="setFilter('category', 'Politics')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg">রাজনীতি</button>
+                    <button onclick="setFilter('category', 'Others')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg last:rounded-b-xl">অন্যান্য</button>
                 </div>
             </div>
-        </div>
-    </aside>
 
-    <section class="flex-1 space-y-3">
-        <div id="posts-container" class="space-y-3">
-            <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
+            <div id="auth-filters" class="hidden flex lg:flex-col gap-1 w-full">
+                <button id="filter-bookmarks" onclick="setFilter('bookmarks')" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left w-full whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                    বুকমার্কস
+                </button>
+                <button id="filter-pending" onclick="setFilter('pending')" class="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left w-full whitespace-nowrap relative">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        পেন্ডিং
+                    </div>
+                    <span id="pending-badge" class="hidden bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold"></span>
+                </button>
+            </div>
         </div>
-        <div id="load-more-container" class="hidden py-4 text-center">
-            <button id="load-more-btn" onclick="loadMorePosts()" class="px-8 py-2 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-full text-xs font-bold hover:ring-2 ring-accent transition-all">আরো দেখুন</button>
-        </div>
-    </section>
-</main>
+    </div>
+</aside>
+
+<section class="flex-1 space-y-3">
+    <div id="posts-container" class="space-y-3">
+        <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
+    </div>
+    <div id="load-more-container" class="hidden py-4 text-center">
+        <button id="load-more-btn" onclick="loadMorePosts()" class="px-8 py-2 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-full text-xs font-bold hover:ring-2 ring-accent transition-all">আরো দেখুন</button>
+    </div>
+</section></main>
 
 <div id="details-view" class="view-overlay" onclick="if(event.target.id === 'details-view') closeView()">
     <div class="view-body" onclick="event.stopPropagation()">
@@ -322,9 +321,8 @@
         if (!e.target.closest('#noti-trigger') && !e.target.closest('#notification-dropdown')) {
             document.getElementById('notification-dropdown').classList.add('hidden');
         }
-        // ক্যাটাগরি প্যানেল বন্ধ হবে না যদি ভেতরে ক্লিক করা হয়
-        if (!e.target.closest('#filter-categories') && !e.target.closest('#category-cloud')) {
-            document.getElementById('category-cloud').classList.add('hidden');
+        if (!e.target.closest('#filter-categories') && !e.target.closest('#category-dropdown')) {
+            document.getElementById('category-dropdown').classList.add('hidden');
             document.getElementById('cat-arrow').style.transform = 'rotate(0deg)';
         }
     };
@@ -335,39 +333,27 @@
         visibleCount = postsPerPage; 
         
         document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('filter-active'));
-        document.querySelectorAll('.cat-chip').forEach(chip => chip.classList.remove('border-accent', 'text-accent'));
         
         if (filter === 'category' && category) {
             document.getElementById('filter-categories').classList.add('filter-active');
-            // নির্দিষ্ট চিপকে একটিভ দেখানো
-            const chips = document.querySelectorAll('.cat-chip');
-            chips.forEach(chip => {
-               if(chip.innerText.trim() === getBNName(category)) chip.classList.add('border-accent', 'text-accent');
-            });
+            setTimeout(() => {
+                document.getElementById('category-dropdown').classList.add('hidden');
+                document.getElementById('cat-arrow').style.transform = 'rotate(0deg)';
+            }, 50);
         } else {
             const activeBtn = document.getElementById(`filter-${filter}`);
             if(activeBtn) activeBtn.classList.add('filter-active');
-            // অন্যান্য ফিল্টার সিলেক্ট করলে ক্লাউড বন্ধ করা
-            if(filter !== 'category') {
-                document.getElementById('category-cloud').classList.add('hidden');
-                document.getElementById('cat-arrow').style.transform = 'rotate(0deg)';
-            }
         }
         render();
     };
 
-    const getBNName = (cat) => {
-        const mapping = {'General': 'জেনারেল', 'Tech': 'টেক', 'Literature': 'সাহিত্য', 'Politics': 'রাজনীতি', 'Others': 'অন্যান্য'};
-        return mapping[cat] || cat;
-    };
-
     window.toggleCategoryFilter = (e) => { 
         e.stopPropagation(); 
-        const cloud = document.getElementById('category-cloud');
+        const drop = document.getElementById('category-dropdown');
         const arrow = document.getElementById('cat-arrow');
-        const isHidden = cloud.classList.contains('hidden');
+        const isHidden = drop.classList.contains('hidden');
         
-        cloud.classList.toggle('hidden'); 
+        drop.classList.toggle('hidden'); 
         arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
     };
 
@@ -632,7 +618,7 @@
                                 <span> • ${formatTime(c.at)}</span>
                                 ${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}
                             </div>
-                            <span class="text-[10px] px-2 py-0.5 bg-gray-100 dark:bg-darkCard rounded-full">${getBNName(c.category || 'General')}</span>
+                            <span class="text-[10px] px-2 py-0.5 bg-gray-100 dark:bg-darkCard rounded-full">${c.category || 'Uncategorized'}</span>
                         </div>
                         <div class="cursor-pointer" onclick="openDetails('${c.id}')">
                             <h2 class="text-sm font-semibold mb-2 line-clamp-3 text-gray-800 dark:text-gray-200 leading-relaxed">${c.msg}</h2>
