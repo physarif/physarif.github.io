@@ -105,7 +105,6 @@
     const provider = new GoogleAuthProvider();
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
     
-    // অ্যাডমিন ইমেইল সেট করা হলো
     const ADMIN_EMAIL = 'phys.arif@gmail.com'; 
 
     window.currentUser = null;
@@ -115,6 +114,9 @@
     onSnapshot(collection(db, BASE_PATH), (snapshot) => {
         allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
+    }, (error) => {
+        console.error("Firestore Error:", error);
+        document.getElementById('posts-container').innerHTML = `<div class="p-20 text-center text-red-500 text-sm">ডেটা লোড করতে সমস্যা হচ্ছে। Rules চেক করো।</div>`;
     });
 
     onAuthStateChanged(auth, (user) => {
@@ -124,7 +126,6 @@
         document.getElementById('user-info-wrapper').classList.toggle('hidden', !isUser);
         document.getElementById('login-ui').classList.toggle('hidden', isUser);
         
-        // অ্যাডমিন বাটন চেক
         const adminBtn = document.getElementById('admin-link');
         if (user && user.email === ADMIN_EMAIL) {
             adminBtn.classList.remove('hidden');
@@ -142,11 +143,17 @@
 
     window.render = () => {
         const container = document.getElementById('posts-container');
-        let posts = allData.filter(p => !p.parentId && p.status === 'approved');
         
-        if (currentFilter === 'popular') posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
-        else if (currentFilter === 'featured') posts = posts.filter(p => p.featured);
-        else posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+        // Filter logic updated to be more flexible
+        let posts = allData.filter(p => !p.parentId && (p.status === 'approved' || !p.status));
+        
+        if (currentFilter === 'popular') {
+            posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+        } else if (currentFilter === 'featured') {
+            posts = posts.filter(p => p.featured);
+        } else {
+            posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+        }
 
         if(posts.length === 0) {
             container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কোনো পোস্ট পাওয়া যায়নি</div>`;
@@ -154,7 +161,7 @@
         }
 
         container.innerHTML = posts.map(p => `
-            <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm transition-all" onclick="openDetails('${p.id}')">
+            <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm transition-all cursor-pointer" onclick="openDetails('${p.id}')">
                 <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1">
                     <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
                     <span class="text-xs font-bold text-accent">${p.votes || 0}</span>
@@ -163,18 +170,16 @@
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-2">
                         <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
-                        <span class="text-[11px] font-bold text-gray-500 uppercase">${p.name}</span>
-                        <span class="text-[10px] text-gray-300">• কিছুক্ষণ আগে</span>
+                        <span class="text-[11px] font-bold text-gray-500 uppercase">${p.name || 'Anonymous'}</span>
+                        <span class="text-[10px] text-gray-300">• ${p.at ? new Date(p.at.seconds * 1000).toLocaleDateString('bn-BD') : 'নতুন'}</span>
                         <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent ml-auto">${p.category || 'সাধারণ'}</span>
                     </div>
-                    <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${p.msg}</p>
+                    <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${p.msg || ''}</p>
                 </div>
             </div>`).join('');
     };
 
-    window.openDetails = (id) => {
-        if(id) window.location.href = `post.html?id=${id}`;
-    };
+    window.openDetails = (id) => { if(id) window.location.href = `post.html?id=${id}`; };
 
     window.setFilter = (f) => {
         currentFilter = f;
