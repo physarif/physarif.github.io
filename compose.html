@@ -105,7 +105,7 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    // Quill Initialization with Image support
+    // Toolbar without 'clean' (T-cross) button
     const quill = new Quill('#editor', {
         theme: 'snow',
         placeholder: 'আপনার মনের কথা এখানে লিখুন...',
@@ -113,13 +113,24 @@
             toolbar: [
                 ['bold', 'italic', 'underline', 'blockquote'],
                 [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['link', 'image', 'video', 'clean'] // 'image' button added here
+                ['link', 'image', 'video'] // 'clean' removed from here
             ]
         }
     });
 
-    // Custom Image URL Handler
     const toolbar = quill.getModule('toolbar');
+    
+    // Better Link Handler
+    toolbar.addHandler('link', function(value) {
+        if (value) {
+            const href = prompt('লিংক (URL) দিন:');
+            if(href) this.quill.format('link', href);
+        } else {
+            this.quill.format('link', false);
+        }
+    });
+
+    // Custom Image URL Handler
     toolbar.addHandler('image', () => {
         const range = quill.getSelection();
         const value = prompt('ইমেজ ইউআরএল (URL) দিন:');
