@@ -29,6 +29,13 @@
         }
         .forum-card:hover { border-left-color: #3498db; }
         .tab-active { border-bottom: 2px solid #3498db; color: #3498db; }
+        /* ৩ লাইন পর ডট ডট দেখানোর জন্য */
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -56,13 +63,11 @@
                 </div>
                 
                 <div class="space-y-1.5">
-                    <!-- যোগদান তথ্য উপরে -->
                     <div class="flex items-center gap-1.5 text-[11px] text-gray-400">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         <span>যোগদান: <span id="join-date" class="font-medium">...</span></span>
                     </div>
 
-                    <!-- আপভোট তথ্য নিচে -->
                     <div class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                         <svg class="w-3.5 h-3.5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path>
@@ -74,13 +79,16 @@
         </div>
     </div>
 
-    <!-- Tabs Navigation with Counts -->
+    <!-- Tabs Navigation -->
     <div class="flex border-b dark:border-darkBorder mb-6">
-        <button id="tab-posts" class="flex-1 py-3 text-sm font-bold tab-active transition-all">
-            পোস্টসমূহ (<span id="count-posts">০</span>)
+        <button id="tab-posts" class="flex-1 py-3 text-[13px] font-bold tab-active transition-all">
+            পোস্ট (<span id="count-posts">০</span>)
         </button>
-        <button id="tab-comments" class="flex-1 py-3 text-sm font-bold text-gray-400 hover:text-accent transition-all">
-            মন্তব্যসমূহ (<span id="count-comments">০</span>)
+        <button id="tab-comments" class="flex-1 py-3 text-[13px] font-bold text-gray-400 hover:text-accent transition-all">
+            মন্তব্য (<span id="count-comments">০</span>)
+        </button>
+        <button id="tab-bookmarks" class="flex-1 py-3 text-[13px] font-bold text-gray-400 hover:text-accent transition-all">
+            বুকমার্ক (<span id="count-bookmarks">০</span>)
         </button>
     </div>
     
@@ -91,7 +99,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, where, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -107,6 +115,7 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
+    const BOOKMARK_PATH = 'blog_comments/pages/bookmarks';
 
     let currentTab = 'posts';
     let currentUser = null;
@@ -128,10 +137,10 @@
         }
     });
 
-    function fetchData() {
+    async function fetchData() {
         const q = query(collection(db, BASE_PATH), where("uid", "==", currentUser.uid));
         
-        onSnapshot(q, (snapshot) => {
+        onSnapshot(q, async (snapshot) => {
             const allData = snapshot.docs
                 .map(d => ({ id: d.id, ...d.data() }))
                 .sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
@@ -145,33 +154,41 @@
             const totalUpvotes = allData.reduce((acc, curr) => acc + (curr.votes || 0), 0);
             document.getElementById('total-upvotes').innerText = totalUpvotes.toLocaleString('bn-BD');
 
-            const badgeEl = document.getElementById('user-badge');
-            
-            if (currentUser.email === 'phys.arif@gmail.com') {
-                badgeEl.innerText = "এডমিন";
-                badgeEl.className = "px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
-            } else {
-                if (totalUpvotes >= 100) { 
-                    badgeEl.innerText = "মাস্টার লেখক"; 
-                    badgeEl.className = "px-2 py-0.5 bg-orange-100 text-orange-600 text-[10px] font-bold rounded-full border border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800"; 
-                } else if (totalUpvotes >= 50) { 
-                    badgeEl.innerText = "সিনিয়র লেখক"; 
-                    badgeEl.className = "px-2 py-0.5 bg-purple-100 text-purple-600 text-[10px] font-bold rounded-full border border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800"; 
-                } else if (totalUpvotes >= 10) { 
-                    badgeEl.innerText = "উদীয়মান লেখক"; 
-                    badgeEl.className = "px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded-full border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"; 
-                } else {
-                    badgeEl.innerText = "সদস্য";
-                    badgeEl.className = "px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-full border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700";
-                }
-            }
-            
+            updateBadge(totalUpvotes);
+
+            const bq = query(collection(db, BOOKMARK_PATH), where("uid", "==", currentUser.uid));
+            const bSnapshot = await getDocs(bq);
+            const bookmarks = bSnapshot.docs.map(d => d.data());
+            document.getElementById('count-bookmarks').innerText = bookmarks.length.toLocaleString('bn-BD');
+
             if (currentTab === 'posts') {
                 renderItems(posts, 'তুমি এখনো কোনো পোস্ট করোনি');
-            } else {
+            } else if (currentTab === 'comments') {
                 renderItems(comments, 'তুমি এখনো কোনো মন্তব্য করোনি');
+            } else if (currentTab === 'bookmarks') {
+                renderBookmarks(bookmarks);
             }
         });
+    }
+
+    function updateBadge(totalUpvotes) {
+        const badgeEl = document.getElementById('user-badge');
+        if (currentUser.email === 'phys.arif@gmail.com') {
+            badgeEl.innerText = "এডমিন";
+            badgeEl.className = "px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
+        } else if (totalUpvotes >= 100) { 
+            badgeEl.innerText = "মাস্টার লেখক"; 
+            badgeEl.className = "px-2 py-0.5 bg-orange-100 text-orange-600 text-[10px] font-bold rounded-full border border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800"; 
+        } else if (totalUpvotes >= 50) { 
+            badgeEl.innerText = "সিনিয়র লেখক"; 
+            badgeEl.className = "px-2 py-0.5 bg-purple-100 text-purple-600 text-[10px] font-bold rounded-full border border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800"; 
+        } else if (totalUpvotes >= 10) { 
+            badgeEl.innerText = "উদীয়মান লেখক"; 
+            badgeEl.className = "px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded-full border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"; 
+        } else {
+            badgeEl.innerText = "সদস্য";
+            badgeEl.className = "px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-full border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700";
+        }
     }
 
     function renderItems(items, emptyMsg) {
@@ -186,22 +203,61 @@
                  onclick="location.href='post.html?id=${item.parentId || item.id}'">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-[10px] text-gray-400">${item.at ? new Date(item.at.seconds * 1000).toLocaleDateString('bn-BD') : ''}</span>
-                    <span class="text-xs font-bold text-accent">${currentTab === 'posts' ? 'ভোট' : 'লাইক'}: ${(item.votes || 0).toLocaleString('bn-BD')}</span>
+                    <span class="text-xs font-bold text-accent">${item.parentId ? 'লাইক' : 'ভোট'}: ${(item.votes || 0).toLocaleString('bn-BD')}</span>
                 </div>
-                <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-2">${item.msg || ''}</p>
+                <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-3">${item.msg || ''}</p>
                 ${item.parentId ? `<p class="text-[10px] text-accent mt-2 font-medium">মূল পোস্ট দেখতে ক্লিক করো</p>` : ''}
             </div>
         `).join('');
     }
 
-    document.getElementById('tab-posts').onclick = () => { currentTab = 'posts'; updateTabUI(); fetchData(); };
-    document.getElementById('tab-comments').onclick = () => { currentTab = 'comments'; updateTabUI(); fetchData(); };
+    async function renderBookmarks(bookmarks) {
+        const container = document.getElementById('content-container');
+        if (bookmarks.length === 0) {
+            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm italic bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder">তুমি কোনো পোস্ট বুকমার্ক করোনি</div>`;
+            return;
+        }
+
+        const postPromises = bookmarks.map(b => getDocs(query(collection(db, BASE_PATH), where("__name__", "==", b.postId))));
+        const postSnapshots = await Promise.all(postPromises);
+        const bookmarkedPosts = postSnapshots.map(s => s.docs[0]?.data() ? {id: s.docs[0].id, ...s.docs[0].data()} : null).filter(p => p !== null);
+
+        container.innerHTML = bookmarkedPosts.map(post => `
+            <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm cursor-pointer" 
+                 onclick="location.href='post.html?id=${post.id}'">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <img src="${post.userPhoto || 'https://via.placeholder.com/30'}" class="w-4 h-4 rounded-full">
+                        <span class="text-[10px] font-bold">${post.userName || 'অজানা'}</span>
+                    </div>
+                    <svg class="w-3.5 h-3.5 text-accent" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg>
+                </div>
+                <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-3">${post.msg || ''}</p>
+                <div class="mt-2 flex items-center justify-between">
+                     <span class="text-[10px] text-gray-400">${post.at ? new Date(post.at.seconds * 1000).toLocaleDateString('bn-BD') : ''}</span>
+                     <span class="text-[10px] font-bold text-accent">ভোট: ${(post.votes || 0).toLocaleString('bn-BD')}</span>
+                </div>
+            </div>
+        `).join('');
+    }
 
     function updateTabUI() {
-        const p = document.getElementById('tab-posts'), c = document.getElementById('tab-comments');
-        if (currentTab === 'posts') { p.classList.add('tab-active'); p.classList.remove('text-gray-400'); c.classList.remove('tab-active'); c.classList.add('text-gray-400'); }
-        else { c.classList.add('tab-active'); c.classList.remove('text-gray-400'); p.classList.remove('tab-active'); p.classList.add('text-gray-400'); }
+        const tabs = ['tab-posts', 'tab-comments', 'tab-bookmarks'];
+        tabs.forEach(t => {
+            const el = document.getElementById(t);
+            if (t === `tab-${currentTab}`) {
+                el.classList.add('tab-active');
+                el.classList.remove('text-gray-400');
+            } else {
+                el.classList.remove('tab-active');
+                el.classList.add('text-gray-400');
+            }
+        });
     }
+
+    document.getElementById('tab-posts').onclick = () => { currentTab = 'posts'; updateTabUI(); fetchData(); };
+    document.getElementById('tab-comments').onclick = () => { currentTab = 'comments'; updateTabUI(); fetchData(); };
+    document.getElementById('tab-bookmarks').onclick = () => { currentTab = 'bookmarks'; updateTabUI(); fetchData(); };
 
     document.getElementById('logout-btn').onclick = () => { signOut(auth).then(() => location.href = 'index.html'); };
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
