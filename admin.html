@@ -24,6 +24,7 @@
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
         .admin-card { transition: all 0.2s; }
+        .tab-active { background-color: #3498db !important; color: white !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-10">
@@ -36,26 +37,32 @@
             </button>
             <div>
                 <h1 class="text-xl font-bold">এডমিন প্যানেল</h1>
-                <p class="text-xs text-gray-500">পেন্ডিং পোস্ট ম্যানেজমেন্ট</p>
+                <p id="view-title" class="text-xs text-gray-500">পেন্ডিং পোস্ট ম্যানেজমেন্ট</p>
             </div>
         </div>
         <div class="text-right">
-            <span id="admin-badge" class="px-3 py-1 bg-accent/10 text-accent text-[10px] font-bold rounded-full uppercase tracking-widest border border-accent/20">Verified Admin</span>
+            <span class="px-3 py-1 bg-accent/10 text-accent text-[10px] font-bold rounded-full uppercase tracking-widest border border-accent/20">Verified Admin</span>
         </div>
     </div>
 
     <div class="grid grid-cols-2 gap-4 mb-8">
         <div class="bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm">
-            <p class="text-xs text-gray-500 mb-1">মোট পেন্ডিং</p>
-            <p id="pending-count" class="text-2xl font-black text-accent">0</p>
+            <p class="text-xs text-gray-500 mb-1 font-bold">আইটেম সংখ্যা</p>
+            <p id="item-count" class="text-2xl font-black text-accent">0</p>
         </div>
         <div class="bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm">
-            <p class="text-xs text-gray-500 mb-1">অ্যাকশন প্রয়োজন</p>
-            <p class="text-2xl font-black text-orange-500">Urgent</p>
+            <p class="text-xs text-gray-500 mb-1 font-bold">স্ট্যাটাস</p>
+            <p id="status-text" class="text-sm font-bold text-green-500 italic">সিস্টেম অনলাইন</p>
         </div>
     </div>
 
-    <div id="pending-posts" class="space-y-4">
+    <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+        <button onclick="switchTab('pending')" id="btn-pending" class="px-4 py-2 text-xs font-bold rounded-lg bg-white dark:bg-darkCard border dark:border-darkBorder whitespace-nowrap tab-active">পেন্ডিং পোস্ট</button>
+        <button onclick="switchTab('all')" id="btn-all" class="px-4 py-2 text-xs font-bold rounded-lg bg-white dark:bg-darkCard border dark:border-darkBorder whitespace-nowrap">সব পোস্ট</button>
+        <button onclick="switchTab('comments')" id="btn-comments" class="px-4 py-2 text-xs font-bold rounded-lg bg-white dark:bg-darkCard border dark:border-darkBorder whitespace-nowrap">সব কমেন্ট</button>
+    </div>
+
+    <div id="content-list" class="space-y-4">
         <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
     </div>
 </main>
@@ -70,7 +77,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -85,65 +92,108 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+
     const ADMIN_EMAIL = 'phys.arif@gmail.com';
-    const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
+    const POSTS_PATH = 'blog_comments/pages/forum_v2_voted';
+    const COMMENTS_PATH = 'blog_comments/pages/forum_comments'; // আপনার সঠিক কমেন্ট পাথটি এখানে দিন
+
+    let currentMode = 'pending';
+    let unsubscribe = null;
 
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === ADMIN_EMAIL) {
             document.getElementById('admin-main').classList.remove('hidden');
-            loadPendingPosts();
+            switchTab('pending');
         } else {
             document.getElementById('access-denied').classList.remove('hidden');
             setTimeout(() => { if(!user || user.email !== ADMIN_EMAIL) location.href = 'index.html'; }, 3000);
         }
     });
 
-    function loadPendingPosts() {
-        const q = query(collection(db, BASE_PATH), where("status", "==", "pending"));
-        onSnapshot(q, (snapshot) => {
-            const posts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            document.getElementById('pending-count').innerText = posts.length;
-            renderAdminPosts(posts);
+    window.switchTab = (mode) => {
+        currentMode = mode;
+        // Update UI Tabs
+        ['pending', 'all', 'comments'].forEach(m => {
+            document.getElementById(`btn-${m}`).classList.remove('tab-active');
+        });
+        document.getElementById(`btn-${mode}`).classList.add('tab-active');
+        
+        const labels = { 'pending': 'পেন্ডিং পোস্ট ম্যানেজমেন্ট', 'all': 'সকল পোস্টের তালিকা', 'comments': 'সকল কমেন্টের তালিকা' };
+        document.getElementById('view-title').innerText = labels[mode];
+
+        loadData();
+    };
+
+    function loadData() {
+        if (unsubscribe) unsubscribe();
+        
+        let q;
+        const colRef = collection(db, (currentMode === 'comments' ? COMMENTS_PATH : POSTS_PATH));
+
+        if (currentMode === 'pending') {
+            q = query(colRef, where("status", "==", "pending"));
+        } else if (currentMode === 'all') {
+            q = query(colRef, orderBy("createdAt", "desc"));
+        } else {
+            q = query(colRef, orderBy("createdAt", "desc"));
+        }
+
+        unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('item-count').innerText = data.length;
+            renderItems(data);
+        }, (error) => {
+            console.error("Error loading data: ", error);
+            document.getElementById('content-list').innerHTML = `<p class="text-center text-red-500 py-10">ডাটা লোড করতে সমস্যা হচ্ছে। পাথ ঠিক আছে কি না চেক করুন।</p>`;
         });
     }
 
-    function renderAdminPosts(posts) {
-        const container = document.getElementById('pending-posts');
-        if (posts.length === 0) {
-            container.innerHTML = `<div class="text-center py-20 text-gray-400 bg-white dark:bg-darkCard rounded-2xl border dark:border-darkBorder">কোনো পেন্ডিং পোস্ট নেই</div>`;
+    function renderItems(items) {
+        const container = document.getElementById('content-list');
+        if (items.length === 0) {
+            container.innerHTML = `<div class="text-center py-20 text-gray-400 bg-white dark:bg-darkCard rounded-2xl border dark:border-darkBorder">কোনো তথ্য পাওয়া যায়নি</div>`;
             return;
         }
 
-        container.innerHTML = posts.map(p => `
-            <div class="admin-card bg-white dark:bg-darkCard p-5 rounded-xl border dark:border-darkBorder shadow-sm">
+        container.innerHTML = items.map(item => `
+            <div class="admin-card bg-white dark:bg-darkCard p-5 rounded-xl border dark:border-darkBorder shadow-sm relative overflow-hidden">
+                ${item.status === 'pending' ? '<div class="absolute top-0 right-0 bg-orange-500 text-[8px] text-white px-2 py-0.5 rounded-bl-lg font-bold">PENDING</div>' : ''}
                 <div class="flex items-center gap-3 mb-4">
-                    <img src="${p.photoURL || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full">
+                    <img src="${item.photoURL || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full border dark:border-gray-700">
                     <div>
-                        <p class="text-sm font-bold">${p.name || 'Anonymous'}</p>
-                        <p class="text-[10px] text-gray-400">${p.email || ''}</p>
+                        <p class="text-sm font-bold">${item.name || 'Anonymous'}</p>
+                        <p class="text-[10px] text-gray-400">${item.email || ''}</p>
                     </div>
                 </div>
-                <p class="text-sm text-gray-800 dark:text-gray-200 mb-6 bg-gray-50 dark:bg-darkBg p-3 rounded-lg">${p.msg || ''}</p>
+                <p class="text-sm text-gray-800 dark:text-gray-200 mb-6 bg-gray-50 dark:bg-darkBg p-3 rounded-lg border dark:border-darkBorder">${item.msg || item.text || ''}</p>
                 <div class="flex gap-3">
-                    <button onclick="approvePost('${p.id}')" class="flex-1 py-2 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-colors">APPROVE</button>
-                    <button onclick="deletePost('${p.id}')" class="flex-1 py-2 bg-red-100 text-red-500 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-xs font-bold hover:bg-red-200 transition-colors">DELETE</button>
+                    ${item.status === 'pending' ? `
+                        <button onclick="approvePost('${item.id}')" class="flex-1 py-2 bg-green-600 text-white rounded-lg text-[10px] font-bold hover:bg-green-700 transition-colors">APPROVE</button>
+                    ` : ''}
+                    <button onclick="deleteItem('${item.id}')" class="flex-1 py-2 bg-red-100 text-red-500 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-[10px] font-bold hover:bg-red-200 transition-colors uppercase tracking-wider">Delete</button>
                 </div>
             </div>
         `).join('');
     }
 
     window.approvePost = async (id) => {
-        if(confirm('পোস্টটি অ্যাপ্রুভ করতে চান?')) {
-            await updateDoc(doc(db, BASE_PATH, id), { status: 'approved' });
+        if(confirm('আইটেমটি অ্যাপ্রুভ করতে চান?')) {
+            try {
+                await updateDoc(doc(db, POSTS_PATH, id), { status: 'approved' });
+            } catch (e) { alert('Error: ' + e.message); }
         }
     };
 
-    window.deletePost = async (id) => {
-        if(confirm('পোস্টটি চিরতরে মুছে ফেলতে চান?')) {
-            await deleteDoc(doc(db, BASE_PATH, id));
+    window.deleteItem = async (id) => {
+        if(confirm('এটি চিরতরে মুছে ফেলতে চান?')) {
+            try {
+                const path = (currentMode === 'comments' ? COMMENTS_PATH : POSTS_PATH);
+                await deleteDoc(doc(db, path, id));
+            } catch (e) { alert('Error: ' + e.message); }
         }
     };
 
+    // Auto Dark Mode
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark');
     }
