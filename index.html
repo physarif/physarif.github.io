@@ -110,19 +110,18 @@
                     ফিচারড
                 </button>
 
-            <!-- নতুন: ক্যাটাগরি ড্রপডাউন -->
             <div class="relative w-full">
-                <button id="filter-categories" onclick="toggleCategoryFilter(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left w-full whitespace-nowrap">
+                <button id="filter-categories" onclick="toggleCategoryFilter(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left w-full whitespace-nowrap hover:bg-gray-100 dark:hover:bg-darkCard">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
                     ক্যাটাগরি
-                    <svg class="w-3 h-3 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <svg class="w-3 h-3 ml-auto transition-transform" id="cat-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
-                <div id="category-dropdown" class="dropdown-menu right-0 mt-1 w-full hidden">
-                    <button onclick="setFilter('category', 'General')" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-100 dark:hover:bg-darkBg">জেনারেল</button>
-                    <button onclick="setFilter('category', 'Tech')" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-100 dark:hover:bg-darkBg">টেক</button>
-                    <button onclick="setFilter('category', 'Literature')" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-100 dark:hover:bg-darkBg">সাহিত্য</button>
-                    <button onclick="setFilter('category', 'Politics')" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-100 dark:hover:bg-darkBg">রাজনীতি</button>
-                    <button onclick="setFilter('category', 'Others')" class="w-full text-left px-4 py-2 text-xs hover:bg-gray-100 dark:hover:bg-darkBg">অন্যান্য</button>
+                <div id="category-dropdown" class="hidden mt-1 w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl shadow-xl z-[110] lg:absolute lg:left-0 lg:top-full">
+                    <button onclick="setFilter('category', 'General')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg first:rounded-t-xl">জেনারেল</button>
+                    <button onclick="setFilter('category', 'Tech')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg">টেক</button>
+                    <button onclick="setFilter('category', 'Literature')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg">সাহিত্য</button>
+                    <button onclick="setFilter('category', 'Politics')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg">রাজনীতি</button>
+                    <button onclick="setFilter('category', 'Others')" class="w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-darkBg last:rounded-b-xl">অন্যান্য</button>
                 </div>
             </div>
 
@@ -214,7 +213,7 @@
     <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-2xl p-5 shadow-2xl">
         <h2 id="modal-title" class="text-lg font-black mb-4 text-center">নতুন আলোচনা</h2>
         <textarea id="user-comment" placeholder="আপনার মনের কথা লিখুন..." class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-xl px-4 py-3 h-48 outline-none focus:ring-2 ring-accent resize-none text-base"></textarea>
-        <!-- নতুন: ক্যাটাগরি সিলেক্ট -->
+        
         <select id="post-category" class="w-full mt-2 bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-xl px-4 py-3 outline-none focus:ring-2 ring-accent text-base">
             <option value="General">জেনারেল</option>
             <option value="Tech">টেক</option>
@@ -310,14 +309,25 @@
 
     window.googleLogin = async () => { try { await signInWithPopup(auth, provider); } catch(e){} };
     window.googleLogout = async () => { if(!confirm('আপনি কি লগ আউট করতে চান?')) return; try { await signOut(auth); location.reload(); } catch(e){} };
-    window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('dropdown-active'); };
+    
+    window.toggleUserDropdown = (e) => { 
+        e.stopPropagation(); 
+        document.getElementById('user-dropdown').classList.toggle('dropdown-active'); 
+    };
+
     window.closeAllDropdowns = (e) => {
+        // User Dropdown
         document.getElementById('user-dropdown').classList.remove('dropdown-active');
+        
+        // Notifications Dropdown
         if (!e.target.closest('#noti-trigger') && !e.target.closest('#notification-dropdown')) {
             document.getElementById('notification-dropdown').classList.add('hidden');
         }
+        
+        // Category Dropdown
         if (!e.target.closest('#filter-categories') && !e.target.closest('#category-dropdown')) {
             document.getElementById('category-dropdown').classList.add('hidden');
+            document.getElementById('cat-arrow').style.transform = 'rotate(0deg)';
         }
     };
 
@@ -325,19 +335,28 @@
         currentFilter = filter;
         currentCategory = category;
         visibleCount = postsPerPage; 
+        
         document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('filter-active'));
-        const activeBtn = document.getElementById(`filter-${filter}`);
-        if(activeBtn) activeBtn.classList.add('filter-active');
+        
         if (filter === 'category' && category) {
             document.getElementById('filter-categories').classList.add('filter-active');
             document.getElementById('category-dropdown').classList.add('hidden');
+            document.getElementById('cat-arrow').style.transform = 'rotate(0deg)';
+        } else {
+            const activeBtn = document.getElementById(`filter-${filter}`);
+            if(activeBtn) activeBtn.classList.add('filter-active');
         }
         render();
     };
 
     window.toggleCategoryFilter = (e) => { 
         e.stopPropagation(); 
-        document.getElementById('category-dropdown').classList.toggle('hidden'); 
+        const drop = document.getElementById('category-dropdown');
+        const arrow = document.getElementById('cat-arrow');
+        const isHidden = drop.classList.contains('hidden');
+        
+        drop.classList.toggle('hidden'); 
+        arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
     };
 
     window.loadMorePosts = () => {
@@ -345,7 +364,12 @@
         render();
     };
 
-    window.toggleNotifications = (e) => { e.stopPropagation(); const drop = document.getElementById('notification-dropdown'); drop.classList.toggle('hidden'); if(!drop.classList.contains('hidden')) markNotisAsRead(); };
+    window.toggleNotifications = (e) => { 
+        e.stopPropagation(); 
+        const drop = document.getElementById('notification-dropdown'); 
+        drop.classList.toggle('hidden'); 
+        if(!drop.classList.contains('hidden')) markNotisAsRead(); 
+    };
 
     async function markNotisAsRead() {
         if(!currentUser) return;
@@ -378,12 +402,18 @@
             </div>`).join('');
     }
 
-    window.openFromNoti = (postId) => { document.getElementById('notification-dropdown').classList.add('hidden'); openDetails(postId); };
+    window.openFromNoti = (postId) => { 
+        document.getElementById('notification-dropdown').classList.add('hidden'); 
+        openDetails(postId); 
+    };
 
     function updateBadges() {
         const pCount = allData.filter(p => !p.parentId && p.status === 'pending').length;
         const pBadge = document.getElementById('pending-badge');
-        if(pBadge) { pBadge.innerText = toBN(pCount); pBadge.classList.toggle('hidden', !isAdmin || pCount === 0); }
+        if(pBadge) { 
+            pBadge.innerText = toBN(pCount); 
+            pBadge.classList.toggle('hidden', !isAdmin || pCount === 0); 
+        }
     }
 
     window.submitPost = async () => {
@@ -428,20 +458,50 @@
     window.postReply = async () => {
         const rawMsg = document.getElementById('reply-input').value.trim();
         if(!rawMsg || !currentUser || !activeThreadId) return;
-        if (editCommentId) { await updateDoc(doc(db, BASE_PATH, editCommentId), { msg: rawMsg, edited: true }); showToast('মন্তব্য সংশোধন হয়েছে'); cancelCommentEdit(); } 
+        if (editCommentId) { 
+            await updateDoc(doc(db, BASE_PATH, editCommentId), { msg: rawMsg, edited: true }); 
+            showToast('মন্তব্য সংশোধন হয়েছে'); 
+            cancelCommentEdit(); 
+        } 
         else {
             const parentPost = allData.find(d => d.id === activeThreadId);
-            await addDoc(collection(db, BASE_PATH), { name: currentUser.displayName, msg: rawMsg, parentId: activeThreadId, replyToId: replyingToId || null, replyToName: replyingToName || null, photoURL: currentUser.photoURL, userId: currentUser.uid, at: serverTimestamp() });
-            if(replyingToId) { const targetComment = allData.find(d => d.id === replyingToId); if(targetComment) addNotification(targetComment.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'reply'); } 
-            else { addNotification(parentPost.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'comment'); }
+            await addDoc(collection(db, BASE_PATH), { 
+                name: currentUser.displayName, 
+                msg: rawMsg, 
+                parentId: activeThreadId, 
+                replyToId: replyingToId || null, 
+                replyToName: replyingToName || null, 
+                photoURL: currentUser.photoURL, 
+                userId: currentUser.uid, 
+                at: serverTimestamp() 
+            });
+            
+            if(replyingToId) { 
+                const targetComment = allData.find(d => d.id === replyingToId); 
+                if(targetComment) addNotification(targetComment.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'reply'); 
+            } else { 
+                addNotification(parentPost.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'comment'); 
+            }
             showToast('মন্তব্য করা হয়েছে');
         }
         document.getElementById('reply-input').value = '';
         cancelReplyTag();
     };
 
-    window.prepareCommentEdit = (id, msg) => { editCommentId = id; document.getElementById('reply-input').value = msg; document.getElementById('replying-to-text').innerText = "মন্তব্য সংশোধন করছেন..."; document.getElementById('reply-tag-ui').classList.remove('hidden'); document.getElementById('reply-send-btn').innerText = "আপডেট"; document.getElementById('reply-input').focus(); };
-    window.cancelCommentEdit = () => { editCommentId = null; document.getElementById('reply-send-btn').innerText = "পাঠান"; cancelReplyTag(); };
+    window.prepareCommentEdit = (id, msg) => { 
+        editCommentId = id; 
+        document.getElementById('reply-input').value = msg; 
+        document.getElementById('replying-to-text').innerText = "মন্তব্য সংশোধন করছেন..."; 
+        document.getElementById('reply-tag-ui').classList.remove('hidden'); 
+        document.getElementById('reply-send-btn').innerText = "আপডেট"; 
+        document.getElementById('reply-input').focus(); 
+    };
+
+    window.cancelCommentEdit = () => { 
+        editCommentId = null; 
+        document.getElementById('reply-send-btn').innerText = "পাঠান"; 
+        cancelReplyTag(); 
+    };
 
     window.openProfile = (uid) => {
         const userDocs = allData.filter(d => d.userId === uid);
@@ -449,6 +509,7 @@
         const userPosts = userDocs.filter(d => !d.parentId);
         const userComments = userDocs.filter(d => d.parentId);
         const totalVotes = userPosts.reduce((acc, curr) => acc + (curr.votes || 0), 0);
+        
         document.getElementById('profile-content').innerHTML = `
             <div class="flex flex-col items-center mb-8">
                 <img src="${user.photoURL}" class="w-20 h-20 rounded-2xl mb-4 border-2 border-accent">
@@ -456,11 +517,26 @@
                 <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">${uid === ADMIN_EMAIL ? 'Admin' : 'Member'}</p>
             </div>
             <div class="grid grid-cols-3 gap-3 mb-8">
-                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder"><div class="text-lg font-black text-accent">${toBN(userPosts.length)}</div><div class="text-[9px] text-gray-400 font-bold uppercase">আলোচনা</div></div>
-                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder"><div class="text-lg font-black text-accent">${toBN(userComments.length)}</div><div class="text-[9px] text-gray-400 font-bold uppercase">মন্তব্য</div></div>
-                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder"><div class="text-lg font-black text-accent">${toBN(totalVotes)}</div><div class="text-[9px] text-gray-400 font-bold uppercase">ভোট</div></div>
+                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder">
+                    <div class="text-lg font-black text-accent">${toBN(userPosts.length)}</div>
+                    <div class="text-[9px] text-gray-400 font-bold uppercase">আলোচনা</div>
+                </div>
+                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder">
+                    <div class="text-lg font-black text-accent">${toBN(userComments.length)}</div>
+                    <div class="text-[9px] text-gray-400 font-bold uppercase">মন্তব্য</div>
+                </div>
+                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder">
+                    <div class="text-lg font-black text-accent">${toBN(totalVotes)}</div>
+                    <div class="text-[9px] text-gray-400 font-bold uppercase">ভোট</div>
+                </div>
             </div>
-            <div class="space-y-3">${userPosts.slice(0, 10).map(p => `<div onclick="closeProfile(); openDetails('${p.id}')" class="p-3 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl cursor-pointer hover:border-accent"><p class="text-xs font-semibold line-clamp-2">${p.msg}</p><span class="text-[9px] text-gray-400 font-bold">${formatTime(p.at)}</span></div>`).join('') || '<p class="text-center text-gray-400 text-xs py-10">কোনো আলোচনা নেই</p>'}</div>`;
+            <div class="space-y-3">
+                ${userPosts.slice(0, 10).map(p => `
+                    <div onclick="closeProfile(); openDetails('${p.id}')" class="p-3 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl cursor-pointer hover:border-accent">
+                        <p class="text-xs font-semibold line-clamp-2">${p.msg}</p>
+                        <span class="text-[9px] text-gray-400 font-bold">${formatTime(p.at)}</span>
+                    </div>`).join('') || '<p class="text-center text-gray-400 text-xs py-10">কোনো আলোচনা নেই</p>'}
+            </div>`;
         document.getElementById('profile-view').style.display = 'block';
     };
 
@@ -468,7 +544,10 @@
 
     window.adminApprovePost = async () => {
         if(!isAdmin || !activeThreadId) return;
-        try { await updateDoc(doc(db, BASE_PATH, activeThreadId), { status: 'approved' }); showToast('অ্যাপ্রুভ করা হয়েছে'); } catch (e) { showToast('সমস্যা হয়েছে'); }
+        try { 
+            await updateDoc(doc(db, BASE_PATH, activeThreadId), { status: 'approved' }); 
+            showToast('অ্যাপ্রুভ করা হয়েছে'); 
+        } catch (e) { showToast('সমস্যা হয়েছে'); }
     };
 
     window.handleDeletePost = async () => {
@@ -477,11 +556,23 @@
         const isOwner = currentUser && post.userId === currentUser.uid;
         if(!isAdmin && !isOwner) return;
         if(!confirm('আপনি কি এই আলোচনাটি মুছে ফেলতে চান?')) return;
-        try { await deleteDoc(doc(db, BASE_PATH, activeThreadId)); showToast('আলোচনা মুছে ফেলা হয়েছে'); closeView(); } catch(e) { showToast('কিছু সমস্যা হয়েছে'); }
+        try { 
+            await deleteDoc(doc(db, BASE_PATH, activeThreadId)); 
+            showToast('আলোচনা মুছে ফেলা হয়েছে'); 
+            closeView(); 
+        } catch(e) { showToast('কিছু সমস্যা হয়েছে'); }
     };
 
-    window.adminToggleFeature = async () => { const post = allData.find(d => d.id === activeThreadId); await updateDoc(doc(db, BASE_PATH, activeThreadId), { isFeatured: !post.isFeatured }); };
-    window.adminDeleteComment = async (id) => { if(!confirm('এই মন্তব্যটি মুছতে চান?')) return; await deleteDoc(doc(db, BASE_PATH, id)); showToast('মন্তব্য মোছা হয়েছে'); };
+    window.adminToggleFeature = async () => { 
+        const post = allData.find(d => d.id === activeThreadId); 
+        await updateDoc(doc(db, BASE_PATH, activeThreadId), { isFeatured: !post.isFeatured }); 
+    };
+    
+    window.adminDeleteComment = async (id) => { 
+        if(!confirm('এই মন্তব্যটি মুছতে চান?')) return; 
+        await deleteDoc(doc(db, BASE_PATH, id)); 
+        showToast('মন্তব্য মোছা হয়েছে'); 
+    };
 
     function render() {
         const container = document.getElementById('posts-container');
@@ -523,10 +614,17 @@
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <div class="flex items-center justify-between mb-1 text-[10px] font-bold text-gray-400 uppercase">
-                            <div class="flex items-center gap-2"><img src="${c.photoURL}" class="w-4 h-4 rounded-full cursor-pointer" onclick="openProfile('${c.userId}')"><span class="user-link" onclick="openProfile('${c.userId}')">${c.name}</span><span> • ${formatTime(c.at)}</span>${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}</div>
+                            <div class="flex items-center gap-2">
+                                <img src="${c.photoURL}" class="w-4 h-4 rounded-full cursor-pointer" onclick="openProfile('${c.userId}')">
+                                <span class="user-link" onclick="openProfile('${c.userId}')">${c.name}</span>
+                                <span> • ${formatTime(c.at)}</span>
+                                ${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}
+                            </div>
                             <span class="text-[10px] px-2 py-0.5 bg-gray-100 dark:bg-darkCard rounded-full">${c.category || 'Uncategorized'}</span>
                         </div>
-                        <div class="cursor-pointer" onclick="openDetails('${c.id}')"><h2 class="text-sm font-semibold mb-2 line-clamp-3 text-gray-800 dark:text-gray-200 leading-relaxed">${c.msg}</h2></div>
+                        <div class="cursor-pointer" onclick="openDetails('${c.id}')">
+                            <h2 class="text-sm font-semibold mb-2 line-clamp-3 text-gray-800 dark:text-gray-200 leading-relaxed">${c.msg}</h2>
+                        </div>
                     </div>
                 </div>
             </div>`;
@@ -542,8 +640,10 @@
         document.getElementById('edit-post-btn').classList.toggle('hidden', !(isAdmin || isOwner));
         document.getElementById('admin-approve-btn').classList.toggle('hidden', !(isAdmin && post.status === 'pending'));
         const featureIcon = document.getElementById('feature-icon-svg'); featureIcon.setAttribute('fill', post.isFeatured ? 'currentColor' : 'none');
+        
         const allReplies = allData.filter(r => r.parentId === activeThreadId).sort((a,b) => (a.at?.seconds || 0) - (b.at?.seconds || 0));
         const rootComments = allReplies.filter(r => !r.replyToId);
+        
         const renderComment = (comment, isReply = false) => {
             const nestedReplies = allReplies.filter(r => r.replyToId === comment.id);
             const canEdit = isAdmin || (currentUser && comment.userId === currentUser.uid);
@@ -562,12 +662,13 @@
                     ${nestedReplies.map(nr => renderComment(nr, true)).join('')}
                 </div>`;
         };
+
         document.getElementById('details-content').innerHTML = `
             <div class="mb-6">
                 <div class="flex items-center justify-between mb-4"> 
                     <div class="flex items-center gap-3">
                         <img src="${post.photoURL}" class="w-10 h-10 rounded-lg cursor-pointer" onclick="openProfile('${post.userId}')">
-                        <div><div class="font-black text-sm user-link" onclick="openProfile('${post.userId}')">${post.name} ${post.isFeatured ? '' : ''}</div><div class="text-[10px] text-gray-400 uppercase">${formatTime(post.at)} ${post.edited ? '• সম্পাদিত' : ''}</div></div>
+                        <div><div class="font-black text-sm user-link" onclick="openProfile('${post.userId}')">${post.name}</div><div class="text-[10px] text-gray-400 uppercase">${formatTime(post.at)} ${post.edited ? '• সম্পাদিত' : ''}</div></div>
                     </div>
                     <button onclick="handleShare()" class="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg></button>
                 </div>
@@ -576,8 +677,21 @@
             </div>`;
     }
 
-    window.prepareReply = (id, userName) => { replyingToId = id; replyingToName = userName; const tagUi = document.getElementById('reply-tag-ui'); document.getElementById('replying-to-text').innerText = `${userName} কে উত্তর দিচ্ছেন`; tagUi.classList.remove('hidden'); document.getElementById('reply-input').focus(); };
-    window.cancelReplyTag = () => { replyingToId = null; replyingToName = null; editCommentId = null; document.getElementById('reply-tag-ui').classList.add('hidden'); document.getElementById('reply-send-btn').innerText = "পাঠান"; };
+    window.prepareReply = (id, userName) => { 
+        replyingToId = id; 
+        replyingToName = userName; 
+        document.getElementById('replying-to-text').innerText = `${userName} কে উত্তর দিচ্ছেন`; 
+        document.getElementById('reply-tag-ui').classList.remove('hidden'); 
+        document.getElementById('reply-input').focus(); 
+    };
+
+    window.cancelReplyTag = () => { 
+        replyingToId = null; 
+        replyingToName = null; 
+        editCommentId = null; 
+        document.getElementById('reply-tag-ui').classList.add('hidden'); 
+        document.getElementById('reply-send-btn').innerText = "পাঠান"; 
+    };
     
     window.handleVote = async (id, val) => {
         if (!currentUser) return googleLogin();
@@ -589,27 +703,71 @@
         let upvoters = data.upvoters || [];
         let downvoters = data.downvoters || [];
         let currentVotes = data.votes || 0;
-        if (val === 1) { if (upvoters.includes(uid)) { upvoters = upvoters.filter(item => item !== uid); currentVotes -= 1; } else { if (downvoters.includes(uid)) { downvoters = downvoters.filter(item => item !== uid); currentVotes += 2; } else { currentVotes += 1; } upvoters.push(uid); } } 
-        else if (val === -1) { if (downvoters.includes(uid)) { downvoters = downvoters.filter(item => item !== uid); currentVotes += 1; } else { if (upvoters.includes(uid)) { upvoters = upvoters.filter(item => item !== uid); currentVotes -= 2; } else { currentVotes -= 1; } downvoters.push(uid); } }
-        try { await updateDoc(postRef, { votes: currentVotes, upvoters: upvoters, downvoters: downvoters }); } catch (e) { console.error("Error voting:", e); }
+        
+        if (val === 1) { 
+            if (upvoters.includes(uid)) { 
+                upvoters = upvoters.filter(item => item !== uid); currentVotes -= 1; 
+            } else { 
+                if (downvoters.includes(uid)) { downvoters = downvoters.filter(item => item !== uid); currentVotes += 2; } 
+                else { currentVotes += 1; } 
+                upvoters.push(uid); 
+            } 
+        } 
+        else if (val === -1) { 
+            if (downvoters.includes(uid)) { 
+                downvoters = downvoters.filter(item => item !== uid); currentVotes += 1; 
+            } else { 
+                if (upvoters.includes(uid)) { upvoters = upvoters.filter(item => item !== uid); currentVotes -= 2; } 
+                else { currentVotes -= 1; } 
+                downvoters.push(uid); 
+            } 
+        }
+        try { await updateDoc(postRef, { votes: currentVotes, upvoters, downvoters }); } catch (e) { console.error("Error voting:", e); }
     };
 
     window.handleShare = async () => {
         const post = allData.find(d => d.id === activeThreadId);
         if(!post) return;
         const shareUrl = window.location.origin + window.location.pathname + '?post=' + activeThreadId;
-        try { if (navigator.share) { await navigator.share({ title: 'লেখক ফোরাম', text: post.msg.substring(0, 100) + '...', url: shareUrl }); } else { await navigator.clipboard.writeText(shareUrl); showToast('লিংক কপি করা হয়েছে!'); } } catch (e) { console.log(e); }
+        try { 
+            if (navigator.share) { 
+                await navigator.share({ title: 'লেখক ফোরাম', text: post.msg.substring(0, 100) + '...', url: shareUrl }); 
+            } else { 
+                await navigator.clipboard.writeText(shareUrl); 
+                showToast('লিংক কপি করা হয়েছে!'); 
+            } 
+        } catch (e) { console.log(e); }
     };
 
-    window.openDetails = (id) => { activeThreadId = id; cancelReplyTag(); document.getElementById('details-view').style.display = 'block'; updateDetails(); updateBookmarkIcon(); };
-    window.closeView = () => { document.getElementById('details-view').style.display = 'none'; activeThreadId = null; };
+    window.openDetails = (id) => { 
+        activeThreadId = id; 
+        cancelReplyTag(); 
+        document.getElementById('details-view').style.display = 'block'; 
+        updateDetails(); 
+        updateBookmarkIcon(); 
+    };
+
+    window.closeView = () => { 
+        document.getElementById('details-view').style.display = 'none'; 
+        activeThreadId = null; 
+    };
 
     window.togglePostModal = (show) => { 
-        if(!show) { editPostId = null; document.getElementById('modal-title').innerText = "নতুন আলোচনা"; document.getElementById('user-comment').value = ''; document.getElementById('post-submit-btn').innerText = "পাবলিশ"; }
+        if(!show) { 
+            editPostId = null; 
+            document.getElementById('modal-title').innerText = "নতুন আলোচনা"; 
+            document.getElementById('user-comment').value = ''; 
+            document.getElementById('post-submit-btn').innerText = "পাবলিশ"; 
+        }
         document.getElementById('post-modal-overlay').style.display = show ? 'flex' : 'none'; 
     };
     
-    window.showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 3000); };
+    window.showToast = (msg) => { 
+        const t = document.getElementById('toast'); 
+        t.innerText = msg; 
+        t.style.opacity = '1'; 
+        setTimeout(() => t.style.opacity = '0', 3000); 
+    };
 
     window.toggleBookmark = async () => { 
         if (!currentUser) return googleLogin();
@@ -619,10 +777,24 @@
         showToast(exists ? 'বুকমার্ক সরানো হয়েছে' : 'বুকমার্ক করা হয়েছে');
     };
 
-    function updateBookmarkIcon() { const icon = document.getElementById('bookmark-icon'); const btn = document.getElementById('bookmark-btn'); if(!icon || !activeThreadId) return; const isBookmarked = userBookmarks.includes(activeThreadId); icon.setAttribute('fill', isBookmarked ? 'currentColor' : 'none'); btn.classList.toggle('text-accent', isBookmarked); }
+    function updateBookmarkIcon() { 
+        const icon = document.getElementById('bookmark-icon'); 
+        const btn = document.getElementById('bookmark-btn'); 
+        if(!icon || !activeThreadId) return; 
+        const isBookmarked = userBookmarks.includes(activeThreadId); 
+        icon.setAttribute('fill', isBookmarked ? 'currentColor' : 'none'); 
+        btn.classList.toggle('text-accent', isBookmarked); 
+    }
 
     const toBN = (n) => n.toString().replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
-    function formatTime(ts) { if(!ts) return 'এখন'; const s = Math.floor((new Date() - new Date(ts.seconds * 1000))/1000); if(s < 60) return 'এইমাত্র'; if(s < 3600) return toBN(Math.floor(s/60)) + 'মি আগে'; if(s < 86400) return toBN(Math.floor(s/3600)) + 'ঘ আগে'; return new Date(ts.seconds*1000).toLocaleDateString('bn-BD', {day:'numeric', month:'short'}); }
+    function formatTime(ts) { 
+        if(!ts) return 'এখন'; 
+        const s = Math.floor((new Date() - new Date(ts.seconds * 1000))/1000); 
+        if(s < 60) return 'এইমাত্র'; 
+        if(s < 3600) return toBN(Math.floor(s/60)) + 'মি আগে'; 
+        if(s < 86400) return toBN(Math.floor(s/3600)) + 'ঘ আগে'; 
+        return new Date(ts.seconds*1000).toLocaleDateString('bn-BD', {day:'numeric', month:'short'}); 
+    }
 
     const setDarkMode = (dark) => {
         document.documentElement.classList.toggle('dark', dark);
@@ -637,12 +809,13 @@
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('post');
         if (postId) {
-            if (allData && allData.length > 0) { const postExists = allData.find(p => p.id === postId); if (postExists) openDetails(postId); } 
-            else setTimeout(checkDirectLink, 1000);
+            if (allData && allData.length > 0) { 
+                const postExists = allData.find(p => p.id === postId); 
+                if (postExists) openDetails(postId); 
+            } else setTimeout(checkDirectLink, 1000);
         }
     }
     checkDirectLink();
 </script>
 </body>
 </html>
-
