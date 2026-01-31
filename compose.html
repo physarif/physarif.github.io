@@ -25,9 +25,12 @@
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
         .ql-container { font-family: 'Hind Siliguri', sans-serif; font-size: 1.125rem; border: none !important; }
-        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; }
+        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; border-radius: 12px 12px 0 0; }
         .dark .ql-editor.ql-blank::before { color: #9ca3af; }
         .dark .ql-snow .ql-stroke { stroke: #fff; }
+        .dark .ql-snow .ql-fill { fill: #fff; }
+        .dark .ql-snow .ql-picker { color: #fff; }
+        .ql-editor { min-height: 250px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -41,43 +44,69 @@
             <h1 class="text-xl font-bold">নতুন পোস্ট</h1>
         </div>
         <div class="flex gap-2">
-            <button id="preview-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkCard rounded-full text-sm font-bold">প্রিভিউ</button>
-            <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg hover:bg-opacity-90 transition-all">পাবলিশ</button>
+            <button id="preview-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkCard rounded-full text-sm font-bold hover:bg-opacity-80 transition-all">প্রিভিউ</button>
+            <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg shadow-accent/20 hover:bg-opacity-90 transition-all">পাবলিশ</button>
+        </div>
+    </div>
+
+    <div id="auth-check" class="mb-6 flex items-center gap-3 p-3 bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder">
+        <img id="current-user-img" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full border dark:border-darkBorder">
+        <div>
+            <p id="current-user-name" class="text-sm font-bold">লোড হচ্ছে...</p>
+            <p class="text-[10px] text-gray-400">আপনার প্রোফাইল থেকে পোস্ট করা হচ্ছে</p>
+        </div>
+    </div>
+
+    <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-xs text-gray-500 mb-1 ml-1">ক্যাটাগরি</label>
+            <select id="post-category" class="bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-3 py-2.5 text-sm w-full outline-none focus:border-accent">
+                <option value="সাধারণ">সাধারণ পোস্ট</option>
+                <option value="কবিতা">কবিতা</option>
+                <option value="গল্প">গল্প</option>
+                <option value="প্রবন্ধ">প্রবন্ধ</option>
+                <option value="অন্যান্য">অন্যান্য</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs text-gray-500 mb-1 ml-1">শিডিউল (ঐচ্ছিক)</label>
+            <input type="datetime-local" id="schedule-time" class="bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-3 py-2.5 text-sm w-full outline-none focus:border-accent">
         </div>
     </div>
 
     <div class="mb-4">
-        <select id="post-category" class="bg-white dark:bg-darkCard border dark:border-darkBorder rounded-lg px-3 py-2 text-sm w-full outline-none">
-            <option value="সাধারণ">ক্যাটাগরি বেছে নিন</option>
-            <option value="কবিতা">কবিতা</option>
-            <option value="গল্প">গল্প</option>
-            <option value="প্রবন্ধ">প্রবন্ধ</option>
-            <option value="অন্যান্য">অন্যান্য</option>
-        </select>
+        <label class="block text-xs text-gray-500 mb-1 ml-1">হ্যাশট্যাগ</label>
+        <input type="text" id="post-hashtags" placeholder="যেমন: #কবিতা #গল্প #অনুভূতি" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent transition-all">
     </div>
 
     <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden">
-        <div id="editor" style="height: 350px;"></div>
+        <div id="editor"></div>
     </div>
 
-    <div class="flex justify-between mt-2">
-        <span id="draft-status" class="text-[10px] text-green-500"></span>
-        <span id="char-count" class="text-xs text-gray-400">০ / ২০০০</span>
-    </div>
-
-    <div id="preview-modal" class="fixed inset-0 bg-black/80 hidden z-[110] p-4 flex items-center justify-center">
-        <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-2xl p-6 max-h-[80vh] overflow-y-auto">
-            <h2 class="text-lg font-bold mb-4 border-b pb-2">পোস্ট প্রিভিউ</h2>
-            <div id="preview-content" class="prose dark:prose-invert"></div>
-            <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-6 w-full py-2 bg-accent text-white rounded-lg">বন্ধ করুন</button>
-        </div>
+    <div class="flex justify-between items-center mt-3 px-1">
+        <span id="draft-status" class="text-[11px] font-medium text-green-500"></span>
+        <span id="char-count" class="text-xs text-gray-400">০ / ২০০০ শব্দ</span>
     </div>
 </main>
 
+<div id="preview-modal" class="fixed inset-0 bg-black/80 hidden z-[110] p-4 flex items-center justify-center backdrop-blur-sm">
+    <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-2xl p-6 max-h-[85vh] overflow-y-auto shadow-2xl">
+        <div class="flex justify-between items-center mb-4 border-b dark:border-darkBorder pb-3">
+            <h2 class="text-lg font-bold">পোস্ট প্রিভিউ</h2>
+            <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="text-gray-500 hover:text-red-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div id="preview-content" class="prose dark:prose-invert max-w-none text-gray-800 dark:text-gray-200"></div>
+        <div id="preview-tags" class="mt-4 flex flex-wrap gap-2"></div>
+        <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-8 w-full py-3 bg-accent text-white rounded-xl font-bold shadow-lg shadow-accent/20">বন্ধ করুন</button>
+    </div>
+</div>
+
 <div id="loading-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-[100]">
-    <div class="bg-white dark:bg-darkCard p-6 rounded-2xl text-center">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-4"></div>
-        <p class="text-sm">পোস্ট সেভ হচ্ছে...</p>
+    <div class="bg-white dark:bg-darkCard p-8 rounded-2xl text-center shadow-2xl border dark:border-darkBorder">
+        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-accent mx-auto mb-4"></div>
+        <p class="text-sm font-medium">পোস্ট প্রসেস হচ্ছে...</p>
     </div>
 </div>
 
@@ -101,16 +130,15 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    // Quill Initialization (Feature 4)
+    // Quill Initialization
     const quill = new Quill('#editor', {
         theme: 'snow',
-        placeholder: 'আপনার মনের কথা এখানে লিখুন...',
+        placeholder: 'আজ আপনি কী ভাবছেন? আপনার মনের কথা এখানে লিখুন...',
         modules: {
             toolbar: [
-                ['bold', 'italic', 'underline'],
-                ['blockquote', 'code-block'],
+                ['bold', 'italic', 'underline', 'blockquote'],
                 [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['clean']
+                ['link', 'clean']
             ]
         }
     });
@@ -120,27 +148,44 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
-            // লোড ড্রাফট (Feature 2)
+            document.getElementById('current-user-img').src = user.photoURL || 'https://via.placeholder.com/40';
+            document.getElementById('current-user-name').innerText = user.displayName;
+            
+            // Load Draft
             const savedDraft = localStorage.getItem('post_draft');
-            if (savedDraft) quill.root.innerHTML = savedDraft;
+            if (savedDraft) {
+                quill.root.innerHTML = savedDraft;
+                document.getElementById('draft-status').innerText = "পূর্বের ড্রাফট লোড হয়েছে";
+            }
         } else {
             alert('পোস্ট করতে আগে লগইন করুন!');
             location.href = 'index.html';
         }
     });
 
-    // অটো ড্রাফট সেভ (Feature 2)
+    // Auto-save Draft & Character Count
     quill.on('text-change', () => {
         const content = quill.root.innerHTML;
         const text = quill.getText().trim();
         localStorage.setItem('post_draft', content);
-        document.getElementById('draft-status').innerText = "ড্রাফট সেভ হয়েছে";
+        document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
         document.getElementById('char-count').innerText = `${text.length} / ২০০০`;
+        
+        setTimeout(() => {
+            document.getElementById('draft-status').innerText = "ড্রাফট সেভ করা আছে";
+        }, 1500);
     });
 
-    // প্রিভিউ ফাংশন (Feature 6)
+    // Preview Functionality
     document.getElementById('preview-btn').onclick = () => {
-        document.getElementById('preview-content').innerHTML = quill.root.innerHTML;
+        const content = quill.root.innerHTML;
+        const hashtagInput = document.getElementById('post-hashtags').value;
+        const hashtags = hashtagInput.match(/#[^\s#]+/g) || [];
+        
+        document.getElementById('preview-content').innerHTML = content;
+        const tagContainer = document.getElementById('preview-tags');
+        tagContainer.innerHTML = hashtags.map(t => `<span class="text-accent text-sm font-medium">${t}</span>`).join(' ');
+        
         document.getElementById('preview-modal').classList.remove('hidden');
     };
 
@@ -151,9 +196,12 @@
         const msgHtml = quill.root.innerHTML;
         const msgText = quill.getText().trim();
         const category = document.getElementById('post-category').value;
+        const scheduleTime = document.getElementById('schedule-time').value;
+        const hashtagInput = document.getElementById('post-hashtags').value;
+        const hashtags = hashtagInput.match(/#[^\s#]+/g) || [];
 
-        if (!msgText || msgText === "") {
-            alert('কিছু তো লিখুন!');
+        if (!msgText || msgText.length < 5) {
+            alert('পোস্টটি খুব ছোট! অন্তত কিছু শব্দ লিখুন।');
             return;
         }
 
@@ -162,29 +210,37 @@
         loader.classList.remove('hidden');
 
         try {
-            await addDoc(collection(db, BASE_PATH), {
+            const postData = {
                 msg: msgHtml,
                 category: category,
+                hashtags: hashtags,
                 name: currentUser.displayName,
                 email: currentUser.email,
                 uid: currentUser.uid,
                 photoURL: currentUser.photoURL,
                 at: serverTimestamp(),
                 votes: 0,
-                status: 'pending'
-            });
+                status: scheduleTime ? 'scheduled' : 'pending'
+            };
 
-            localStorage.removeItem('post_draft'); // সফল হলে ড্রাফট মুছে ফেলা
-            alert('পোস্টটি জমা দেওয়া হয়েছে!');
+            if (scheduleTime) {
+                postData.scheduledFor = new Date(scheduleTime).toISOString();
+            }
+
+            await addDoc(collection(db, BASE_PATH), postData);
+
+            localStorage.removeItem('post_draft');
+            alert(scheduleTime ? 'পোস্টটি নির্দিষ্ট সময়ের জন্য শিডিউল করা হয়েছে!' : 'পোস্টটি সফলভাবে জমা দেওয়া হয়েছে!');
             location.href = 'index.html';
         } catch (error) {
             console.error("Error: ", error);
-            alert('দুঃখিত, পোস্টটি সেভ করা যায়নি।');
+            alert('দুঃখিত, পোস্টটি সেভ করা যায়নি। আপনার ইন্টারনেট চেক করুন।');
         } finally {
             loader.classList.add('hidden');
         }
     };
 
+    // Auto Dark Mode
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark');
     }
