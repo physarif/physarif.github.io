@@ -73,20 +73,17 @@
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-20">
 
-<nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
-    <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="location.href='index.html'">
-            <h1 class="text-xl font-black text-accent tracking-tighter">লেখক.</h1>
-            <button id="admin-link" onclick="event.stopPropagation(); location.href='admin.html'" class="hidden bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Admin</button>
+<main class="max-w-2xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-8">
+        <div class="cursor-pointer" onclick="location.href='index.html'">
+            <h1 class="text-3xl font-black text-accent tracking-tighter">লেখক.</h1>
         </div>
         
         <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
-            <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+            <svg id="theme-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
         </button>
     </div>
-</nav>
 
-<main class="max-w-2xl mx-auto px-4 py-6">
     <div id="posts-container" class="space-y-4">
          <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
     </div>
@@ -138,7 +135,6 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
-    const ADMIN_EMAIL = 'phys.arif@gmail.com'; 
 
     window.currentUser = null;
     let allData = [];
@@ -158,7 +154,6 @@
             profileImg.src = user.photoURL;
             profileImg.classList.remove('hidden');
             document.getElementById('fab-post').style.display = 'flex';
-            if (user.email === ADMIN_EMAIL) document.getElementById('admin-link').classList.remove('hidden');
         } else {
             profileIcon.classList.remove('hidden');
             profileImg.classList.add('hidden');
