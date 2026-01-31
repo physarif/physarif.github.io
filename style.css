@@ -34,6 +34,7 @@ body {
     background-color: rgba(52, 152, 219, 0.1);
 }
 
+/* FAB বাটন স্টাইল */
 .fab-post { 
     position: fixed; bottom: 24px; right: 24px; 
     width: 56px; height: 56px; 
@@ -48,11 +49,27 @@ body {
     transform: scale(1.1) rotate(90deg); 
 }
 
-.filter-active { 
-    background-color: rgba(52, 152, 219, 0.1) !important; 
-    color: #3498db !important; 
+/* নতুন ফিল্টার বার স্টাইল (ছবির মতো) */
+.filter-btn {
+    position: relative;
+    border-bottom: 2px solid transparent;
 }
 
+.filter-active { 
+    color: #3498db !important; 
+    border-bottom-color: #3498db !important;
+}
+
+/* স্ক্রলবার হাইড করার জন্য */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* ড্রপডাউন মেনু */
 .dropdown-menu { 
     display: none; position: absolute; right: 0; top: 100%; 
     margin-top: 0.5rem; width: 160px; background: white; 
@@ -63,6 +80,7 @@ body {
 .dark .dropdown-menu { background: #15191c; border-color: #2d333b; }
 .dropdown-active { display: block !important; }
 
+/* টোস্ট মেসেজ */
 #toast {
     position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
     z-index: 300; background: #15191c; color: white;
