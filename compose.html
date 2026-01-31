@@ -25,13 +25,15 @@
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
         .ql-container { font-family: 'Hind Siliguri', sans-serif; font-size: 1.125rem; border: none !important; }
-        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; border-radius: 12px 12px 0 0; }
+        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; border-radius: 12px 12px 0 0; padding: 8px !important; }
         .dark .ql-editor.ql-blank::before { color: #9ca3af; }
         .dark .ql-snow .ql-stroke { stroke: #fff; }
         .dark .ql-snow .ql-fill { fill: #fff; }
         .dark .ql-snow .ql-picker { color: #fff; }
         .ql-editor { min-height: 300px; }
         .ql-video, .ql-editor img { width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
+        /* টুলবার আইকনগুলো যাতে খুব বেশি চেপে না যায় */
+        .ql-snow.ql-toolbar button { margin-right: 4px !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -105,20 +107,22 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    // Toolbar set to a single line group
+    // Toolbar groups defined for better wrapping
     const quill = new Quill('#editor', {
         theme: 'snow',
         placeholder: 'আপনার মনের কথা এখানে লিখুন...',
         modules: {
             toolbar: [
-                ['bold', 'italic', 'underline', 'blockquote', 'link', 'image', 'video', { 'list': 'ordered'}, { 'list': 'bullet' }]
+                ['bold', 'italic', 'underline'],
+                ['link', 'image', 'video'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['blockquote']
             ]
         }
     });
 
     const toolbar = quill.getModule('toolbar');
     
-    // Better Link Handler
     toolbar.addHandler('link', function(value) {
         if (value) {
             const href = prompt('লিংক (URL) দিন:');
@@ -128,7 +132,6 @@
         }
     });
 
-    // Custom Image URL Handler
     toolbar.addHandler('image', () => {
         const range = quill.getSelection();
         const value = prompt('ইমেজ ইউআরএল (URL) দিন:');
@@ -138,7 +141,6 @@
     });
 
     let currentUser = null;
-
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
