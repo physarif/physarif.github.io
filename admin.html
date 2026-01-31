@@ -3,77 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>লেখন ফোরাম - অ্যাডমিন প্যানেল</title>
+    <title>এডমিন প্যানেল - লেখক ফোরাম</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: { colors: { darkBg: '#0b0e11', darkCard: '#15191c', darkBorder: '#2d333b', accent: '#3498db' } } }
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
         }
     </script>
     <style>
-        .loading-screen { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .dark .loading-screen { background: #0b0e11; }
+        body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
+        .admin-card { transition: all 0.2s; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-10">
 
-<div id="loading" class="loading-screen">
-    <div class="flex flex-col items-center gap-4">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-accent"></div>
-        <p class="text-xs font-bold animate-pulse">অ্যাডমিন যাচাই করা হচ্ছে...</p>
-    </div>
-</div>
-
-<nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
-    <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="location.href='index.html'">
-            <h1 class="text-xl font-black text-accent tracking-tighter">লেখন. 📝</h1>
-            <span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Admin Panel</span>
+<main id="admin-main" class="max-w-3xl mx-auto px-4 py-6 hidden">
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4">
+            <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <div>
+                <h1 class="text-xl font-bold">এডমিন প্যানেল</h1>
+                <p class="text-xs text-gray-500">পেন্ডিং পোস্ট ম্যানেজমেন্ট</p>
+            </div>
         </div>
-        <button onclick="location.href='index.html'" class="text-xs font-bold bg-gray-200 dark:bg-darkCard px-4 py-2 rounded-lg">ফিরে যাও</button>
-    </div>
-</nav>
-
-<main class="max-w-6xl mx-auto px-4 py-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder">
-            <h3 class="text-gray-500 text-sm font-bold mb-1">মোট পোস্ট</h3>
-            <p id="total-posts" class="text-3xl font-black text-accent">০</p>
-        </div>
-        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder">
-            <h3 class="text-gray-500 text-sm font-bold mb-1">পেন্ডিং পোস্ট</h3>
-            <p id="pending-posts" class="text-3xl font-black text-yellow-500">০</p>
-        </div>
-        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder">
-            <h3 class="text-gray-500 text-sm font-bold mb-1">রিপোর্টেড</h3>
-            <p id="reported-posts" class="text-3xl font-black text-red-500">০</p>
+        <div class="text-right">
+            <span id="admin-badge" class="px-3 py-1 bg-accent/10 text-accent text-[10px] font-bold rounded-full uppercase tracking-widest border border-accent/20">Verified Admin</span>
         </div>
     </div>
 
-    <div class="bg-white dark:bg-darkCard rounded-2xl border dark:border-darkBorder overflow-hidden">
-        <div class="p-4 border-b dark:border-darkBorder">
-            <h2 class="font-bold">পোস্ট ম্যানেজমেন্ট</h2>
+    <div class="grid grid-cols-2 gap-4 mb-8">
+        <div class="bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm">
+            <p class="text-xs text-gray-500 mb-1">মোট পেন্ডিং</p>
+            <p id="pending-count" class="text-2xl font-black text-accent">0</p>
         </div>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-                <thead class="bg-gray-50 dark:bg-darkBg text-xs uppercase text-gray-500">
-                    <tr>
-                        <th class="p-4">ব্যবহারকারী</th>
-                        <th class="p-4">পোস্ট</th>
-                        <th class="p-4">স্ট্যাটাস</th>
-                        <th class="p-4 text-right">অ্যাকশন</th>
-                    </tr>
-                </thead>
-                <tbody id="admin-table-body" class="text-sm"></tbody>
-            </table>
+        <div class="bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm">
+            <p class="text-xs text-gray-500 mb-1">অ্যাকশন প্রয়োজন</p>
+            <p class="text-2xl font-black text-orange-500">Urgent</p>
         </div>
+    </div>
+
+    <div id="pending-posts" class="space-y-4">
+        <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
     </div>
 </main>
 
+<div id="access-denied" class="h-screen flex items-center justify-center hidden">
+    <div class="text-center">
+        <h1 class="text-4xl font-black text-red-500 mb-2">Access Denied</h1>
+        <p class="text-gray-500">আপনার এই পেজে প্রবেশের অনুমতি নেই।</p>
+        <button onclick="location.href='index.html'" class="mt-4 text-accent font-bold underline">হোমে ফিরে যান</button>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -88,81 +85,68 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
     const ADMIN_EMAIL = 'phys.arif@gmail.com';
+    const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
     onAuthStateChanged(auth, (user) => {
-        // console.log("Current User:", user?.email); // এটি দিয়ে চেক করতে পারো ইমেইল ঠিক আসছে কি না
-        if (user) {
-            if (user.email === ADMIN_EMAIL) {
-                document.getElementById('loading').style.display = 'none';
-                loadAdminData();
-            } else {
-                alert("আপনার অ্যাডমিন এক্সেস নেই!");
-                window.location.href = 'index.html';
-            }
+        if (user && user.email === ADMIN_EMAIL) {
+            document.getElementById('admin-main').classList.remove('hidden');
+            loadPendingPosts();
         } else {
-            // ইউজার লগইন না করা থাকলে হোমপেজে নিয়ে যাবে
-            window.location.href = 'index.html';
+            document.getElementById('access-denied').classList.remove('hidden');
+            setTimeout(() => { if(!user || user.email !== ADMIN_EMAIL) location.href = 'index.html'; }, 3000);
         }
     });
 
-    function loadAdminData() {
-        onSnapshot(collection(db, BASE_PATH), (snapshot) => {
-            const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            renderTable(data);
-            updateStats(data);
+    function loadPendingPosts() {
+        const q = query(collection(db, BASE_PATH), where("status", "==", "pending"));
+        onSnapshot(q, (snapshot) => {
+            const posts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('pending-count').innerText = posts.length;
+            renderAdminPosts(posts);
         });
     }
 
-    function updateStats(data) {
-        document.getElementById('total-posts').innerText = data.length;
-        document.getElementById('pending-posts').innerText = data.filter(p => p.status === 'pending').length;
-        document.getElementById('reported-posts').innerText = data.filter(p => p.reported).length;
-    }
+    function renderAdminPosts(posts) {
+        const container = document.getElementById('pending-posts');
+        if (posts.length === 0) {
+            container.innerHTML = `<div class="text-center py-20 text-gray-400 bg-white dark:bg-darkCard rounded-2xl border dark:border-darkBorder">কোনো পেন্ডিং পোস্ট নেই</div>`;
+            return;
+        }
 
-    function renderTable(posts) {
-        const tbody = document.getElementById('admin-table-body');
-        tbody.innerHTML = posts.map(p => `
-            <tr class="border-b dark:border-darkBorder hover:bg-gray-50 dark:hover:bg-darkBg/50 transition-colors">
-                <td class="p-4">
-                    <div class="flex items-center gap-2">
-                        <img src="${p.photoURL || 'https://via.placeholder.com/32'}" class="w-8 h-8 rounded-full border border-accent">
-                        <div>
-                            <p class="font-bold text-xs">${p.name || 'অজানা'}</p>
-                            <p class="text-[10px] text-gray-500">${p.category || 'সাধারণ'}</p>
-                        </div>
+        container.innerHTML = posts.map(p => `
+            <div class="admin-card bg-white dark:bg-darkCard p-5 rounded-xl border dark:border-darkBorder shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <img src="${p.photoURL || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full">
+                    <div>
+                        <p class="text-sm font-bold">${p.name || 'Anonymous'}</p>
+                        <p class="text-[10px] text-gray-400">${p.email || ''}</p>
                     </div>
-                </td>
-                <td class="p-4 max-w-xs truncate text-gray-600 dark:text-gray-300">${p.msg || ''}</td>
-                <td class="p-4">
-                    <span class="px-2 py-1 rounded text-[10px] font-bold ${p.status === 'approved' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}">
-                        ${p.status === 'approved' ? 'Approved' : 'Pending'}
-                    </span>
-                </td>
-                <td class="p-4 text-right space-x-2">
-                    ${p.status !== 'approved' ? `<button onclick="updateStatus('${p.id}', 'approved')" class="text-green-500 hover:text-green-600 font-bold text-xs">Approve</button>` : ''}
-                    <button onclick="deletePost('${p.id}')" class="text-red-500 hover:text-red-600 font-bold text-xs">Delete</button>
-                </td>
-            </tr>
+                </div>
+                <p class="text-sm text-gray-800 dark:text-gray-200 mb-6 bg-gray-50 dark:bg-darkBg p-3 rounded-lg">${p.msg || ''}</p>
+                <div class="flex gap-3">
+                    <button onclick="approvePost('${p.id}')" class="flex-1 py-2 bg-green-500 text-white rounded-lg text-xs font-bold hover:bg-green-600 transition-colors">APPROVE</button>
+                    <button onclick="deletePost('${p.id}')" class="flex-1 py-2 bg-red-100 text-red-500 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-xs font-bold hover:bg-red-200 transition-colors">DELETE</button>
+                </div>
+            </div>
         `).join('');
     }
 
-    window.updateStatus = async (id, status) => {
+    window.approvePost = async (id) => {
         if(confirm('পোস্টটি অ্যাপ্রুভ করতে চান?')) {
-            try {
-                await updateDoc(doc(db, BASE_PATH, id), { status });
-            } catch (e) { alert("Error: " + e.message); }
+            await updateDoc(doc(db, BASE_PATH, id), { status: 'approved' });
         }
     };
 
     window.deletePost = async (id) => {
-        if(confirm('আপনি কি নিশ্চিত যে পোস্টটি ডিলিট করতে চান?')) {
-            try {
-                await deleteDoc(doc(db, BASE_PATH, id));
-            } catch (e) { alert("Error: " + e.message); }
+        if(confirm('পোস্টটি চিরতরে মুছে ফেলতে চান?')) {
+            await deleteDoc(doc(db, BASE_PATH, id));
         }
     };
+
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
 </script>
 </body>
 </html>
