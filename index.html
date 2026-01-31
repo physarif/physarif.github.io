@@ -28,7 +28,7 @@
     <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <div class="flex items-center gap-2 cursor-pointer" onclick="location.href='index.html'">
             <h1 class="text-xl font-black text-accent tracking-tighter">লেখন. 📝</h1>
-            <button onclick="event.stopPropagation(); location.href='admin.html'" class="bg-red-500 hover:bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase transition-colors">Admin</button>
+            <button id="admin-link" onclick="event.stopPropagation(); location.href='admin.html'" class="hidden bg-red-500 hover:bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase transition-colors">Admin</button>
         </div>
         
         <div class="flex items-center gap-4">
@@ -104,6 +104,9 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
+    
+    // অ্যাডমিন ইমেইল সেট করা হলো
+    const ADMIN_EMAIL = 'phys.arif@gmail.com'; 
 
     window.currentUser = null;
     let allData = [];
@@ -117,8 +120,18 @@
     onAuthStateChanged(auth, (user) => {
         window.currentUser = user;
         const isUser = !!user;
+        
         document.getElementById('user-info-wrapper').classList.toggle('hidden', !isUser);
         document.getElementById('login-ui').classList.toggle('hidden', isUser);
+        
+        // অ্যাডমিন বাটন চেক
+        const adminBtn = document.getElementById('admin-link');
+        if (user && user.email === ADMIN_EMAIL) {
+            adminBtn.classList.remove('hidden');
+        } else {
+            adminBtn.classList.add('hidden');
+        }
+
         if (isUser) {
             document.getElementById('user-avatar').src = user.photoURL;
             document.getElementById('fab-post').style.display = 'flex';
