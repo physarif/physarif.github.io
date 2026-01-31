@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>অ্যাডমিন ড্যাশবোর্ড - লেখন ফোরাম</title>
+    <title>কন্ট্রোল প্যানেল - লেখন ফোরাম</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <script>
@@ -22,19 +22,36 @@
         }
     </script>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 hidden" id="admin-body">
 
 <nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
     <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <h1 class="text-xl font-black text-accent tracking-tighter cursor-pointer" onclick="location.href='index.html'">লেখন অ্যাডমিন. 🛡️</h1>
-        <button onclick="location.href='index.html'" class="text-xs font-bold bg-gray-200 dark:bg-darkCard px-3 py-1.5 rounded-lg">হোম পেজ</button>
+        <div class="flex items-center gap-4">
+            <span id="admin-name" class="text-xs font-bold text-gray-500"></span>
+            <button onclick="location.href='index.html'" class="text-xs font-bold bg-gray-200 dark:bg-darkCard px-3 py-1.5 rounded-lg">হোম পেজ</button>
+        </div>
     </div>
 </nav>
 
-<main class="max-w-4xl mx-auto px-4 py-8">
-    <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-bold">পেন্ডিং পোস্টসমূহ</h2>
-        <span id="pending-count" class="bg-accent text-white px-3 py-1 rounded-full text-xs font-bold">0</span>
+<main class="max-w-5xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm">
+            <p class="text-gray-500 text-xs font-bold uppercase mb-1">মোট পোস্ট</p>
+            <h3 id="total-posts" class="text-3xl font-black text-accent">0</h3>
+        </div>
+        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm">
+            <p class="text-gray-500 text-xs font-bold uppercase mb-1">পেন্ডিং পোস্ট</p>
+            <h3 id="pending-count" class="text-3xl font-black text-orange-500">0</h3>
+        </div>
+        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm">
+            <p class="text-gray-500 text-xs font-bold uppercase mb-1">ফিচারড পোস্ট</p>
+            <h3 id="featured-count" class="text-3xl font-black text-green-500">0</h3>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold">মডারেটর অ্যাকশন প্যানেল</h2>
     </div>
 
     <div id="admin-posts-container" class="space-y-4">
@@ -45,6 +62,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
     import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
@@ -57,54 +75,80 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    // ডেটা লোড করা (শুধুমাত্র Pending পোস্ট)
-    onSnapshot(collection(db, BASE_PATH), (snapshot) => {
-        const allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-        const pendingPosts = allData.filter(p => p.status === 'pending');
-        document.getElementById('pending-count').innerText = pendingPosts.length;
-        renderAdminPosts(pendingPosts);
+    // *** এখানে তোমার ইমেইলটি দাও ***
+    const ADMIN_EMAIL = "your-email@gmail.com"; 
+
+    // সিকিউরিটি চেক
+    onAuthStateChanged(auth, (user) => {
+        if (user && user.email === ADMIN_EMAIL) {
+            document.getElementById('admin-body').classList.remove('hidden');
+            document.getElementById('admin-name').innerText = user.displayName;
+            loadData();
+        } else {
+            alert("আপনার এই পেজে প্রবেশের অনুমতি নেই!");
+            window.location.href = "index.html";
+        }
     });
+
+    function loadData() {
+        onSnapshot(collection(db, BASE_PATH), (snapshot) => {
+            const allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            // Stats Update
+            document.getElementById('total-posts').innerText = allData.length;
+            document.getElementById('pending-count').innerText = allData.filter(p => p.status === 'pending').length;
+            document.getElementById('featured-count').innerText = allData.filter(p => p.featured === true).length;
+
+            renderAdminPosts(allData);
+        });
+    }
 
     function renderAdminPosts(posts) {
         const container = document.getElementById('admin-posts-container');
-        if (posts.length === 0) {
-            container.innerHTML = `<div class="p-20 text-center text-gray-400 border-2 border-dashed border-gray-200 dark:border-darkBorder rounded-2xl">কোনো পেন্ডিং পোস্ট নেই</div>`;
-            return;
-        }
+        // লেটেস্ট পোস্ট উপরে দেখানোর জন্য সর্ট করা
+        posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
 
         container.innerHTML = posts.map(p => `
-            <div class="bg-white dark:bg-darkCard p-6 rounded-xl border dark:border-darkBorder shadow-sm">
-                <div class="flex items-center gap-3 mb-4">
-                    <img src="${p.photoURL}" class="w-8 h-8 rounded-full">
-                    <div>
-                        <p class="text-sm font-bold">${p.name}</p>
-                        <p class="text-[10px] text-gray-400">${p.category || 'সাধারণ'}</p>
+            <div class="bg-white dark:bg-darkCard p-5 rounded-xl border dark:border-darkBorder shadow-sm flex flex-col md:flex-row gap-4 items-start">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-2">
+                        <img src="${p.photoURL}" class="w-6 h-6 rounded-full">
+                        <span class="text-xs font-bold">${p.name}</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded ${p.status === 'pending' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'} font-bold uppercase">${p.status}</span>
+                        ${p.featured ? '<span class="text-[10px] px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded font-bold uppercase">Featured</span>' : ''}
                     </div>
-                </div>
-                <p class="text-sm leading-relaxed mb-6 text-gray-700 dark:text-gray-300">${p.msg}</p>
-                <div class="flex gap-3">
-                    <button onclick="approvePost('${p.id}')" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg text-xs font-bold transition-all">Approve</button>
-                    <button onclick="rejectPost('${p.id}')" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-xs font-bold transition-all">Reject</button>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">${p.msg}</p>
+                    
+                    <div class="flex flex-wrap gap-2">
+                        ${p.status === 'pending' ? 
+                            `<button onclick="updateStatus('${p.id}', 'approved')" class="bg-green-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold">Approve</button>` : ''
+                        }
+                        
+                        <button onclick="toggleFeature('${p.id}', ${p.featured || false})" class="bg-blue-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold">
+                            ${p.featured ? 'Unfeature' : 'Feature'}
+                        </button>
+
+                        <button onclick="deletePost('${p.id}')" class="bg-red-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold">Delete</button>
+                    </div>
                 </div>
             </div>
         `).join('');
     }
 
-    // পোস্ট অ্যাপ্রুভ করার ফাংশন
-    window.approvePost = async (id) => {
-        if(confirm('আপনি কি এই পোস্টটি অ্যাপ্রুভ করতে চান?')) {
-            const postRef = doc(db, BASE_PATH, id);
-            await updateDoc(postRef, { status: 'approved' });
-        }
+    window.updateStatus = async (id, status) => {
+        await updateDoc(doc(db, BASE_PATH, id), { status });
     };
 
-    // পোস্ট রিজেক্ট/ডিলিট করার ফাংশন
-    window.rejectPost = async (id) => {
-        if(confirm('আপনি কি এই পোস্টটি রিজেক্ট করতে চান? এটি ডিলিট হয়ে যাবে।')) {
-            const postRef = doc(db, BASE_PATH, id);
-            await deleteDoc(postRef);
+    window.toggleFeature = async (id, currentStatus) => {
+        await updateDoc(doc(db, BASE_PATH, id), { featured: !currentStatus });
+    };
+
+    window.deletePost = async (id) => {
+        if(confirm('আপনি কি নিশ্চিত যে পোস্টটি ডিলিট করতে চান?')) {
+            await deleteDoc(doc(db, BASE_PATH, id));
         }
     };
 </script>
