@@ -25,15 +25,15 @@
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
         .ql-container { font-family: 'Hind Siliguri', sans-serif; font-size: 1.125rem; border: none !important; }
-        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; border-radius: 12px 12px 0 0; padding: 8px !important; }
+        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; border-radius: 12px 12px 0 0; padding: 10px !important; }
         .dark .ql-editor.ql-blank::before { color: #9ca3af; }
         .dark .ql-snow .ql-stroke { stroke: #fff; }
         .dark .ql-snow .ql-fill { fill: #fff; }
         .dark .ql-snow .ql-picker { color: #fff; }
         .ql-editor { min-height: 300px; }
         .ql-video, .ql-editor img { width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
-        /* টুলবার আইকনগুলো যাতে খুব বেশি চেপে না যায় */
-        .ql-snow.ql-toolbar button { margin-right: 4px !important; }
+        /* টুলবার ডিজাইন একটু উন্নত করা */
+        .ql-formats { margin-right: 15px !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -48,12 +48,12 @@
         </div>
         <div class="flex gap-2">
             <button id="preview-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkCard rounded-full text-sm font-bold hover:bg-opacity-80 transition-all">প্রিভিউ</button>
-            <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg shadow-accent/20 hover:bg-opacity-90 transition-all">পাবলিশ</button>
+            <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg hover:bg-opacity-90 transition-all">পাবলিশ</button>
         </div>
     </div>
 
     <div class="mb-4">
-        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition-all">
+        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent">
     </div>
 
     <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden">
@@ -107,16 +107,16 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    // Toolbar groups defined for better wrapping
+    // Toolbar logic: Video button in a separate array for a new line
     const quill = new Quill('#editor', {
         theme: 'snow',
         placeholder: 'আপনার মনের কথা এখানে লিখুন...',
         modules: {
             toolbar: [
-                ['bold', 'italic', 'underline'],
-                ['link', 'image', 'video'],
+                ['bold', 'italic', 'underline', 'blockquote'],
+                ['link', 'image'],
                 [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['blockquote']
+                ['video'] // This will push it to a new line if it wraps
             ]
         }
     });
