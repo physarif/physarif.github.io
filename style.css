@@ -5,6 +5,15 @@ body {
     transition: all 0.3s; 
 }
 
+/* ৩ লাইনে টেক্সট সীমাবদ্ধ করার জন্য (Line Clamp) */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+
+/* ফোরাম কার্ডের ডিজাইন */
 .forum-card { 
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
     border-left: 3px solid transparent; 
@@ -13,6 +22,7 @@ body {
 .forum-card:hover { 
     border-left-color: #3498db; 
     box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    transform: translateY(-1px);
 }
 
 .featured-card { 
@@ -20,6 +30,21 @@ body {
     background: linear-gradient(to right, rgba(241, 196, 15, 0.08), transparent); 
 }
 
+/* ভোট বাটন স্টাইল */
+.vote-btn {
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.vote-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.dark .vote-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* FAB পোস্ট বাটন */
 .fab-post { 
     position: fixed; bottom: 24px; right: 24px; 
     width: 56px; height: 56px; 
@@ -30,11 +55,17 @@ body {
     cursor: pointer; z-index: 90; transition: all 0.3s; 
 }
 
-.filter-active { 
-    background-color: rgba(52, 152, 219, 0.1); 
-    color: #3498db; 
+.fab-post:hover {
+    transform: scale(1.1) rotate(90deg);
 }
 
+/* ফিল্টার বাটন */
+.filter-active { 
+    background-color: rgba(52, 152, 219, 0.1) !important; 
+    color: #3498db !important; 
+}
+
+/* ড্রপডাউন মেনু */
 .dropdown-menu { 
     display: none; position: absolute; right: 0; top: 100%; 
     margin-top: 0.5rem; width: 160px; background: white; 
@@ -52,4 +83,8 @@ body {
     padding: 8px 16px; border-radius: 99px; font-size: 12px;
     font-weight: bold; opacity: 0; transition: opacity 0.3s;
     pointer-events: none;
+}
+
+.dark #toast {
+    background: #3498db;
 }
