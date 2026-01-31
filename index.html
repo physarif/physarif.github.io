@@ -82,23 +82,13 @@
 
 <main class="max-w-2xl mx-auto px-4 py-6">
     <div class="grid grid-cols-3 items-center mb-8">
-        <div class="flex justify-start">
-            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
-                <svg id="theme-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
-            </button>
-        </div>
-
-        <div class="flex justify-center cursor-pointer" onclick="location.href='index.html'">
-            <h1 class="text-2xl font-black text-accent tracking-tighter">লেখক.</h1>
-        </div>
-        
-        <div class="flex justify-end relative">
+        <div class="flex justify-start relative">
             <div class="relative inline-block text-left">
-                <button onclick="toggleDropdown(event)" class="flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-dark800 transition-all">
+                <button onclick="toggleDropdown(event)" class="flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
                     <span id="current-filter">সর্বশেষ</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
-                <div id="filter-dropdown" class="absolute right-0 mt-2 w-32 origin-top-right bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl shadow-xl z-[100] overflow-hidden">
+                <div id="filter-dropdown" class="absolute left-0 mt-2 w-32 origin-top-left bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl shadow-xl z-[100] overflow-hidden">
                     <div class="py-1">
                         <button onclick="applyFilter('latest')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-darkBg transition-colors">সর্বশেষ</button>
                         <button onclick="applyFilter('popular')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-darkBg transition-colors">জনপ্রিয়</button>
@@ -106,6 +96,16 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="flex justify-center cursor-pointer" onclick="location.href='index.html'">
+            <h1 class="text-2xl font-black text-accent tracking-tighter">লেখক.</h1>
+        </div>
+
+        <div class="flex justify-end">
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
+                <svg id="theme-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+            </button>
         </div>
     </div>
 
