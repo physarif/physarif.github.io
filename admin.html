@@ -3,92 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>লেখন ফোরাম - হোম</title>
+    <title>লেখন ফোরাম - অ্যাডমিন প্যানেল</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { 
-                extend: { 
-                    colors: { 
-                        darkBg: '#0b0e11', 
-                        darkCard: '#15191c', 
-                        darkBorder: '#2d333b', 
-                        accent: '#3498db'
-                    } 
-                } 
-            }
+            theme: { extend: { colors: { darkBg: '#0b0e11', darkCard: '#15191c', darkBorder: '#2d333b', accent: '#3498db' } } }
         }
     </script>
+    <style>
+        .loading-screen { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .dark .loading-screen { background: #0b0e11; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100" onclick="closeAllDropdowns(event)">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+
+<div id="loading" class="loading-screen">
+    <div class="flex flex-col items-center gap-4">
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-accent"></div>
+        <p class="text-xs font-bold animate-pulse">অ্যাডমিন যাচাই করা হচ্ছে...</p>
+    </div>
+</div>
 
 <nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
     <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <div class="flex items-center gap-2 cursor-pointer" onclick="location.href='index.html'">
             <h1 class="text-xl font-black text-accent tracking-tighter">লেখন. 📝</h1>
-            <button id="admin-link" onclick="event.stopPropagation(); location.href='admin.html'" class="hidden bg-red-500 hover:bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase transition-colors">Admin</button>
+            <span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Admin Panel</span>
         </div>
-        
-        <div class="flex items-center gap-4">
-            <button class="text-gray-500 dark:text-gray-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-            </button>
-            
-            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
-                <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
-            </button>
-            
-            <div id="auth-section">
-                <button id="login-ui" onclick="googleLogin()" class="hidden bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-lg">Login</button>
-                <div id="user-info-wrapper" class="flex items-center gap-2 cursor-pointer relative" onclick="toggleUserDropdown(event)">
-                    <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent" src="https://via.placeholder.com/32">
-                    <div id="user-dropdown" class="dropdown-menu">
-                        <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg">আমার প্রোফাইল</button>
-                        <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">লগ আউট</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <button onclick="location.href='index.html'" class="text-xs font-bold bg-gray-200 dark:bg-darkCard px-4 py-2 rounded-lg">ফিরে যাও</button>
     </div>
 </nav>
 
-<main class="max-w-4xl mx-auto px-4 py-6">
-    <div class="flex items-center gap-4 mb-6 overflow-x-auto pb-1 scrollbar-hide border-b dark:border-darkBorder">
-        <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            সর্বশেষ
-        </button>
-        
-        <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500 hover:text-accent">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-            জনপ্রিয়
-        </button>
-
-        <button id="filter-featured" onclick="setFilter('featured')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500 hover:text-accent">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
-            ফিচারড
-        </button>
+<main class="max-w-6xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder">
+            <h3 class="text-gray-500 text-sm font-bold mb-1">মোট পোস্ট</h3>
+            <p id="total-posts" class="text-3xl font-black text-accent">০</p>
+        </div>
+        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder">
+            <h3 class="text-gray-500 text-sm font-bold mb-1">পেন্ডিং পোস্ট</h3>
+            <p id="pending-posts" class="text-3xl font-black text-yellow-500">০</p>
+        </div>
+        <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder">
+            <h3 class="text-gray-500 text-sm font-bold mb-1">রিপোর্টেড</h3>
+            <p id="reported-posts" class="text-3xl font-black text-red-500">০</p>
+        </div>
     </div>
 
-    <div id="posts-container" class="space-y-4">
-         <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
+    <div class="bg-white dark:bg-darkCard rounded-2xl border dark:border-darkBorder overflow-hidden">
+        <div class="p-4 border-b dark:border-darkBorder">
+            <h2 class="font-bold">পোস্ট ম্যানেজমেন্ট</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-gray-50 dark:bg-darkBg text-xs uppercase text-gray-500">
+                    <tr>
+                        <th class="p-4">ব্যবহারকারী</th>
+                        <th class="p-4">পোস্ট</th>
+                        <th class="p-4">স্ট্যাটাস</th>
+                        <th class="p-4 text-right">অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-table-body" class="text-sm"></tbody>
+            </table>
+        </div>
     </div>
 </main>
 
-<div id="fab-post" class="fab-post" onclick="handleFabClick()">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-</div>
-
-<div id="toast"></div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
@@ -102,105 +88,81 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
-    
-    // অ্যাডমিন ইমেইল সেট করা হলো
-    const ADMIN_EMAIL = 'phys.arif@gmail.com'; 
-
-    window.currentUser = null;
-    let allData = [];
-    let currentFilter = 'latest';
-
-    onSnapshot(collection(db, BASE_PATH), (snapshot) => {
-        allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-        render();
-    });
+    const ADMIN_EMAIL = 'phys.arif@gmail.com';
 
     onAuthStateChanged(auth, (user) => {
-        window.currentUser = user;
-        const isUser = !!user;
-        
-        document.getElementById('user-info-wrapper').classList.toggle('hidden', !isUser);
-        document.getElementById('login-ui').classList.toggle('hidden', isUser);
-        
-        // অ্যাডমিন বাটন চেক
-        const adminBtn = document.getElementById('admin-link');
-        if (user && user.email === ADMIN_EMAIL) {
-            adminBtn.classList.remove('hidden');
+        // console.log("Current User:", user?.email); // এটি দিয়ে চেক করতে পারো ইমেইল ঠিক আসছে কি না
+        if (user) {
+            if (user.email === ADMIN_EMAIL) {
+                document.getElementById('loading').style.display = 'none';
+                loadAdminData();
+            } else {
+                alert("আপনার অ্যাডমিন এক্সেস নেই!");
+                window.location.href = 'index.html';
+            }
         } else {
-            adminBtn.classList.add('hidden');
-        }
-
-        if (isUser) {
-            document.getElementById('user-avatar').src = user.photoURL;
-            document.getElementById('fab-post').style.display = 'flex';
-        } else {
-            document.getElementById('fab-post').style.display = 'none';
+            // ইউজার লগইন না করা থাকলে হোমপেজে নিয়ে যাবে
+            window.location.href = 'index.html';
         }
     });
 
-    window.render = () => {
-        const container = document.getElementById('posts-container');
-        let posts = allData.filter(p => !p.parentId && p.status === 'approved');
-        
-        if (currentFilter === 'popular') posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
-        else if (currentFilter === 'featured') posts = posts.filter(p => p.featured);
-        else posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
-
-        if(posts.length === 0) {
-            container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কোনো পোস্ট পাওয়া যায়নি</div>`;
-            return;
-        }
-
-        container.innerHTML = posts.map(p => `
-            <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm transition-all" onclick="openDetails('${p.id}')">
-                <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1">
-                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
-                    <span class="text-xs font-bold text-accent">${p.votes || 0}</span>
-                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-red-500"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.941 11a1.001 1.001 0 0 0-.781-1.625H16V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6.375H4a1.001 1.001 0 0 0-.781 1.625l8 10c.381.475 1.181.475 1.562 0l8-10z"></path></svg></button>
-                </div>
-                <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-2">
-                        <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
-                        <span class="text-[11px] font-bold text-gray-500 uppercase">${p.name}</span>
-                        <span class="text-[10px] text-gray-300">• কিছুক্ষণ আগে</span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent ml-auto">${p.category || 'সাধারণ'}</span>
-                    </div>
-                    <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${p.msg}</p>
-                </div>
-            </div>`).join('');
-    };
-
-    window.openDetails = (id) => {
-        if(id) window.location.href = `post.html?id=${id}`;
-    };
-
-    window.setFilter = (f) => {
-        currentFilter = f;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('filter-active', 'text-accent', 'border-accent');
-            btn.classList.add('text-gray-500', 'border-transparent');
+    function loadAdminData() {
+        onSnapshot(collection(db, BASE_PATH), (snapshot) => {
+            const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderTable(data);
+            updateStats(data);
         });
-        const activeBtn = document.getElementById(`filter-${f}`);
-        activeBtn.classList.add('filter-active', 'text-accent', 'border-accent');
-        activeBtn.classList.remove('text-gray-500', 'border-transparent');
-        render();
+    }
+
+    function updateStats(data) {
+        document.getElementById('total-posts').innerText = data.length;
+        document.getElementById('pending-posts').innerText = data.filter(p => p.status === 'pending').length;
+        document.getElementById('reported-posts').innerText = data.filter(p => p.reported).length;
+    }
+
+    function renderTable(posts) {
+        const tbody = document.getElementById('admin-table-body');
+        tbody.innerHTML = posts.map(p => `
+            <tr class="border-b dark:border-darkBorder hover:bg-gray-50 dark:hover:bg-darkBg/50 transition-colors">
+                <td class="p-4">
+                    <div class="flex items-center gap-2">
+                        <img src="${p.photoURL || 'https://via.placeholder.com/32'}" class="w-8 h-8 rounded-full border border-accent">
+                        <div>
+                            <p class="font-bold text-xs">${p.name || 'অজানা'}</p>
+                            <p class="text-[10px] text-gray-500">${p.category || 'সাধারণ'}</p>
+                        </div>
+                    </div>
+                </td>
+                <td class="p-4 max-w-xs truncate text-gray-600 dark:text-gray-300">${p.msg || ''}</td>
+                <td class="p-4">
+                    <span class="px-2 py-1 rounded text-[10px] font-bold ${p.status === 'approved' ? 'bg-green-100 text-green-600' : 'bg-yellow-100 text-yellow-600'}">
+                        ${p.status === 'approved' ? 'Approved' : 'Pending'}
+                    </span>
+                </td>
+                <td class="p-4 text-right space-x-2">
+                    ${p.status !== 'approved' ? `<button onclick="updateStatus('${p.id}', 'approved')" class="text-green-500 hover:text-green-600 font-bold text-xs">Approve</button>` : ''}
+                    <button onclick="deletePost('${p.id}')" class="text-red-500 hover:text-red-600 font-bold text-xs">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    window.updateStatus = async (id, status) => {
+        if(confirm('পোস্টটি অ্যাপ্রুভ করতে চান?')) {
+            try {
+                await updateDoc(doc(db, BASE_PATH, id), { status });
+            } catch (e) { alert("Error: " + e.message); }
+        }
     };
 
-    window.handleFabClick = () => { window.location.href = 'create-post.html'; };
-    window.googleLogin = () => signInWithPopup(auth, provider);
-    window.googleLogout = () => signOut(auth).then(() => location.reload());
-    window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('dropdown-active'); };
-    window.closeAllDropdowns = () => document.getElementById('user-dropdown')?.classList.remove('dropdown-active');
-    window.openProfile = (uid) => { window.location.href = `profile.html?uid=${uid}`; };
-
-    const setDarkMode = (dark) => {
-        document.documentElement.classList.toggle('dark', dark);
-        document.getElementById('theme-icon').innerHTML = dark ? '<path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2"></path>' : '<path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke="currentColor" stroke-width="2"></path>';
+    window.deletePost = async (id) => {
+        if(confirm('আপনি কি নিশ্চিত যে পোস্টটি ডিলিট করতে চান?')) {
+            try {
+                await deleteDoc(doc(db, BASE_PATH, id));
+            } catch (e) { alert("Error: " + e.message); }
+        }
     };
-    setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    document.getElementById('theme-toggle').onclick = () => setDarkMode(!document.documentElement.classList.contains('dark'));
 </script>
 </body>
 </html>
