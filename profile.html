@@ -50,32 +50,38 @@
         <div class="flex items-center gap-6">
             <img id="user-photo" src="https://via.placeholder.com/80" class="w-20 h-20 rounded-full border-2 border-accent/20 object-cover shadow-lg">
             <div class="flex-1">
-                <div class="flex items-center gap-2 mb-1">
-                    <h2 id="user-name" class="text-xl font-bold">লোড হচ্ছে...</h2>
+                <div class="flex items-center gap-2 mb-2">
+                    <h2 id="user-name" class="text-xl font-bold leading-none">লোড হচ্ছে...</h2>
                     <span id="user-badge" class="px-2 py-0.5 text-[10px] font-bold rounded-full border">সদস্য</span>
                 </div>
                 
-                <div class="space-y-1">
-                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                        <!-- Up Arrow Icon -->
-                        <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path>
+                <div class="space-y-1.5">
+                    <!-- যোগদান তথ্য উপরে -->
+                    <div class="flex items-center gap-1.5 text-[11px] text-gray-400">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span>যোগদান: <span id="join-date" class="font-medium">...</span></span>
+                    </div>
+
+                    <!-- আপভোট তথ্য নিচে -->
+                    <div class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                        <svg class="w-3.5 h-3.5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd"></path>
                         </svg>
                         <span>আপভোট: <span id="total-upvotes" class="font-bold text-gray-800 dark:text-gray-200">০</span></span>
-                    </div>
-                    <div class="flex items-center gap-1 text-[11px] text-gray-400">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <span>যোগদান: <span id="join-date">...</span></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tabs -->
+    <!-- Tabs Navigation with Counts -->
     <div class="flex border-b dark:border-darkBorder mb-6">
-        <button id="tab-posts" class="flex-1 py-3 text-sm font-bold tab-active transition-all">পোস্টসমূহ</button>
-        <button id="tab-comments" class="flex-1 py-3 text-sm font-bold text-gray-400 hover:text-accent transition-all">মন্তব্যসমূহ</button>
+        <button id="tab-posts" class="flex-1 py-3 text-sm font-bold tab-active transition-all">
+            পোস্টসমূহ (<span id="count-posts">০</span>)
+        </button>
+        <button id="tab-comments" class="flex-1 py-3 text-sm font-bold text-gray-400 hover:text-accent transition-all">
+            মন্তব্যসমূহ (<span id="count-comments">০</span>)
+        </button>
     </div>
     
     <div id="content-container" class="space-y-4">
@@ -130,8 +136,14 @@
                 .map(d => ({ id: d.id, ...d.data() }))
                 .sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
             
+            const posts = allData.filter(p => !p.parentId);
+            const comments = allData.filter(p => p.parentId);
+
+            document.getElementById('count-posts').innerText = posts.length.toLocaleString('bn-BD');
+            document.getElementById('count-comments').innerText = comments.length.toLocaleString('bn-BD');
+
             const totalUpvotes = allData.reduce((acc, curr) => acc + (curr.votes || 0), 0);
-            document.getElementById('total-upvotes').innerText = totalUpvotes;
+            document.getElementById('total-upvotes').innerText = totalUpvotes.toLocaleString('bn-BD');
 
             const badgeEl = document.getElementById('user-badge');
             
@@ -155,9 +167,9 @@
             }
             
             if (currentTab === 'posts') {
-                renderItems(allData.filter(p => !p.parentId), 'তুমি এখনো কোনো পোস্ট করোনি');
+                renderItems(posts, 'তুমি এখনো কোনো পোস্ট করোনি');
             } else {
-                renderItems(allData.filter(p => p.parentId), 'তুমি এখনো কোনো মন্তব্য করোনি');
+                renderItems(comments, 'তুমি এখনো কোনো মন্তব্য করোনি');
             }
         });
     }
@@ -174,7 +186,7 @@
                  onclick="location.href='post.html?id=${item.parentId || item.id}'">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-[10px] text-gray-400">${item.at ? new Date(item.at.seconds * 1000).toLocaleDateString('bn-BD') : ''}</span>
-                    <span class="text-xs font-bold text-accent">${currentTab === 'posts' ? 'ভোট' : 'লাইক'}: ${item.votes || 0}</span>
+                    <span class="text-xs font-bold text-accent">${currentTab === 'posts' ? 'ভোট' : 'লাইক'}: ${(item.votes || 0).toLocaleString('bn-BD')}</span>
                 </div>
                 <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-2">${item.msg || ''}</p>
                 ${item.parentId ? `<p class="text-[10px] text-accent mt-2 font-medium">মূল পোস্ট দেখতে ক্লিক করো</p>` : ''}
