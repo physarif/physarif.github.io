@@ -47,8 +47,7 @@
         <div class="flex items-center gap-6">
             <img id="user-photo" src="https://via.placeholder.com/80" class="w-20 h-20 rounded-full border-2 border-accent/20 object-cover shadow-lg">
             <div class="flex-1">
-                <h2 id="user-name" class="text-xl font-bold mb-1">লোড হচ্ছে...</h2>
-                <p id="user-email" class="text-sm text-gray-500 mb-3 italic truncate max-w-[200px]">...</p>
+                <h2 id="user-name" class="text-xl font-bold mb-3">লোড হচ্ছে...</h2>
                 <button id="logout-btn" class="px-4 py-1.5 bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-xs font-bold hover:bg-red-100 transition-all">লগ আউট</button>
             </div>
         </div>
@@ -68,7 +67,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -93,7 +92,6 @@
             currentUser = user;
             document.getElementById('user-photo').src = user.photoURL || 'https://via.placeholder.com/80';
             document.getElementById('user-name').innerText = user.displayName;
-            document.getElementById('user-email').innerText = user.email;
             fetchData();
         } else {
             location.href = 'index.html';
@@ -104,18 +102,25 @@
         const container = document.getElementById('content-container');
         container.innerHTML = '<div class="flex justify-center py-10"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>';
 
-        const q = query(collection(db, BASE_PATH), where("uid", "==", currentUser.uid), orderBy("at", "desc"));
+        // orderBy বাদ দেওয়া হয়েছে যাতে ইনডেক্স এরর না হয়
+        const q = query(collection(db, BASE_PATH), where("uid", "==", currentUser.uid));
         
         onSnapshot(q, (snapshot) => {
-            const allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            // মেমোরিতে সর্ট করা হচ্ছে
+            const allData = snapshot.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
             
             if (currentTab === 'posts') {
                 const posts = allData.filter(p => !p.parentId);
-                renderItems(posts, 'আপনি এখনো কোনো পোস্ট করেননি');
+                renderItems(posts, 'তুমি এখনো কোনো পোস্ট করোনি');
             } else {
                 const comments = allData.filter(p => p.parentId);
-                renderItems(comments, 'আপনি এখনো কোনো মন্তব্য করেননি');
+                renderItems(comments, 'তুমি এখনো কোনো মন্তব্য করোনি');
             }
+        }, (error) => {
+            console.error("Error fetching data:", error);
+            container.innerHTML = `<div class="text-center py-10 text-red-400 text-sm">ডেটা লোড করতে সমস্যা হয়েছে।</div>`;
         });
     }
 
@@ -134,29 +139,34 @@
                     <span class="text-xs font-bold text-accent">${currentTab === 'posts' ? 'ভোট' : 'লাইক'}: ${item.votes || 0}</span>
                 </div>
                 <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-2">${item.msg || ''}</p>
-                ${item.parentId ? `<p class="text-[10px] text-accent mt-2 font-medium">মূল পোস্ট দেখতে ক্লিক করুন</p>` : ''}
+                ${item.parentId ? `<p class="text-[10px] text-accent mt-2 font-medium">মূল পোস্ট দেখতে ক্লিক করো</p>` : ''}
             </div>
         `).join('');
     }
 
-    // Tab Logic
     document.getElementById('tab-posts').onclick = () => {
         currentTab = 'posts';
-        document.getElementById('tab-posts').classList.add('tab-active');
-        document.getElementById('tab-posts').classList.remove('text-gray-400');
-        document.getElementById('tab-comments').classList.remove('tab-active');
-        document.getElementById('tab-comments').classList.add('text-gray-400');
+        updateTabUI();
         fetchData();
     };
 
     document.getElementById('tab-comments').onclick = () => {
         currentTab = 'comments';
-        document.getElementById('tab-comments').classList.add('tab-active');
-        document.getElementById('tab-comments').classList.remove('text-gray-400');
-        document.getElementById('tab-posts').classList.remove('tab-active');
-        document.getElementById('tab-posts').classList.add('text-gray-400');
+        updateTabUI();
         fetchData();
     };
+
+    function updateTabUI() {
+        const postBtn = document.getElementById('tab-posts');
+        const commBtn = document.getElementById('tab-comments');
+        if (currentTab === 'posts') {
+            postBtn.classList.add('tab-active'); postBtn.classList.remove('text-gray-400');
+            commBtn.classList.remove('tab-active'); commBtn.classList.add('text-gray-400');
+        } else {
+            commBtn.classList.add('tab-active'); commBtn.classList.remove('text-gray-400');
+            postBtn.classList.remove('tab-active'); postBtn.classList.add('text-gray-400');
+        }
+    }
 
     document.getElementById('logout-btn').onclick = () => {
         signOut(auth).then(() => location.href = 'index.html');
