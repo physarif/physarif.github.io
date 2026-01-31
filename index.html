@@ -47,7 +47,7 @@
         }
 
         .fab-post { 
-            position: fixed; bottom: 24px; right: 24px; 
+            position: fixed; bottom: 80px; right: 20px; 
             width: 56px; height: 56px; 
             background-color: #3498db; color: white; 
             border-radius: 50%; display: none; 
@@ -56,22 +56,32 @@
             cursor: pointer; z-index: 90; transition: all 0.3s; 
         }
 
-        .fab-post:hover { transform: scale(1.1) rotate(90deg); }
-        .fab-post:active { scale: 0.9; }
+        @media (min-width: 1024px) {
+            .fab-post { bottom: 24px; right: 24px; }
+        }
 
         .filter-btn {
             position: relative;
-            border-bottom: 2px solid transparent;
             white-space: nowrap;
-            flex-shrink: 0;
             transition: all 0.2s;
         }
 
-        .filter-btn:active { transform: scale(0.95); }
-
         .filter-active { 
             color: #3498db !important; 
-            border-bottom-color: #3498db !important;
+        }
+
+        @media (max-width: 1023px) {
+            .filter-active {
+                background: rgba(52, 152, 219, 0.1);
+                border-radius: 12px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .filter-active {
+                border-right: 3px solid #3498db;
+                background: rgba(52, 152, 219, 0.05);
+            }
         }
 
         .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -86,43 +96,29 @@
 
         .dark .dropdown-menu { background: #15191c; border-color: #2d333b; }
         .dropdown-active { display: block !important; }
-
-        #toast {
-            position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
-            z-index: 300; background: #15191c; color: white;
-            padding: 8px 16px; border-radius: 99px; font-size: 12px;
-            font-weight: bold; opacity: 0; transition: opacity 0.3s;
-            pointer-events: none;
-        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100" onclick="closeAllDropdowns(event)">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-20 lg:pb-0" onclick="closeAllDropdowns(event)">
 
 <nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
     <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <div class="flex items-center gap-2 cursor-pointer" onclick="location.href='index.html'">
             <h1 class="text-xl font-black text-accent tracking-tighter">লেখক.</h1>
-            <button id="admin-link" onclick="event.stopPropagation(); location.href='admin.html'" class="hidden bg-red-500 active:scale-95 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase transition-all">Admin</button>
+            <button id="admin-link" onclick="event.stopPropagation(); location.href='admin.html'" class="hidden bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Admin</button>
         </div>
         
-        <div class="flex items-center gap-2 sm:gap-4">
-            <button class="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-all">
-                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-            </button>
-            
-            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all active:rotate-12">
+        <div class="flex items-center gap-4">
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
                 <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
             </button>
             
-            <div id="auth-section" class="flex items-center">
-                <button id="login-ui" onclick="googleLogin()" class="hidden bg-accent text-white px-3 py-1.5 sm:px-4 rounded-lg text-xs font-bold shadow-lg active:scale-95 transition-transform">Login</button>
+            <div id="auth-section">
+                <button id="login-ui" onclick="googleLogin()" class="hidden bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold">Login</button>
                 <div id="user-info-wrapper" class="hidden items-center gap-2 cursor-pointer relative" onclick="toggleUserDropdown(event)">
                     <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent object-cover">
                     <div id="user-dropdown" class="dropdown-menu">
-                        <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg transition-colors">আমার প্রোফাইল</button>
-                        <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">লগ আউট</button>
+                        <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg">আমার প্রোফাইল</button>
+                        <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500">লগ আউট</button>
                     </div>
                 </div>
             </div>
@@ -130,34 +126,37 @@
     </div>
 </nav>
 
-<main class="max-w-4xl mx-auto px-4 py-6">
-    <div class="flex items-center gap-1 sm:gap-4 mb-6 overflow-x-auto pb-1 scrollbar-hide border-b dark:border-darkBorder flex-nowrap">
-        <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active flex items-center gap-2 pb-3 px-4 text-sm font-bold">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            সর্বশেষ
-        </button>
-        
-        <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold text-gray-500 hover:text-accent">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-            জনপ্রিয়
-        </button>
+<main class="max-w-6xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-8">
+    
+    <aside class="fixed bottom-0 left-0 right-0 lg:relative lg:bottom-auto lg:w-64 z-40 bg-white dark:bg-darkBg lg:bg-transparent border-t lg:border-t-0 dark:border-darkBorder lg:block">
+        <div class="flex lg:flex-col items-center lg:items-stretch justify-center lg:justify-start gap-2 p-3 lg:p-0 lg:sticky lg:top-20">
+            
+            <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active flex items-center gap-3 py-2 px-5 lg:w-full text-sm font-bold transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="hidden sm:inline lg:inline">সর্বশেষ</span>
+            </button>
+            
+            <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn flex items-center gap-3 py-2 px-5 lg:w-full text-sm font-bold text-gray-500 hover:text-accent transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                <span class="hidden sm:inline lg:inline">জনপ্রিয়</span>
+            </button>
 
-        <button id="filter-featured" onclick="setFilter('featured')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold text-gray-500 hover:text-accent">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
-            ফিচারড
-        </button>
-    </div>
+            <button id="filter-featured" onclick="setFilter('featured')" class="filter-btn flex items-center gap-3 py-2 px-5 lg:w-full text-sm font-bold text-gray-500 hover:text-accent transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
+                <span class="hidden sm:inline lg:inline">ফিচারড</span>
+            </button>
+        </div>
+    </aside>
 
-    <div id="posts-container" class="space-y-4">
+    <section class="flex-1 space-y-4" id="posts-container">
          <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
-    </div>
+    </section>
+
 </main>
 
 <div id="fab-post" class="fab-post" onclick="handleFabClick()">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
 </div>
-
-<div id="toast"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
@@ -187,8 +186,6 @@
     onSnapshot(collection(db, BASE_PATH), (snapshot) => {
         allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
-    }, (error) => {
-        document.getElementById('posts-container').innerHTML = `<div class="p-20 text-center text-red-500 text-sm">ডেটা লোড করতে সমস্যা হচ্ছে।</div>`;
     });
 
     onAuthStateChanged(auth, (user) => {
@@ -197,12 +194,7 @@
         document.getElementById('user-info-wrapper').style.display = isUser ? 'flex' : 'none';
         document.getElementById('login-ui').classList.toggle('hidden', isUser);
         
-        if (user && user.email === ADMIN_EMAIL) {
-            document.getElementById('admin-link').classList.remove('hidden');
-        } else {
-            document.getElementById('admin-link').classList.add('hidden');
-        }
-
+        if (user && user.email === ADMIN_EMAIL) document.getElementById('admin-link').classList.remove('hidden');
         if (isUser) {
             document.getElementById('user-avatar').src = user.photoURL;
             document.getElementById('fab-post').style.display = 'flex';
@@ -225,22 +217,19 @@
         }
 
         container.innerHTML = posts.map(p => `
-            <div class="forum-card flex gap-3 sm:gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm" onclick="openDetails('${p.id}')">
+            <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm" onclick="openDetails('${p.id}')">
                 <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1 h-fit">
-                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent active:scale-125 transition-transform"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
+                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
                     <span class="text-xs font-bold text-accent">${p.votes || 0}</span>
-                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-red-500 active:scale-125 transition-transform"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.941 11a1.001 1.001 0 0 0-.781-1.625H16V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6.375H4a1.001 1.001 0 0 0-.781 1.625l8 10c.381.475 1.181.475 1.562 0l8-10z"></path></svg></button>
+                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-red-500"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.941 11a1.001 1.001 0 0 0-.781-1.625H16V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6.375H4a1.001 1.001 0 0 0-.781 1.625l8 10c.381.475 1.181.475 1.562 0l8-10z"></path></svg></button>
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-2">
                         <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
-                        <span class="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase truncate">${p.name || 'Anonymous'}</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-300 whitespace-nowrap">• ${p.at ? new Date(p.at.seconds * 1000).toLocaleDateString('bn-BD') : 'নতুন'}</span>
+                        <span class="text-[11px] font-bold text-gray-500 uppercase truncate">${p.name || 'Anonymous'}</span>
+                        <span class="text-[10px] text-gray-300">• ${p.at ? new Date(p.at.seconds * 1000).toLocaleDateString('bn-BD') : 'নতুন'}</span>
                     </div>
                     <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${p.msg || ''}</p>
-                    <div class="mt-3 flex">
-                        <span class="text-[9px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent uppercase">${p.category || 'সাধারণ'}</span>
-                    </div>
                 </div>
             </div>`).join('');
     };
@@ -250,11 +239,10 @@
     window.setFilter = (f) => {
         currentFilter = f;
         document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('filter-active', 'text-accent', 'border-accent');
-            btn.classList.add('text-gray-500', 'border-transparent');
+            btn.classList.remove('filter-active', 'text-accent');
+            btn.classList.add('text-gray-500');
         });
-        const activeBtn = document.getElementById(`filter-${f}`);
-        activeBtn.classList.add('filter-active', 'text-accent', 'border-accent');
+        document.getElementById(`filter-${f}`).classList.add('filter-active', 'text-accent');
         render();
     };
 
