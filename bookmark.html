@@ -1,1 +1,162 @@
-.
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বুকমার্ক - লেখক ফোরাম</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 min-h-screen">
+
+<!-- ন্যাপবার -->
+<nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
+    <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <button onclick="history.back()" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            </button>
+            <h1 class="text-xl font-bold">বুকমার্কসমূহ</h1>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 py-8">
+    <!-- লগইন চেক -->
+    <div id="auth-check" class="hidden text-center py-20">
+        <div class="bg-white dark:bg-darkCard p-8 rounded-3xl border dark:border-darkBorder shadow-sm">
+            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <p class="text-lg font-medium mb-6">আপনার বুকমার্ক দেখতে লগইন করুন</p>
+            <button id="login-btn" class="bg-accent text-white px-8 py-2 rounded-full font-bold shadow-lg shadow-blue-500/20">Google দিয়ে লগইন</button>
+        </div>
+    </div>
+
+    <!-- বুকমার্ক লিস্ট -->
+    <div id="bookmarks-container" class="space-y-4">
+        <div class="animate-pulse space-y-4">
+            <div class="h-32 bg-gray-200 dark:bg-darkCard rounded-2xl"></div>
+            <div class="h-32 bg-gray-200 dark:bg-darkCard rounded-2xl"></div>
+        </div>
+    </div>
+
+    <!-- কোনো বুকমার্ক না থাকলে -->
+    <div id="empty-state" class="hidden text-center py-20">
+        <p class="text-gray-500">এখনো কোনো পোস্ট বুকমার্ক করেননি।</p>
+    </div>
+</main>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, collection, query, onSnapshot, doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
+        authDomain: "myblogcomments-22808.firebaseapp.com",
+        projectId: "myblogcomments-22808",
+        storageBucket: "myblogcomments-22808.firebasestorage.app",
+        messagingSenderId: "1067155293144",
+        appId: "1:1067155293144:web:8f10b016462b52d36628ad"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    onAuthStateChanged(auth, (user) => {
+        const authCheck = document.getElementById('auth-check');
+        const container = document.getElementById('bookmarks-container');
+        
+        if (user) {
+            authCheck.classList.add('hidden');
+            loadBookmarks(user.uid);
+        } else {
+            authCheck.classList.remove('hidden');
+            container.innerHTML = '';
+        }
+    });
+
+    document.getElementById('login-btn').onclick = () => signInWithPopup(auth, provider);
+
+    function loadBookmarks(userId) {
+        // ধরা যাক বুকমার্কগুলো এই পাথে জমা আছে: users/{userId}/bookmarks
+        const q = query(collection(db, 'artifacts', 'blog_app', 'users', userId, 'bookmarks'));
+        
+        onSnapshot(q, async (snapshot) => {
+            const container = document.getElementById('bookmarks-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (snapshot.empty) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            container.innerHTML = '';
+
+            for (const bDoc of snapshot.docs) {
+                const bookmarkData = bDoc.data();
+                // মেইন পোস্ট ডাটা ফেচ করা হচ্ছে পোস্ট আইডি দিয়ে
+                const postRef = doc(db, 'blog_comments/pages/forum_v2_voted', bookmarkData.postId);
+                const postSnap = await getDoc(postRef);
+
+                if (postSnap.exists()) {
+                    const post = postSnap.data();
+                    const card = document.createElement('div');
+                    card.className = "bg-white dark:bg-darkCard p-5 rounded-2xl border dark:border-darkBorder shadow-sm flex flex-col gap-3 relative";
+                    
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div class="flex items-center gap-3">
+                                <img src="${post.photoURL || 'https://ui-avatars.com/api/?name='+post.name}" class="w-8 h-8 rounded-full">
+                                <span class="text-sm font-bold">${post.name}</span>
+                            </div>
+                            <button onclick="removeBookmark('${bDoc.id}')" class="text-red-400 hover:text-red-500 p-1">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"></path></svg>
+                            </button>
+                        </div>
+                        <a href="post.html?id=${bookmarkData.postId}" class="block">
+                            <h2 class="font-bold text-lg mb-2 line-clamp-2">${post.msg.split('\n')[0]}</h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">${post.msg.substring(0, 150)}...</p>
+                        </a>
+                    `;
+                    container.appendChild(card);
+                }
+            }
+        });
+    }
+
+    // গ্লোবাল ফাংশন হিসেবে সেট করা যাতে ইনলাইন HTML থেকে কল করা যায়
+    window.removeBookmark = async (id) => {
+        if (!auth.currentUser) return;
+        if(confirm('বুকমার্কটি মুছে ফেলতে চান?')) {
+            await deleteDoc(doc(db, 'artifacts', 'blog_app', 'users', auth.currentUser.uid, 'bookmarks', id));
+        }
+    };
+
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
+</script>
+</body>
+</html>
+
