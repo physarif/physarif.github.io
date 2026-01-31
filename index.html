@@ -538,11 +538,12 @@
                                 <img src="${c.photoURL}" class="w-4 h-4 rounded-full cursor-pointer" onclick="openProfile('${c.userId}')">
                                 <span class="user-link" onclick="openProfile('${c.userId}')">${c.name}</span>
                                 <span> • ${formatTime(c.at)}</span>
+${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}
+
                             </div>
                         </div>
                         <div class="cursor-pointer" onclick="openDetails('${c.id}')">
                             <h2 class="text-sm font-semibold mb-2 line-clamp-3 text-gray-800 dark:text-gray-200 leading-relaxed">${c.msg}</h2>
-                            ${c.edited ? `<span class="text-[9px] text-gray-400 italic">(সম্পাদিত)</span>` : ''}
                         </div>
                     </div>
                 </div>
@@ -583,6 +584,11 @@ if(approveBtn) {
                         <div class="bg-gray-100 dark:bg-darkCard p-3 rounded-xl border dark:border-darkBorder text-xs flex-1">
                             <div class="flex justify-between items-start mb-1">
                                 <div class="font-bold text-[10px] user-link" onclick="openProfile('${comment.userId}')">${comment.name}</div>
+                                <div class="flex items-center gap-2">
+    <div class="font-bold text-[10px] user-link" onclick="openProfile('${comment.userId}')">${comment.name}</div>
+    ${comment.edited ? `<span class="text-[8px] text-accent italic">(সম্পাদিত)</span>` : ''}
+</div>
+
                                 <div class="flex gap-2">
                                     ${isAdmin ? `<button onclick="adminDeleteComment('${comment.id}')" class="text-red-400 text-[9px] font-bold">Delete</button>` : ''}
                                     ${canEdit ? `<button onclick="prepareCommentEdit('${comment.id}', '${comment.msg.replace(/'/g, "\\'")}')" class="text-blue-500 text-[9px] font-bold">Edit</button>` : ''}
@@ -593,7 +599,6 @@ if(approveBtn) {
                                 ${comment.replyToName ? `<span class="text-accent font-bold mr-1 cursor-pointer" onclick="openProfile('${allData.find(u => u.id === comment.replyToId)?.userId}')">@${comment.replyToName}</span>` : ''}
                                 ${DOMPurify.sanitize(marked.parse(comment.msg))}
                             </div>
-                            ${comment.edited ? `<div class="text-[8px] text-gray-400 italic mt-1">(সম্পাদিত)</div>` : ''}
                         </div>
                     </div>
                     ${nestedReplies.map(nr => renderComment(nr, true)).join('')}
