@@ -51,16 +51,13 @@
 </nav>
 
 <main class="max-w-3xl mx-auto px-4 py-10">
-    <!-- টাইটেল -->
-    <h1 id="post-title" class="text-3xl md:text-5xl font-bold leading-tight mb-8"></h1>
-
-    <!-- লেখক প্রোফাইল -->
+    <!-- লেখক প্রোফাইল এবং তারিখ -->
     <div class="flex items-center justify-between pb-8 border-b dark:border-darkBorder mb-10">
         <div class="flex items-center gap-4">
             <img id="author-img" src="" alt="Author" class="w-12 h-12 rounded-full ring-2 ring-gray-100 dark:ring-darkBorder">
             <div>
-                <p class="text-sm font-bold" id="author-name"></p>
-                <p id="post-date" class="text-xs text-gray-500 mt-0.5">লোডিং...</p>
+                <p class="text-sm font-bold" id="author-name">লোডিং...</p>
+                <p id="post-date" class="text-xs text-gray-500 mt-0.5"></p>
             </div>
         </div>
     </div>
@@ -133,11 +130,6 @@
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = data.msg;
-                const firstLine = tempDiv.innerText.split('\n')[0] || "শিরোনামহীন পোস্ট";
-                document.getElementById('post-title').innerText = firstLine;
                 
                 document.getElementById('post-content').innerHTML = data.msg;
                 document.getElementById('author-name').innerText = data.name;
