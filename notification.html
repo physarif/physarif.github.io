@@ -23,18 +23,9 @@
     </script>
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
-        .notif-card { 
-            transition: all 0.2s; 
-            border-left: 3px solid transparent; 
-        }
-        .notif-card.unread { 
-            background-color: #f0f7ff; 
-            border-left-color: #3498db; 
-        }
-        .dark .notif-card.unread { 
-            background-color: #1a2229; 
-            border-left-color: #3498db; 
-        }
+        .notif-card { transition: all 0.2s; border-left: 4px solid transparent; }
+        .notif-card.unread { background-color: #f0f7ff; border-left-color: #3498db; }
+        .dark .notif-card.unread { background-color: #1a2229; border-left-color: #3498db; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -47,7 +38,7 @@
             </button>
             <h1 class="text-xl font-bold">নোটিফিকেশন</h1>
         </div>
-        <button id="clear-all" class="text-xs text-accent font-semibold hover:underline">সব মুছে ফেলুন</button>
+        <button id="clear-all" class="text-xs text-red-500 font-semibold hover:underline">সব মুছে ফেলুন</button>
     </div>
 
     <div id="notif-container" class="space-y-3">
@@ -59,7 +50,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, limit, doc, updateDoc, deleteDoc, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -75,42 +66,93 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
     const container = document.getElementById('notif-container');
+    const clearBtn = document.getElementById('clear-all');
+
+    let currentUser = null;
+
+    // Time Ago Function
+    function timeAgo(date) {
+        const seconds = Math.floor((new Date() - date) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+        if (interval >= 1) return interval + " বছর আগে";
+        interval = Math.floor(seconds / 2592000);
+        if (interval >= 1) return interval + " মাস আগে";
+        interval = Math.floor(seconds / 86400);
+        if (interval >= 1) return interval + " দিন আগে";
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1) return interval + " ঘণ্টা আগে";
+        interval = Math.floor(seconds / 60);
+        if (interval >= 1) return interval + " মিনিট আগে";
+        return "এইমাত্র";
+    }
+
+    // Get Icon based on Type
+    function getIcon(type) {
+        switch(type) {
+            case 'like': return `<svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"></path></svg>`;
+            case 'follow': return `<svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>`;
+            default: return `<svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>`;
+        }
+    }
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // নোটিফিকেশন পাথ (তোমার ডেটাবেস স্ট্রাকচার অনুযায়ী পাথটি পরিবর্তন করে নিতে পারো)
+            currentUser = user;
             const NOTIF_PATH = `users/${user.uid}/notifications`;
             const q = query(collection(db, NOTIF_PATH), orderBy('at', 'desc'), limit(20));
 
             onSnapshot(q, (snapshot) => {
                 const notifications = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderNotifications(notifications);
-            }, (error) => {
-                container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">কোনো নোটিফিকেশন পাওয়া যায়নি</div>`;
+                renderNotifications(notifications, NOTIF_PATH);
             });
         } else {
-            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">নোটিফিকেশন দেখতে লগইন করুন</div>`;
+            container.innerHTML = `<div class="text-center py-10 text-gray-400">নোটিফিকেশন দেখতে লগইন করুন</div>`;
         }
     });
 
-    function renderNotifications(notifs) {
+    async function markAsRead(id, path, postId) {
+        const docRef = doc(db, path, id);
+        await updateDoc(docRef, { read: true });
+        if(postId) location.href = `post.html?id=${postId}`;
+    }
+
+    window.handleNotifClick = (id, path, postId) => markAsRead(id, path, postId);
+
+    function renderNotifications(notifs, path) {
         if (notifs.length === 0) {
-            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">এখনো কোনো নোটিফিকেশন নেই</div>`;
+            container.innerHTML = `<div class="text-center py-10 text-gray-400">এখনো কোনো নোটিফিকেশন নেই</div>`;
             return;
         }
 
         container.innerHTML = notifs.map(n => `
-            <div class="notif-card ${n.read ? '' : 'unread'} bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm cursor-pointer flex gap-3" onclick="location.href='post.html?id=${n.postId}'">
-                <div class="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+            <div onclick="handleNotifClick('${n.id}', '${path}', '${n.postId}')" 
+                 class="notif-card ${n.read ? '' : 'unread'} bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm cursor-pointer flex gap-3">
+                <div class="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
+                    ${getIcon(n.type)}
                 </div>
-                <div>
-                    <p class="text-sm font-medium leading-snug">${n.message || 'আপনার পোস্টে একজন মন্তব্য করেছেন'}</p>
-                    <span class="text-[10px] text-gray-400 mt-1 block">${n.at ? new Date(n.at.seconds * 1000).toLocaleString('bn-BD') : 'এখন'}</span>
+                <div class="flex-1">
+                    <p class="text-sm ${n.read ? 'text-gray-600 dark:text-gray-400' : 'font-semibold text-gray-900 dark:text-gray-100'} leading-snug">
+                        ${n.message || 'আপনার পোস্টে নতুন একটি আপডেট আছে'}
+                    </p>
+                    <span class="text-[10px] text-gray-400 mt-1 block">${n.at ? timeAgo(n.at.seconds * 1000) : 'এখন'}</span>
                 </div>
+                ${!n.read ? '<div class="w-2 h-2 bg-accent rounded-full self-center"></div>' : ''}
             </div>
         `).join('');
     }
+
+    // Clear All Notifications Function
+    clearBtn.addEventListener('click', async () => {
+        if (!currentUser || !confirm('সব নোটিফিকেশন মুছে ফেলতে চান?')) return;
+        
+        const path = `users/${currentUser.uid}/notifications`;
+        const q = query(collection(db, path));
+        const snapshot = await getDocs(q);
+        
+        const batch = writeBatch(db);
+        snapshot.docs.forEach(d => batch.delete(d.ref));
+        await batch.commit();
+    });
 
     // Auto Dark Mode
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
