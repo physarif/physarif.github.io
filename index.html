@@ -69,9 +69,17 @@
             box-shadow: 0 8px 16px rgba(52, 152, 219, 0.3); 
             cursor: pointer; z-index: 90; transition: all 0.3s; 
         }
+
+        /* Dropdown Animation */
+        #filter-dropdown {
+            display: none;
+        }
+        #filter-dropdown.show {
+            display: block;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-20">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-20" onclick="closeDropdowns(event)">
 
 <main class="max-w-2xl mx-auto px-4 py-6">
     <div class="flex items-center justify-between mb-8">
@@ -79,9 +87,25 @@
             <h1 class="text-3xl font-black text-accent tracking-tighter">লেখক.</h1>
         </div>
         
-        <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
-            <svg id="theme-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
-        </button>
+        <div class="flex items-center gap-2 relative">
+            <div class="relative inline-block text-left">
+                <button onclick="toggleDropdown(event)" class="flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                    <span id="current-filter">সর্বশেষ</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="filter-dropdown" class="absolute right-0 mt-2 w-32 origin-top-right bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl shadow-xl z-[100] overflow-hidden">
+                    <div class="py-1">
+                        <button onclick="applyFilter('latest')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-darkBg transition-colors">সর্বশেষ</button>
+                        <button onclick="applyFilter('popular')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-darkBg transition-colors">জনপ্রিয়</button>
+                        <button onclick="applyFilter('selected')" class="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-darkBg transition-colors">নির্বাচিত</button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
+                <svg id="theme-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+            </button>
+        </div>
     </div>
 
     <div id="posts-container" class="space-y-4">
@@ -94,15 +118,12 @@
         <button onclick="location.href='index.html'" class="bottom-nav-item text-accent">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </button>
-
         <button onclick="location.href='search.html'" class="bottom-nav-item text-gray-500 dark:text-gray-400">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         </button>
-
         <button onclick="location.href='notification.html'" class="bottom-nav-item text-gray-500 dark:text-gray-400">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
         </button>
-
         <button id="profile-btn" onclick="handleProfileClick()" class="bottom-nav-item text-gray-500 dark:text-gray-400">
             <div id="profile-icon-container" class="relative">
                 <svg id="profile-icon-placeholder" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -138,6 +159,7 @@
 
     window.currentUser = null;
     let allData = [];
+    let currentFilter = 'latest';
 
     onSnapshot(collection(db, BASE_PATH), (snapshot) => {
         allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -148,7 +170,6 @@
         window.currentUser = user;
         const profileIcon = document.getElementById('profile-icon-placeholder');
         const profileImg = document.getElementById('profile-img-active');
-        
         if (user) {
             profileIcon.classList.add('hidden');
             profileImg.src = user.photoURL;
@@ -161,10 +182,35 @@
         }
     });
 
+    window.toggleDropdown = (e) => {
+        e.stopPropagation();
+        document.getElementById('filter-dropdown').classList.toggle('show');
+    };
+
+    window.closeDropdowns = (e) => {
+        document.getElementById('filter-dropdown').classList.remove('show');
+    };
+
+    window.applyFilter = (filter) => {
+        currentFilter = filter;
+        const labels = { 'latest': 'সর্বশেষ', 'popular': 'জনপ্রিয়', 'selected': 'নির্বাচিত' };
+        document.getElementById('current-filter').innerText = labels[filter];
+        render();
+    };
+
     window.render = () => {
         const container = document.getElementById('posts-container');
         let posts = allData.filter(p => !p.parentId && (p.status === 'approved' || !p.status));
-        posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+
+        // Filtering Logic
+        if (currentFilter === 'latest') {
+            posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+        } else if (currentFilter === 'popular') {
+            posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+        } else if (currentFilter === 'selected') {
+            posts = posts.filter(p => p.selected === true);
+            posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+        }
 
         if(posts.length === 0) {
             container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কোনো পোস্ট পাওয়া যায়নি</div>`;
