@@ -7,6 +7,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
     <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+
         tailwind.config = {
             darkMode: 'class',
             theme: { 
@@ -16,7 +25,10 @@
                         darkCard: '#15191c', 
                         darkBorder: '#2d333b', 
                         accent: '#3498db'
-                    } 
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
                 } 
             }
         }
@@ -24,7 +36,7 @@
     <style>
         body { 
             font-family: 'Hind Siliguri', sans-serif; 
-            transition: all 0.3s; 
+            transition: background-color 0.3s, color 0.3s; 
         }
 
         .line-clamp-3 {
@@ -62,14 +74,41 @@
             transform: scale(0.9);
         }
 
+        /* নতুন ডিজাইন করা FAB Post বাটন */
         .fab-post { 
-            position: fixed; bottom: 80px; right: 20px; 
-            width: 56px; height: 56px; 
-            background-color: #3498db; color: white; 
-            border-radius: 50%; display: none; 
-            align-items: center; justify-content: center; 
-            box-shadow: 0 8px 16px rgba(52, 152, 219, 0.3); 
-            cursor: pointer; z-index: 90; transition: all 0.3s; 
+            position: fixed; 
+            bottom: 90px; 
+            right: 24px; 
+            width: 60px; 
+            height: 60px; 
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white; 
+            border-radius: 18px; 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4); 
+            cursor: pointer; 
+            z-index: 90; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        .fab-post:hover {
+            transform: translateY(-5px) rotate(90deg);
+            border-radius: 50%;
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.5);
+        }
+
+        .fab-post:active {
+            transform: scale(0.9) rotate(90deg);
+        }
+
+        /* আইকন যেন না ঘোরে যখন বাটন ঘোরে */
+        .fab-post svg {
+            transition: transform 0.4s;
+        }
+        .fab-post:hover svg {
+            transform: rotate(-90deg);
         }
 
         #filter-dropdown {
@@ -136,8 +175,9 @@
     </div>
 </div>
 
-<div id="fab-post" class="fab-post" onclick="location.href='compose.html'">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+<!-- এনিমেটেড FAB বাটন -->
+<div id="fab-post" class="fab-post animate-pulse-slow" onclick="location.href='compose.html'">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
 </div>
 
 <script type="module">
@@ -221,9 +261,7 @@
         }
 
         container.innerHTML = posts.map(p => {
-            // যদি পোস্টে ইমেজের লিঙ্ক থাকে তবে তা রেন্ডার করবে
             const postImage = p.image ? `<img src="${p.image}" class="mt-3 rounded-lg w-full max-h-64 object-cover border dark:border-darkBorder">` : '';
-            
             return `
             <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm" onclick="location.href='post.html?id=${p.id}'">
                 <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1 h-fit">
@@ -252,12 +290,20 @@
         }
     };
 
-    const setDarkMode = (dark) => {
-        document.documentElement.classList.toggle('dark', dark);
-        document.getElementById('theme-icon').innerHTML = dark ? '<path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2"></path>' : '<path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke="currentColor" stroke-width="2"></path>';
+    const updateThemeUI = (isDark) => {
+        const themeIcon = document.getElementById('theme-icon');
+        themeIcon.innerHTML = isDark 
+            ? '<path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2"></path>' 
+            : '<path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke="currentColor" stroke-width="2"></path>';
     };
-    setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    document.getElementById('theme-toggle').onclick = () => setDarkMode(!document.documentElement.classList.contains('dark'));
+
+    document.getElementById('theme-toggle').onclick = () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        updateThemeUI(isDark);
+    };
+
+    updateThemeUI(document.documentElement.classList.contains('dark'));
 </script>
 </body>
 </html>
