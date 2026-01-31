@@ -130,6 +130,10 @@
 
     <section class="flex-1 space-y-3">
         <div id="posts-container" class="space-y-3">
+            <div id="load-more-container" class="hidden py-4 text-center">
+        <button id="load-more-btn" onclick="loadMorePosts()" class="px-8 py-2 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-full text-xs font-bold hover:ring-2 ring-accent transition-all">আরো দেখুন</button>
+    </div>
+
             <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
         </div>
     </section>
@@ -233,6 +237,9 @@
     window.currentUser = null;
     window.isAdmin = false;
     let allData = [];
+    let postsPerPage = 10;
+let visibleCount = 10;
+
     let activeThreadId = null;
     let currentFilter = 'latest';
     let userBookmarks = [];
@@ -290,11 +297,18 @@
     };
 
     window.setFilter = (filter) => {
-        currentFilter = filter;
-        document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('filter-active'));
-        document.getElementById(`filter-${filter}`).classList.add('filter-active');
-        render();
-    };
+    currentFilter = filter;
+    visibleCount = postsPerPage; // ফিল্টার বদলালে আবার প্রথম থেকে দেখাবে
+    document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('filter-active'));
+    document.getElementById(`filter-${filter}`).classList.add('filter-active');
+    render();
+};
+
+window.loadMorePosts = () => {
+    visibleCount += postsPerPage;
+    render();
+};
+
 
     window.toggleNotifications = (e) => { e.stopPropagation(); const drop = document.getElementById('notification-dropdown'); drop.classList.toggle('hidden'); if(!drop.classList.contains('hidden')) markNotisAsRead(); };
 
@@ -412,35 +426,53 @@
     window.adminDeleteComment = async (id) => { if(!confirm('এই মন্তব্যটি মুছতে চান?')) return; await deleteDoc(doc(db, BASE_PATH, id)); showToast('মন্তব্য মোছা হয়েছে'); };
 
     function render() {
-        const container = document.getElementById('posts-container');
-        let posts = allData.filter(c => !c.parentId);
-        if(currentFilter === 'pending') posts = posts.filter(p => p.status === 'pending');
-        else if(currentFilter === 'featured') posts = posts.filter(p => p.status === 'approved' && p.isFeatured === true);
-        else if(currentFilter === 'bookmarks') posts = posts.filter(p => userBookmarks.includes(p.id));
-        else posts = posts.filter(p => p.status === 'approved');
-        posts.sort((a, b) => currentFilter === 'popular' ? (b.votes || 0) - (a.votes || 0) : (b.at?.seconds || 0) - (a.at?.seconds || 0));
-        if(posts.length === 0) { container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`; return; }
-        container.innerHTML = posts.map(c => {
-            const isUpvoted = c.upvoters && currentUser && c.upvoters.includes(currentUser.uid);
-            const isDownvoted = c.downvoters && currentUser && c.downvoters.includes(currentUser.uid);
-            return `
-            <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border ${c.isFeatured ? 'featured-card border-featured' : 'dark:border-darkBorder'}">
-                <div class="flex gap-4">
-                    <div class="flex flex-col items-center gap-2 bg-gray-50 dark:bg-darkBg p-2 rounded-lg min-w-[42px] h-fit">
-                        <button onclick="handleVote('${c.id}', 1)" class="${isUpvoted ? 'text-accent' : 'text-gray-400'} hover:text-accent"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
-                        <span class="font-bold text-xs ${isUpvoted ? 'text-accent' : (isDownvoted ? 'text-red-500' : 'text-gray-500')}">${toBN(c.votes || 0)}</span>
-                        <button onclick="handleVote('${c.id}', -1)" class="${isDownvoted ? 'text-red-500' : 'text-gray-400'} hover:text-red-500"><svg class="w-5 h-5 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
-                    </div>
-                    <div class="flex-1 overflow-hidden">
-                        <div class="flex items-center justify-between mb-1 text-[10px] font-bold text-gray-400 uppercase">
-                            <div class="flex items-center gap-2"><img src="${c.photoURL}" class="w-4 h-4 rounded-full cursor-pointer" onclick="openProfile('${c.userId}')"><span class="user-link" onclick="openProfile('${c.userId}')">${c.name}</span><span> • ${formatTime(c.at)}</span>${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}</div>
-                        </div>
-                        <div class="cursor-pointer" onclick="openDetails('${c.id}')"><h2 class="text-sm font-semibold mb-2 line-clamp-3 text-gray-800 dark:text-gray-200 leading-relaxed">${c.msg}</h2></div>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
+    const container = document.getElementById('posts-container');
+    const loadMoreContainer = document.getElementById('load-more-container');
+    
+    let posts = allData.filter(c => !c.parentId);
+    
+    if(currentFilter === 'pending') posts = posts.filter(p => p.status === 'pending');
+    else if(currentFilter === 'featured') posts = posts.filter(p => p.status === 'approved' && p.isFeatured === true);
+    else if(currentFilter === 'bookmarks') posts = posts.filter(p => userBookmarks.includes(p.id));
+    else posts = posts.filter(p => p.status === 'approved');
+    
+    posts.sort((a, b) => currentFilter === 'popular' ? (b.votes || 0) - (a.votes || 0) : (b.at?.seconds || 0) - (a.at?.seconds || 0));
+
+    const totalPosts = posts.length;
+    const paginatedPosts = posts.slice(0, visibleCount);
+
+    if(totalPosts === 0) {
+        container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`;
+        if(loadMoreContainer) loadMoreContainer.classList.add('hidden');
+        return;
     }
+
+    if(loadMoreContainer) {
+        loadMoreContainer.classList.toggle('hidden', visibleCount >= totalPosts);
+    }
+
+    container.innerHTML = paginatedPosts.map(c => {
+        const isUpvoted = c.upvoters && currentUser && c.upvoters.includes(currentUser.uid);
+        const isDownvoted = c.downvoters && currentUser && c.downvoters.includes(currentUser.uid);
+        return `
+        <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border ${c.isFeatured ? 'featured-card border-featured' : 'dark:border-darkBorder'}">
+            <div class="flex gap-4">
+                <div class="flex flex-col items-center gap-2 bg-gray-50 dark:bg-darkBg p-2 rounded-lg min-w-[42px] h-fit">
+                    <button onclick="handleVote('${c.id}', 1)" class="${isUpvoted ? 'text-accent' : 'text-gray-400'} hover:text-accent"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
+                    <span class="font-bold text-xs ${isUpvoted ? 'text-accent' : (isDownvoted ? 'text-red-500' : 'text-gray-500')}">${toBN(c.votes || 0)}</span>
+                    <button onclick="handleVote('${c.id}', -1)" class="${isDownvoted ? 'text-red-500' : 'text-gray-400'} hover:text-red-500"><svg class="w-5 h-5 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <div class="flex items-center justify-between mb-1 text-[10px] font-bold text-gray-400 uppercase">
+                        <div class="flex items-center gap-2"><img src="${c.photoURL}" class="w-4 h-4 rounded-full cursor-pointer" onclick="openProfile('${c.userId}')"><span class="user-link" onclick="openProfile('${c.userId}')">${c.name}</span><span> • ${formatTime(c.at)}</span>${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}</div>
+                    </div>
+                    <div class="cursor-pointer" onclick="openDetails('${c.id}')"><h2 class="text-sm font-semibold mb-2 line-clamp-3 text-gray-800 dark:text-gray-200 leading-relaxed">${c.msg}</h2></div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
 
     function updateDetails() {
         const post = allData.find(c => c.id === activeThreadId);
