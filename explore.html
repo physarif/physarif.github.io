@@ -53,6 +53,11 @@
             class="search-input w-full pl-12 pr-4 py-4 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-2xl shadow-sm text-base transition-all">
     </div>
 
+    <div id="tags-section" class="mb-6 hidden">
+        <h2 class="text-xs font-semibold uppercase text-gray-500 mb-3 px-1">জনপ্রিয় ট্যাগ</h2>
+        <div id="tags-list" class="flex flex-wrap gap-2"></div>
+    </div>
+
     <div id="history-section" class="mb-6 hidden">
         <h2 class="text-xs font-semibold uppercase text-gray-500 mb-3 px-1">সাম্প্রতিক অনুসন্ধান</h2>
         <div id="history-chips" class="flex flex-wrap gap-2"></div>
@@ -93,11 +98,14 @@
     const stats = document.getElementById('result-stats');
     const historySection = document.getElementById('history-section');
     const historyChips = document.getElementById('history-chips');
+    const tagsSection = document.getElementById('tags-section');
+    const tagsList = document.getElementById('tags-list');
 
     // Fetch Data
     onSnapshot(collection(db, BASE_PATH), (snapshot) => {
         allPosts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
                     .filter(p => !p.parentId);
+        updateTags(allPosts);
     });
 
     // Handle Search Input
@@ -112,12 +120,14 @@
         if (term.length < 2) {
             container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm italic">কমপক্ষে ২ টি অক্ষর লিখুন...</div>`;
             stats.classList.add('hidden');
+            tagsSection.classList.add('hidden');
             return;
         }
 
         const filtered = allPosts.filter(p => 
             (p.msg && p.msg.toLowerCase().includes(term)) || 
-            (p.name && p.name.toLowerCase().includes(term))
+            (p.name && p.name.toLowerCase().includes(term)) ||
+            (p.tags && p.tags.some(t => t.toLowerCase().includes(term)))
         );
 
         renderResults(filtered, term);
@@ -125,6 +135,8 @@
 
     function renderResults(posts, term) {
         historySection.classList.add('hidden');
+        tagsSection.classList.add('hidden');
+        
         if (posts.length === 0) {
             container.innerHTML = `<div class="text-center py-20 text-gray-400">কোনো ফলাফল পাওয়া যায়নি!</div>`;
             stats.classList.add('hidden');
@@ -165,6 +177,7 @@
             </div>
         `;
         renderHistory();
+        updateTags(allPosts);
     }
 
     // Search History Logic
@@ -183,6 +196,28 @@
             historyChips.innerHTML = history.map(h => `
                 <button onclick="fillSearch('${h}')" class="px-3 py-1.5 bg-gray-200 dark:bg-darkBorder rounded-full text-xs hover:bg-accent hover:text-white transition-colors">
                     ${h}
+                </button>
+            `).join('');
+        }
+    }
+
+    // Tags Logic
+    function updateTags(posts) {
+        let allTags = [];
+        posts.forEach(p => {
+            if (p.tags && Array.isArray(p.tags)) {
+                allTags.push(...p.tags);
+            }
+        });
+
+        const uniqueTags = [...new Set(allTags)].slice(0, 12);
+
+        if (uniqueTags.length > 0 && searchInput.value.length === 0) {
+            tagsSection.classList.remove('hidden');
+            tagsList.innerHTML = uniqueTags.map(tag => `
+                <button onclick="fillSearch('${tag}')" 
+                    class="px-3 py-1.5 border dark:border-darkBorder rounded-xl text-xs font-medium hover:border-accent hover:text-accent transition-all">
+                    # ${tag}
                 </button>
             `).join('');
         }
