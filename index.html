@@ -27,7 +27,6 @@
             transition: all 0.3s; 
         }
 
-        /* ৩ লাইনে টেক্সট সীমাবদ্ধ করার জন্য */
         .line-clamp-3 {
             display: -webkit-box;
             -webkit-line-clamp: 3;
@@ -47,16 +46,6 @@
             transform: translateY(-2px);
         }
 
-        .vote-btn {
-            border-radius: 6px;
-            transition: background 0.2s;
-        }
-
-        .vote-btn:hover {
-            background-color: rgba(52, 152, 219, 0.1);
-        }
-
-        /* FAB বাটন স্টাইল */
         .fab-post { 
             position: fixed; bottom: 24px; right: 24px; 
             width: 56px; height: 56px; 
@@ -67,31 +56,27 @@
             cursor: pointer; z-index: 90; transition: all 0.3s; 
         }
 
-        .fab-post:hover { 
-            transform: scale(1.1) rotate(90deg); 
-        }
+        .fab-post:hover { transform: scale(1.1) rotate(90deg); }
+        .fab-post:active { scale: 0.9; }
 
-        /* নতুন ফিল্টার বার স্টাইল */
         .filter-btn {
             position: relative;
             border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all 0.2s;
         }
+
+        .filter-btn:active { transform: scale(0.95); }
 
         .filter-active { 
             color: #3498db !important; 
             border-bottom-color: #3498db !important;
         }
 
-        /* স্ক্রলবার হাইড করার জন্য */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* ড্রপডাউন মেনু */
         .dropdown-menu { 
             display: none; position: absolute; right: 0; top: 100%; 
             margin-top: 0.5rem; width: 160px; background: white; 
@@ -102,7 +87,6 @@
         .dark .dropdown-menu { background: #15191c; border-color: #2d333b; }
         .dropdown-active { display: block !important; }
 
-        /* টোস্ট মেসেজ */
         #toast {
             position: fixed; top: 64px; left: 50%; transform: translateX(-50%);
             z-index: 300; background: #15191c; color: white;
@@ -110,8 +94,6 @@
             font-weight: bold; opacity: 0; transition: opacity 0.3s;
             pointer-events: none;
         }
-
-        .dark #toast { background: #3498db; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100" onclick="closeAllDropdowns(event)">
@@ -120,27 +102,27 @@
     <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <div class="flex items-center gap-2 cursor-pointer" onclick="location.href='index.html'">
             <h1 class="text-xl font-black text-accent tracking-tighter">লেখক.</h1>
-            <button id="admin-link" onclick="event.stopPropagation(); location.href='admin.html'" class="hidden bg-red-500 hover:bg-red-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase transition-colors">Admin</button>
+            <button id="admin-link" onclick="event.stopPropagation(); location.href='admin.html'" class="hidden bg-red-500 active:scale-95 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase transition-all">Admin</button>
         </div>
         
-        <div class="flex items-center gap-4">
-            <button class="text-gray-500 dark:text-gray-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-2 sm:gap-4">
+            <button class="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-all">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
             </button>
             
-            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all active:rotate-12">
                 <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
             </button>
             
-            <div id="auth-section">
-                <button id="login-ui" onclick="googleLogin()" class="hidden bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-lg">Login</button>
-                <div id="user-info-wrapper" class="flex items-center gap-2 cursor-pointer relative" onclick="toggleUserDropdown(event)">
-                    <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent" src="https://via.placeholder.com/32">
+            <div id="auth-section" class="flex items-center">
+                <button id="login-ui" onclick="googleLogin()" class="hidden bg-accent text-white px-3 py-1.5 sm:px-4 rounded-lg text-xs font-bold shadow-lg active:scale-95 transition-transform">Login</button>
+                <div id="user-info-wrapper" class="hidden items-center gap-2 cursor-pointer relative" onclick="toggleUserDropdown(event)">
+                    <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent object-cover">
                     <div id="user-dropdown" class="dropdown-menu">
-                        <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg">আমার প্রোফাইল</button>
-                        <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">লগ আউট</button>
+                        <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg transition-colors">আমার প্রোফাইল</button>
+                        <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">লগ আউট</button>
                     </div>
                 </div>
             </div>
@@ -149,18 +131,18 @@
 </nav>
 
 <main class="max-w-4xl mx-auto px-4 py-6">
-    <div class="flex items-center gap-4 mb-6 overflow-x-auto pb-1 scrollbar-hide border-b dark:border-darkBorder">
-        <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2">
+    <div class="flex items-center gap-1 sm:gap-4 mb-6 overflow-x-auto pb-1 scrollbar-hide border-b dark:border-darkBorder flex-nowrap">
+        <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active flex items-center gap-2 pb-3 px-4 text-sm font-bold">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             সর্বশেষ
         </button>
         
-        <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500 hover:text-accent">
+        <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold text-gray-500 hover:text-accent">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
             জনপ্রিয়
         </button>
 
-        <button id="filter-featured" onclick="setFilter('featured')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500 hover:text-accent">
+        <button id="filter-featured" onclick="setFilter('featured')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold text-gray-500 hover:text-accent">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
             ফিচারড
         </button>
@@ -196,7 +178,6 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
-    
     const ADMIN_EMAIL = 'phys.arif@gmail.com'; 
 
     window.currentUser = null;
@@ -207,22 +188,19 @@
         allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
     }, (error) => {
-        console.error("Firestore Error:", error);
-        document.getElementById('posts-container').innerHTML = `<div class="p-20 text-center text-red-500 text-sm">ডেটা লোড করতে সমস্যা হচ্ছে। Rules চেক করো।</div>`;
+        document.getElementById('posts-container').innerHTML = `<div class="p-20 text-center text-red-500 text-sm">ডেটা লোড করতে সমস্যা হচ্ছে।</div>`;
     });
 
     onAuthStateChanged(auth, (user) => {
         window.currentUser = user;
         const isUser = !!user;
-        
-        document.getElementById('user-info-wrapper').classList.toggle('hidden', !isUser);
+        document.getElementById('user-info-wrapper').style.display = isUser ? 'flex' : 'none';
         document.getElementById('login-ui').classList.toggle('hidden', isUser);
         
-        const adminBtn = document.getElementById('admin-link');
         if (user && user.email === ADMIN_EMAIL) {
-            adminBtn.classList.remove('hidden');
+            document.getElementById('admin-link').classList.remove('hidden');
         } else {
-            adminBtn.classList.add('hidden');
+            document.getElementById('admin-link').classList.add('hidden');
         }
 
         if (isUser) {
@@ -235,16 +213,11 @@
 
     window.render = () => {
         const container = document.getElementById('posts-container');
-        
         let posts = allData.filter(p => !p.parentId && (p.status === 'approved' || !p.status));
         
-        if (currentFilter === 'popular') {
-            posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
-        } else if (currentFilter === 'featured') {
-            posts = posts.filter(p => p.featured);
-        } else {
-            posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
-        }
+        if (currentFilter === 'popular') posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+        else if (currentFilter === 'featured') posts = posts.filter(p => p.featured);
+        else posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
 
         if(posts.length === 0) {
             container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কোনো পোস্ট পাওয়া যায়নি</div>`;
@@ -252,20 +225,22 @@
         }
 
         container.innerHTML = posts.map(p => `
-            <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm transition-all cursor-pointer" onclick="openDetails('${p.id}')">
-                <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1">
-                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
+            <div class="forum-card flex gap-3 sm:gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm" onclick="openDetails('${p.id}')">
+                <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1 h-fit">
+                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent active:scale-125 transition-transform"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
                     <span class="text-xs font-bold text-accent">${p.votes || 0}</span>
-                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-red-500"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.941 11a1.001 1.001 0 0 0-.781-1.625H16V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6.375H4a1.001 1.001 0 0 0-.781 1.625l8 10c.381.475 1.181.475 1.562 0l8-10z"></path></svg></button>
+                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-red-500 active:scale-125 transition-transform"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.941 11a1.001 1.001 0 0 0-.781-1.625H16V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6.375H4a1.001 1.001 0 0 0-.781 1.625l8 10c.381.475 1.181.475 1.562 0l8-10z"></path></svg></button>
                 </div>
-                <div class="flex-1">
+                <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-2">
                         <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
-                        <span class="text-[11px] font-bold text-gray-500 uppercase">${p.name || 'Anonymous'}</span>
-                        <span class="text-[10px] text-gray-300">• ${p.at ? new Date(p.at.seconds * 1000).toLocaleDateString('bn-BD') : 'নতুন'}</span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent ml-auto">${p.category || 'সাধারণ'}</span>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-gray-500 uppercase truncate">${p.name || 'Anonymous'}</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-300 whitespace-nowrap">• ${p.at ? new Date(p.at.seconds * 1000).toLocaleDateString('bn-BD') : 'নতুন'}</span>
                     </div>
                     <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${p.msg || ''}</p>
+                    <div class="mt-3 flex">
+                        <span class="text-[9px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent uppercase">${p.category || 'সাধারণ'}</span>
+                    </div>
                 </div>
             </div>`).join('');
     };
@@ -280,7 +255,6 @@
         });
         const activeBtn = document.getElementById(`filter-${f}`);
         activeBtn.classList.add('filter-active', 'text-accent', 'border-accent');
-        activeBtn.classList.remove('text-gray-500', 'border-transparent');
         render();
     };
 
