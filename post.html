@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
     <script>
-        // থিম চেক করার ফাংশন
         function applyTheme() {
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') {
@@ -50,31 +49,24 @@
             ফিরে যান
         </button>
         
-        <div id="action-icons" class="flex items-center gap-1">
-            <!-- Icons will load here based on auth -->
-        </div>
+        <div id="action-icons" class="flex items-center gap-1"></div>
     </div>
 </nav>
 
 <main class="max-w-3xl mx-auto px-4 py-10">
-    <!-- লেখক প্রোফাইল -->
     <div class="flex items-center justify-between pb-8 border-b dark:border-darkBorder mb-10">
         <div class="flex items-center gap-4">
-            <img id="author-img" src="" alt="Author" class="w-12 h-12 rounded-full ring-2 ring-gray-100 dark:ring-darkBorder">
+            <img id="author-img" src="https://ui-avatars.com/api/?name=Loading" alt="Author" class="w-12 h-12 rounded-full ring-2 ring-gray-100 dark:ring-darkBorder">
             <div>
                 <p class="text-sm font-bold" id="author-name">লোডিং...</p>
                 <p id="post-date" class="text-xs text-gray-500 mt-0.5"></p>
             </div>
         </div>
-        <button class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors text-gray-500">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-        </button>
     </div>
 
     <div id="post-content" class="blog-content mb-12"></div>
     <div id="post-tags" class="mb-16 flex flex-wrap gap-2"></div>
 
-    <!-- কমেন্ট সেকশন -->
     <section class="border-t dark:border-darkBorder pt-10">
         <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
@@ -98,7 +90,7 @@
         </div>
 
         <div id="comments-list" class="space-y-6 pb-20">
-            <p class="text-gray-500 text-sm">মন্তব্য লোড হচ্ছে...</p>
+            <p class="text-gray-500 text-sm text-center">মন্তব্য লোড হচ্ছে...</p>
         </div>
     </section>
 </main>
@@ -125,7 +117,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
     let currentUser = null;
-    const ADMIN_UID = "o7p9v3fTj9P6S1k7R8M2N5B4V3C2";
+    const ADMIN_EMAIL = "phys.arif@gmail.com";
 
     const icons = {
         bookmark: `<button class="nav-icon" title="বুকমার্ক"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg></button>`,
@@ -147,9 +139,7 @@
             document.getElementById('current-user-img').src = user.photoURL;
 
             let html = icons.bookmark + icons.edit + icons.delete;
-            if (user.uid === ADMIN_UID) {
-                html = icons.featured + html;
-            }
+            if (user.email === ADMIN_EMAIL) html = icons.featured + html;
             actionIcons.innerHTML = html;
         } else {
             currentUser = null;
@@ -163,24 +153,29 @@
 
     async function loadPost() {
         if (!postId) return;
-        const docSnap = await getDoc(doc(db, 'blog_comments/pages/forum_v2_voted', postId));
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('post-content').innerHTML = data.msg;
-            document.getElementById('author-name').innerText = data.name;
-            document.getElementById('author-img').src = data.photoURL || `https://ui-avatars.com/api/?name=${data.name}&background=random`;
-            if (data.at) document.getElementById('post-date').innerText = data.at.toDate().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
-            if (data.hashtags) document.getElementById('post-tags').innerHTML = data.hashtags.map(tag => `<span class="bg-gray-100 dark:bg-darkCard px-3 py-1 rounded-lg text-xs font-medium">${tag}</span>`).join('');
+        try {
+            const docSnap = await getDoc(doc(db, 'blog_comments/pages/forum_v2_voted', postId));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById('post-content').innerHTML = data.msg;
+                document.getElementById('author-name').innerText = data.name;
+                document.getElementById('author-img').src = data.photoURL || `https://ui-avatars.com/api/?name=${data.name}&background=random`;
+                if (data.at) document.getElementById('post-date').innerText = data.at.toDate().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+                if (data.hashtags) document.getElementById('post-tags').innerHTML = data.hashtags.map(tag => `<span class="bg-gray-100 dark:bg-darkCard px-3 py-1 rounded-lg text-xs font-medium">${tag}</span>`).join('');
+            }
+        } catch (e) {
+            console.error(e);
         }
         loadComments();
     }
 
     function loadComments() {
+        if (!postId) return;
         const q = query(collection(db, 'blog_comments', postId, 'messages'), orderBy('at', 'desc'));
         onSnapshot(q, (snapshot) => {
             const list = document.getElementById('comments-list');
             if (snapshot.empty) {
-                list.innerHTML = '<p class="text-gray-400 text-sm">এখনো কোনো মন্তব্য নেই।</p>';
+                list.innerHTML = '<p class="text-gray-400 text-sm text-center">এখনো কোনো মন্তব্য নেই।</p>';
                 return;
             }
             list.innerHTML = snapshot.docs.map(doc => {
@@ -203,17 +198,29 @@
     }
 
     document.getElementById('submit-comment').onclick = async () => {
-        const text = document.getElementById('comment-text').value.trim();
-        if (!text || !currentUser) return;
+        const input = document.getElementById('comment-text');
+        const text = input.value.trim();
+        const btn = document.getElementById('submit-comment');
 
-        await addDoc(collection(db, 'blog_comments', postId, 'messages'), {
-            name: currentUser.displayName,
-            photoURL: currentUser.photoURL,
-            uid: currentUser.uid,
-            text,
-            at: serverTimestamp()
-        });
-        document.getElementById('comment-text').value = '';
+        if (!text || !currentUser || !postId) return;
+
+        try {
+            btn.disabled = true;
+            btn.innerText = "পাঠানো হচ্ছে...";
+            await addDoc(collection(db, 'blog_comments', postId, 'messages'), {
+                name: currentUser.displayName,
+                photoURL: currentUser.photoURL,
+                uid: currentUser.uid,
+                text: text,
+                at: serverTimestamp()
+            });
+            input.value = '';
+        } catch (e) {
+            console.error(e);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "মন্তব্য করুন";
+        }
     };
 
     loadPost();
