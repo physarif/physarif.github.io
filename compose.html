@@ -3,16 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নতুন লেখা - Summernote</title>
+    <title>নতুন লেখা - লেখক ফোরাম</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
-    
-    <!-- jQuery required for Summernote -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-    <!-- Summernote Lite -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -30,26 +24,14 @@
     </script>
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
-        .note-editor { border-radius: 12px !important; overflow: hidden; border: 1px solid #2d333b !important; }
-        
-        /* টুলবার কাস্টমাইজেশন */
-        .note-toolbar { 
-            background: #f8f9fa !important; 
-            border-bottom: 1px solid #2d333b !important; 
-            padding: 10px !important;
-        }
-        
-        /* ফ্লেক্স বক্স ব্যবহার করে দুই লাইন নিশ্চিত করা */
-        .note-toolbar > .note-btn-group {
-            display: inline-block !important;
-            margin-bottom: 5px !important;
-        }
-
-        .dark .note-editor { background: #15191c !important; color: white !important; }
-        .dark .note-toolbar { background: #15191c !important; color: white !important; border-color: #2d333b !important; }
-        .dark .note-btn { background: #2d333b !important; color: white !important; border: none; }
-        .dark .note-editable { background: #15191c !important; color: white !important; }
-        .note-modal-content { border-radius: 16px !important; }
+        .ql-container { font-family: 'Hind Siliguri', sans-serif; font-size: 1.125rem; border: none !important; }
+        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; border-radius: 12px 12px 0 0; }
+        .dark .ql-editor.ql-blank::before { color: #9ca3af; }
+        .dark .ql-snow .ql-stroke { stroke: #fff; }
+        .dark .ql-snow .ql-fill { fill: #fff; }
+        .dark .ql-snow .ql-picker { color: #fff; }
+        .ql-editor { min-height: 300px; }
+        .ql-video { width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -64,19 +46,21 @@
         </div>
         <div class="flex gap-2">
             <button id="preview-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkCard rounded-full text-sm font-bold hover:bg-opacity-80 transition-all">প্রিভিউ</button>
-            <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg hover:bg-opacity-90 transition-all">পাবলিশ</button>
+            <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg shadow-accent/20 hover:bg-opacity-90 transition-all">পাবলিশ</button>
         </div>
     </div>
 
     <div class="mb-4">
-        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কোডিং #JavaScript)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent">
+        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition-all">
     </div>
 
-    <div id="editor"></div>
+    <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden">
+        <div id="editor"></div>
+    </div>
 
     <div class="flex justify-between items-center mt-3 px-1">
         <span id="draft-status" class="text-[11px] font-medium text-green-500"></span>
-        <span id="char-count" class="text-xs text-gray-400">০ শব্দ</span>
+        <span id="char-count" class="text-xs text-gray-400">০ / ২০০০ শব্দ</span>
     </div>
 </main>
 
@@ -89,10 +73,19 @@
             </button>
         </div>
         <div id="preview-content" class="prose dark:prose-invert max-w-none"></div>
+        <div id="preview-tags" class="mt-4 flex flex-wrap gap-2 font-medium text-accent"></div>
         <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-8 w-full py-3 bg-accent text-white rounded-xl font-bold">ফিরে যান</button>
     </div>
 </div>
 
+<div id="loading-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-[100]">
+    <div class="bg-white dark:bg-darkCard p-8 rounded-2xl text-center shadow-2xl">
+        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-accent mx-auto mb-4"></div>
+        <p class="text-sm font-medium">পোস্ট হচ্ছে...</p>
+    </div>
+</div>
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
@@ -112,69 +105,83 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    let currentUser = null;
-
-    $(document).ready(function() {
-        $('#editor').summernote({
-            placeholder: 'আপনার মনের কথা এখানে লিখুন...',
-            height: 350,
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'আপনার মনের কথা এখানে লিখুন...',
+        modules: {
             toolbar: [
-                // প্রথম লাইন: ফরম্যাটিং
-                ['style', ['bold', 'italic', 'underline']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['linebreak', []], // একটি খালি ব্রেক গ্রপ
-                // দ্বিতীয় লাইন: লিঙ্ক, ফটো, ভিডিও, কোড
-                ['insert', ['link', 'picture', 'video', 'codeview']]
-            ],
-            callbacks: {
-                onChange: function(contents) {
-                    localStorage.setItem('sn_draft', contents);
-                    document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
-                    setTimeout(() => document.getElementById('draft-status').innerText = "সেভ হয়েছে", 1000);
-                }
-            }
-        });
-
-        // টুলবার দুই লাইনে দেখানোর জন্য সামান্য CSS হ্যাক
-        $('.note-toolbar').find('.note-btn-group:has(button[data-original-title="Link"])').before('<div style="display:block; width:100%; height:0; margin: 5px 0; border-top: 1px solid #ddd;"></div>');
-
-        const saved = localStorage.getItem('sn_draft');
-        if (saved) $('#editor').summernote('code', saved);
+                ['bold', 'italic', 'underline', 'blockquote'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'video', 'clean']
+            ]
+        }
     });
 
+    let currentUser = null;
+
     onAuthStateChanged(auth, (user) => {
-        if (user) currentUser = user;
+        if (user) {
+            currentUser = user;
+            const savedDraft = localStorage.getItem('post_draft');
+            if (savedDraft) quill.root.innerHTML = savedDraft;
+        } else {
+            alert('পোস্ট করতে আগে লগইন করুন!');
+            location.href = 'index.html';
+        }
+    });
+
+    quill.on('text-change', () => {
+        localStorage.setItem('post_draft', quill.root.innerHTML);
+        document.getElementById('char-count').innerText = `${quill.getText().trim().length} / ২০০০ শব্দ`;
+        document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
+        setTimeout(() => document.getElementById('draft-status').innerText = "সেভ হয়েছে", 1000);
     });
 
     document.getElementById('preview-btn').onclick = () => {
-        const content = $('#editor').summernote('code');
-        document.getElementById('preview-content').innerHTML = content;
+        document.getElementById('preview-content').innerHTML = quill.root.innerHTML;
+        const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
+        document.getElementById('preview-tags').innerText = tags.join(' ');
         document.getElementById('preview-modal').classList.remove('hidden');
     };
 
-    document.getElementById('submit-post').onclick = async () => {
-        if (!currentUser) return;
-        const msgHtml = $('#editor').summernote('code');
+    const submitBtn = document.getElementById('submit-post');
+    const loader = document.getElementById('loading-overlay');
+
+    submitBtn.onclick = async () => {
+        const msgHtml = quill.root.innerHTML;
+        const msgText = quill.getText().trim();
         const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
+
+        if (!msgText) { alert('কিছু তো লিখুন!'); return; }
+        if (!currentUser) return;
+
+        loader.classList.remove('hidden');
 
         try {
             await addDoc(collection(db, BASE_PATH), {
                 msg: msgHtml,
                 hashtags: tags,
                 name: currentUser.displayName,
+                email: currentUser.email,
                 uid: currentUser.uid,
+                photoURL: currentUser.photoURL,
                 at: serverTimestamp(),
+                votes: 0,
                 status: 'pending'
             });
-            localStorage.removeItem('sn_draft');
-            alert('সফলভাবে পাবলিশ হয়েছে!');
+            localStorage.removeItem('post_draft');
+            alert('সফলভাবে পাবলিশ করা হয়েছে!');
             location.href = 'index.html';
-        } catch (e) { 
-            alert('পাবলিশ করতে সমস্যা হয়েছে।'); 
+        } catch (error) {
+            alert('ত্রুটি হয়েছে, আবার চেষ্টা করুন।');
+        } finally {
+            loader.classList.add('hidden');
         }
     };
 
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
 </script>
 </body>
 </html>
