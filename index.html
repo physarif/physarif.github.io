@@ -9,7 +9,16 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: { colors: { darkBg: '#0b0e11', darkCard: '#15191c', darkBorder: '#2d333b', accent: '#3498db', featured: '#f1c40f' } } }
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
         }
     </script>
 </head>
@@ -24,9 +33,9 @@
             </button>
             <div id="auth-section">
                 <button id="login-ui" onclick="googleLogin()" class="bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-lg">Login</button>
-                <div id="user-info-wrapper" class="hidden flex items-center gap-2 cursor-pointer" onclick="toggleUserDropdown(event)">
+                <div id="user-info-wrapper" class="hidden flex items-center gap-2 cursor-pointer relative" onclick="toggleUserDropdown(event)">
                     <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent">
-                    <div id="user-dropdown" class="dropdown-menu">
+                    <div id="user-dropdown" class="dropdown-menu absolute right-0 top-10 bg-white dark:bg-darkCard border dark:border-darkBorder shadow-xl rounded-xl overflow-hidden w-40 hidden">
                         <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg">আমার প্রোফাইল</button>
                         <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">লগ আউট</button>
                     </div>
@@ -36,22 +45,22 @@
     </div>
 </nav>
 
-<main class="max-w-6xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
-    <aside class="w-full lg:w-56">
+<main class="max-w-4xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
+    <aside class="w-full lg:w-48">
         <div class="sticky top-20 space-y-1">
-            <button id="filter-latest" onclick="setFilter('latest')" class="filter-active w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold transition-all">সর্বশেষ</button>
-            <button id="filter-popular" onclick="setFilter('popular')" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold transition-all">জনপ্রিয়</button>
+            <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active w-full text-left px-3 py-2 rounded-xl text-sm font-semibold transition-all">সর্বশেষ</button>
+            <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn w-full text-left px-3 py-2 rounded-xl text-sm font-semibold transition-all">জনপ্রিয়</button>
         </div>
     </aside>
 
-    <section class="flex-1 space-y-3">
-        <div id="posts-container" class="space-y-3">
+    <section class="flex-1">
+        <div id="posts-container" class="space-y-4">
              <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
         </div>
     </section>
 </main>
 
-<div id="fab-post" class="fab-post" onclick="showToast('নতুন পোস্ট করতে লগইন করুন')">
+<div id="fab-post" class="fab-post fixed bottom-6 right-6 w-14 h-14 bg-accent text-white rounded-full shadow-2xl flex items-center justify-center cursor-pointer hover:scale-110 transition-transform hidden" onclick="showToast('নতুন পোস্ট করতে লগইন করুন')">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
 </div>
 
@@ -81,13 +90,11 @@
     let allData = [];
     let currentFilter = 'latest';
 
-    // ১. ডেটা লোড করা
     onSnapshot(collection(db, BASE_PATH), (snapshot) => {
         allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
     });
 
-    // ২. অথেনটিকেশন চেক
     onAuthStateChanged(auth, (user) => {
         window.currentUser = user;
         const isUser = !!user;
@@ -95,11 +102,10 @@
         document.getElementById('login-ui').classList.toggle('hidden', isUser);
         if (isUser) {
             document.getElementById('user-avatar').src = user.photoURL;
-            document.getElementById('fab-post').style.display = 'flex';
+            document.getElementById('fab-post').classList.remove('hidden');
         }
     });
 
-    // ৩. রেন্ডার ফাংশন
     window.render = () => {
         const container = document.getElementById('posts-container');
         let posts = allData.filter(p => !p.parentId && p.status === 'approved');
@@ -112,30 +118,45 @@
         }
 
         container.innerHTML = posts.map(p => `
-            <div onclick="openDetails('${p.id}')" class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder cursor-pointer">
-                <div class="flex items-center gap-2 mb-2 text-[10px] font-bold text-gray-400 uppercase">
-                    <img src="${p.photoURL}" class="w-4 h-4 rounded-full">
-                    <span>${p.name}</span>
-                    <span>• ${p.category || 'সাধারণ'}</span>
+            <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm transition-all">
+                <div class="flex flex-col items-center gap-1 min-w-[30px]">
+                    <button onclick="event.stopPropagation();" class="vote-btn p-1 text-gray-400 hover:text-accent transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg>
+                    </button>
+                    <span class="text-xs font-bold text-gray-600 dark:text-gray-400">${p.votes || 0}</span>
+                    <button onclick="event.stopPropagation();" class="vote-btn p-1 text-gray-400 hover:text-red-500 transition-colors">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.941 11a1.001 1.001 0 0 0-.781-1.625H16V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6.375H4a1.001 1.001 0 0 0-.781 1.625l8 10c.381.475 1.181.475 1.562 0l8-10z"></path></svg>
+                    </button>
                 </div>
-                <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">${p.msg}</h2>
-                <div class="mt-3 flex items-center gap-4 text-[10px] font-bold text-accent">
-                    <span>${p.votes || 0} ভোট</span>
+
+                <div class="flex-1 cursor-pointer" onclick="openDetails('${p.id}')">
+                    <div class="flex items-center gap-2 mb-2">
+                        <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full border dark:border-gray-700">
+                        <span class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">${p.name}</span>
+                        <span class="text-[10px] text-gray-300">• ${p.at ? 'কিছুক্ষণ আগে' : ''}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent uppercase ml-auto">${p.category || 'General'}</span>
+                    </div>
+                    <h2 class="text-sm md:text-base leading-relaxed text-gray-800 dark:text-gray-200 font-medium line-clamp-3">
+                        ${p.msg}
+                    </h2>
                 </div>
             </div>`).join('');
     };
 
-    // ৪. ফাংশনসমূহ
     window.googleLogin = () => signInWithPopup(auth, provider);
     window.googleLogout = () => signOut(auth).then(() => location.reload());
-    window.setFilter = (f) => { currentFilter = f; render(); };
+    window.setFilter = (f) => { 
+        currentFilter = f; 
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('filter-active'));
+        document.getElementById(`filter-${f}`).classList.add('filter-active');
+        render(); 
+    };
     window.openDetails = (id) => { window.location.href = `post.html?id=${id}`; };
     window.openProfile = (uid) => { window.location.href = `profile.html?uid=${uid}`; };
-    window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('dropdown-active'); };
-    window.closeAllDropdowns = () => document.getElementById('user-dropdown').classList.remove('dropdown-active');
+    window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('hidden'); };
+    window.closeAllDropdowns = () => { if(document.getElementById('user-dropdown')) document.getElementById('user-dropdown').classList.add('hidden'); };
     window.showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 3000); };
 
-    // ডার্ক মোড লজিক
     const setDarkMode = (dark) => {
         document.documentElement.classList.toggle('dark', dark);
         const icon = document.getElementById('theme-icon');
@@ -144,6 +165,5 @@
     setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
     document.getElementById('theme-toggle').onclick = () => setDarkMode(!document.documentElement.classList.contains('dark'));
 </script>
-
 </body>
 </html>
