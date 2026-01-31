@@ -32,7 +32,11 @@
         </div>
         
         <div class="flex items-center gap-4">
-            <button class="text-gray-500 dark:text-gray-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+            <button class="text-gray-500 dark:text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
             
             <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
                 <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
@@ -54,7 +58,7 @@
 
 <main class="max-w-4xl mx-auto px-4 py-6">
     <div class="flex items-center gap-6 mb-6 overflow-x-auto pb-2 scrollbar-hide border-b dark:border-darkBorder">
-        <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active flex items-center gap-2 pb-3 px-2 text-sm font-bold transition-all border-b-2 border-transparent">
+        <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active flex items-center gap-2 pb-3 px-2 text-sm font-bold transition-all border-b-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             সর্বশেষ
         </button>
@@ -149,14 +153,19 @@
                 </div>
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-2">
-                        <img src="${p.photoURL}" class="w-5 h-5 rounded-full">
+                        <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
                         <span class="text-[11px] font-bold text-gray-500 uppercase">${p.name}</span>
-                        <span class="text-[10px] text-gray-300">• ১৯ঘণ্টা আগে</span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent ml-auto">${p.category || 'General'}</span>
+                        <span class="text-[10px] text-gray-300">• কিছুক্ষণ আগে</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent ml-auto">${p.category || 'সাধারণ'}</span>
                     </div>
                     <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${p.msg}</p>
                 </div>
             </div>`).join('');
+    };
+
+    // বিস্তারিত পেজে যাওয়ার ফাংশন
+    window.openDetails = (id) => {
+        if(id) window.location.href = `post.html?id=${id}`;
     };
 
     window.setFilter = (f) => {
@@ -176,6 +185,7 @@
     window.googleLogout = () => signOut(auth).then(() => location.reload());
     window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('dropdown-active'); };
     window.closeAllDropdowns = () => document.getElementById('user-dropdown')?.classList.remove('dropdown-active');
+    window.openProfile = (uid) => { window.location.href = `profile.html?uid=${uid}`; };
 
     const setDarkMode = (dark) => {
         document.documentElement.classList.toggle('dark', dark);
