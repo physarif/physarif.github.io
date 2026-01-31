@@ -5,14 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>লেখক ফোরাম - হোম</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .filter-active { border-color: #3498db; color: #3498db; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .dropdown-menu { display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid #ddd; border-radius: 8px; width: 150px; z-index: 100; }
-        .dark .dropdown-menu { background: #15191c; border-color: #2d333b; }
-        .dropdown-active { display: block; }
-        .fab-post { position: fixed; bottom: 20px; right: 20px; background: #3498db; color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 40; }
-    </style>
+    <link rel="stylesheet" href="style.css">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -51,10 +44,10 @@
             
             <div id="auth-section">
                 <button id="login-ui" onclick="googleLogin()" class="hidden bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-lg">Login</button>
-                <div id="user-info-wrapper" class="hidden flex items-center gap-2 cursor-pointer relative" onclick="toggleUserDropdown(event)">
+                <div id="user-info-wrapper" class="flex items-center gap-2 cursor-pointer relative" onclick="toggleUserDropdown(event)">
                     <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent" src="https://via.placeholder.com/32">
-                    <div id="user-dropdown" class="dropdown-menu shadow-xl">
-                        <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg border-b dark:border-darkBorder">আমার প্রোফাইল</button>
+                    <div id="user-dropdown" class="dropdown-menu">
+                        <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg">আমার প্রোফাইল</button>
                         <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">লগ আউট</button>
                     </div>
                 </div>
@@ -63,41 +56,34 @@
     </div>
 </nav>
 
-<main class="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
-    <aside id="filter-sidebar" class="hidden md:block w-48 shrink-0">
-        <div class="sticky top-20 flex flex-col gap-1">
-            <p class="text-[10px] font-bold text-gray-400 uppercase mb-2 px-4">ফিল্টার</p>
-            <button onclick="setFilter('latest')" id="side-filter-latest" class="filter-btn-side w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:bg-gray-100 dark:hover:bg-darkCard">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                সর্বশেষ
-            </button>
-            <button onclick="setFilter('popular')" id="side-filter-popular" class="filter-btn-side w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:bg-gray-100 dark:hover:bg-darkCard">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                জনপ্রিয়
-            </button>
-            <button onclick="setFilter('featured')" id="side-filter-featured" class="filter-btn-side w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:bg-gray-100 dark:hover:bg-darkCard">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
-                ফিচারড
-            </button>
-        </div>
-    </aside>
+<main class="max-w-4xl mx-auto px-4 py-6">
+    <div class="flex items-center gap-4 mb-6 overflow-x-auto pb-1 scrollbar-hide border-b dark:border-darkBorder">
+        <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            সর্বশেষ
+        </button>
+        
+        <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500 hover:text-accent">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            জনপ্রিয়
+        </button>
 
-    <div class="flex-1 max-w-3xl">
-        <div id="mobile-filter-bar" class="md:hidden flex items-center gap-4 mb-6 overflow-x-auto pb-1 scrollbar-hide border-b dark:border-darkBorder">
-            <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn-mob pb-3 px-4 text-sm font-bold transition-all border-b-2">সর্বশেষ</button>
-            <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn-mob pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500">জনপ্রিয়</button>
-            <button id="filter-featured" onclick="setFilter('featured')" class="filter-btn-mob pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500">ফিচারড</button>
-        </div>
+        <button id="filter-featured" onclick="setFilter('featured')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500 hover:text-accent">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
+            ফিচারড
+        </button>
+    </div>
 
-        <div id="posts-container" class="space-y-4">
-             <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
-        </div>
+    <div id="posts-container" class="space-y-4">
+         <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
     </div>
 </main>
 
-<div id="fab-post" class="fab-post hidden" onclick="handleFabClick()">
+<div id="fab-post" class="fab-post" onclick="handleFabClick()">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
 </div>
+
+<div id="toast"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
@@ -118,6 +104,7 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
+    
     const ADMIN_EMAIL = 'phys.arif@gmail.com'; 
 
     window.currentUser = null;
@@ -127,6 +114,9 @@
     onSnapshot(collection(db, BASE_PATH), (snapshot) => {
         allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         render();
+    }, (error) => {
+        console.error("Firestore Error:", error);
+        document.getElementById('posts-container').innerHTML = `<div class="p-20 text-center text-red-500 text-sm">ডেটা লোড করতে সমস্যা হচ্ছে। Rules চেক করো।</div>`;
     });
 
     onAuthStateChanged(auth, (user) => {
@@ -136,28 +126,34 @@
         document.getElementById('user-info-wrapper').classList.toggle('hidden', !isUser);
         document.getElementById('login-ui').classList.toggle('hidden', isUser);
         
-        // Desktop Sidebar visibility based on login
-        document.getElementById('filter-sidebar').style.display = (isUser && window.innerWidth >= 768) ? 'block' : 'none';
-        
         const adminBtn = document.getElementById('admin-link');
-        if (user && user.email === ADMIN_EMAIL) adminBtn.classList.remove('hidden');
-        
+        if (user && user.email === ADMIN_EMAIL) {
+            adminBtn.classList.remove('hidden');
+        } else {
+            adminBtn.classList.add('hidden');
+        }
+
         if (isUser) {
             document.getElementById('user-avatar').src = user.photoURL;
-            document.getElementById('fab-post').classList.remove('hidden');
+            document.getElementById('fab-post').style.display = 'flex';
         } else {
-            document.getElementById('fab-post').classList.add('hidden');
+            document.getElementById('fab-post').style.display = 'none';
         }
-        setFilter(currentFilter);
     });
 
     window.render = () => {
         const container = document.getElementById('posts-container');
+        
+        // Filter logic updated to be more flexible
         let posts = allData.filter(p => !p.parentId && (p.status === 'approved' || !p.status));
         
-        if (currentFilter === 'popular') posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
-        else if (currentFilter === 'featured') posts = posts.filter(p => p.featured);
-        else posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+        if (currentFilter === 'popular') {
+            posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+        } else if (currentFilter === 'featured') {
+            posts = posts.filter(p => p.featured);
+        } else {
+            posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+        }
 
         if(posts.length === 0) {
             container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কোনো পোস্ট পাওয়া যায়নি</div>`;
@@ -165,46 +161,44 @@
         }
 
         container.innerHTML = posts.map(p => `
-            <div class="bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm cursor-pointer" onclick="openDetails('${p.id}')">
-                <div class="flex gap-4">
-                    <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1 h-fit">
-                        <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
-                        <span class="text-xs font-bold text-accent">${p.votes || 0}</span>
+            <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm transition-all cursor-pointer" onclick="openDetails('${p.id}')">
+                <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1">
+                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
+                    <span class="text-xs font-bold text-accent">${p.votes || 0}</span>
+                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-red-500"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.941 11a1.001 1.001 0 0 0-.781-1.625H16V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6.375H4a1.001 1.001 0 0 0-.781 1.625l8 10c.381.475 1.181.475 1.562 0l8-10z"></path></svg></button>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-2">
+                        <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
+                        <span class="text-[11px] font-bold text-gray-500 uppercase">${p.name || 'Anonymous'}</span>
+                        <span class="text-[10px] text-gray-300">• ${p.at ? new Date(p.at.seconds * 1000).toLocaleDateString('bn-BD') : 'নতুন'}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent ml-auto">${p.category || 'সাধারণ'}</span>
                     </div>
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-1">
-                            <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
-                            <span class="text-[11px] font-bold text-gray-500">${p.name || 'Anonymous'}</span>
-                            <span class="text-[10px] text-gray-400">• ${p.at ? new Date(p.at.seconds * 1000).toLocaleDateString('bn-BD') : 'নতুন'}</span>
-                        </div>
-                        <p class="text-sm dark:text-gray-200 line-clamp-2">${p.msg || ''}</p>
-                    </div>
+                    <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${p.msg || ''}</p>
                 </div>
             </div>`).join('');
     };
 
+    window.openDetails = (id) => { if(id) window.location.href = `post.html?id=${id}`; };
+
     window.setFilter = (f) => {
         currentFilter = f;
-        // Update Mobile UI
-        document.querySelectorAll('.filter-btn-mob').forEach(btn => {
-            btn.classList.toggle('filter-active', btn.id === `filter-${f}`);
-            btn.classList.toggle('text-gray-500', btn.id !== `filter-${f}`);
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('filter-active', 'text-accent', 'border-accent');
+            btn.classList.add('text-gray-500', 'border-transparent');
         });
-        // Update Side UI
-        document.querySelectorAll('.filter-btn-side').forEach(btn => {
-            const isActive = btn.id === `side-filter-${f}`;
-            btn.classList.toggle('bg-accent/10', isActive);
-            btn.classList.toggle('text-accent', isActive);
-        });
+        const activeBtn = document.getElementById(`filter-${f}`);
+        activeBtn.classList.add('filter-active', 'text-accent', 'border-accent');
+        activeBtn.classList.remove('text-gray-500', 'border-transparent');
         render();
     };
 
-    window.openDetails = (id) => { if(id) window.location.href = `post.html?id=${id}`; };
+    window.handleFabClick = () => { window.location.href = 'create-post.html'; };
     window.googleLogin = () => signInWithPopup(auth, provider);
     window.googleLogout = () => signOut(auth).then(() => location.reload());
     window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('dropdown-active'); };
     window.closeAllDropdowns = () => document.getElementById('user-dropdown')?.classList.remove('dropdown-active');
-    window.handleFabClick = () => { window.location.href = 'create-post.html'; };
+    window.openProfile = (uid) => { window.location.href = `profile.html?uid=${uid}`; };
 
     const setDarkMode = (dark) => {
         document.documentElement.classList.toggle('dark', dark);
