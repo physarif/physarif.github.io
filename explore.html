@@ -24,33 +24,49 @@
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
         .forum-card { 
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
-            border-left: 3px solid transparent; 
+            transition: all 0.2s ease; 
+            border-left: 4px solid transparent; 
         }
-        .forum-card:hover { border-left-color: #3498db; }
-        .search-input:focus { ring: 2px; ring-color: #3498db; outline: none; }
+        .forum-card:hover { 
+            border-left-color: #3498db;
+            transform: translateX(4px);
+        }
+        .highlight { background-color: rgba(52, 152, 219, 0.2); color: #3498db; font-weight: 600; padding: 0 2px; border-radius: 2px; }
+        .search-input:focus { border-color: #3498db; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); outline: none; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 min-h-screen">
 
-<main class="max-w-2xl mx-auto px-4 py-6">
-    <div class="flex items-center gap-4 mb-6">
-        <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+<main class="max-w-2xl mx-auto px-4 py-8">
+    <div class="flex items-center gap-4 mb-8">
+        <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-200 dark:hover:bg-darkCard rounded-full transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
-        <h1 class="text-xl font-bold">অনুসন্ধান</h1>
+        <h1 class="text-2xl font-bold tracking-tight">অনুসন্ধান</h1>
     </div>
 
-    <div class="relative mb-8">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+    <div class="relative mb-6">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
         </div>
-        <input type="text" id="search-input" placeholder="লেখকের নাম বা লেখা খুঁজুন..." 
-            class="search-input w-full pl-10 pr-4 py-3 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl shadow-sm text-sm">
+        <input type="text" id="search-input" placeholder="লেখকের নাম বা কী-ওয়ার্ড দিয়ে খুঁজুন..." 
+            class="search-input w-full pl-12 pr-4 py-4 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-2xl shadow-sm text-base transition-all">
     </div>
 
+    <div id="history-section" class="mb-6 hidden">
+        <h2 class="text-xs font-semibold uppercase text-gray-500 mb-3 px-1">সাম্প্রতিক অনুসন্ধান</h2>
+        <div id="history-chips" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <div id="result-stats" class="mb-4 px-1 text-xs text-gray-500 hidden"></div>
+
     <div id="results-container" class="space-y-4">
-        <div class="text-center py-10 text-gray-400 text-sm">কিছু লিখে অনুসন্ধান শুরু করুন</div>
+        <div class="text-center py-20">
+            <div class="bg-gray-100 dark:bg-darkCard w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            </div>
+            <p class="text-gray-500">আপনার পছন্দের লেখা বা লেখক খুঁজুন</p>
+        </div>
     </div>
 </main>
 
@@ -72,18 +88,30 @@
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
     let allPosts = [];
+    const searchInput = document.getElementById('search-input');
+    const container = document.getElementById('results-container');
+    const stats = document.getElementById('result-stats');
+    const historySection = document.getElementById('history-section');
+    const historyChips = document.getElementById('history-chips');
+
+    // Fetch Data
     onSnapshot(collection(db, BASE_PATH), (snapshot) => {
         allPosts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
                     .filter(p => !p.parentId);
     });
 
-    const searchInput = document.getElementById('search-input');
-    const container = document.getElementById('results-container');
-
+    // Handle Search Input
     searchInput.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase().trim();
+        
+        if (term.length === 0) {
+            showDefault();
+            return;
+        }
+
         if (term.length < 2) {
-            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">কমপক্ষে ২ টি অক্ষর লিখুন</div>`;
+            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm italic">কমপক্ষে ২ টি অক্ষর লিখুন...</div>`;
+            stats.classList.add('hidden');
             return;
         }
 
@@ -92,30 +120,84 @@
             (p.name && p.name.toLowerCase().includes(term))
         );
 
-        renderResults(filtered);
+        renderResults(filtered, term);
     });
 
-    function renderResults(posts) {
+    function renderResults(posts, term) {
+        historySection.classList.add('hidden');
         if (posts.length === 0) {
-            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">কোনো ফলাফল পাওয়া যায়নি</div>`;
+            container.innerHTML = `<div class="text-center py-20 text-gray-400">কোনো ফলাফল পাওয়া যায়নি!</div>`;
+            stats.classList.add('hidden');
             return;
         }
 
-        container.innerHTML = posts.map(p => `
-            <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm cursor-pointer" onclick="location.href='post.html?id=${p.id}'">
-                <div class="flex items-center gap-2 mb-2">
-                    <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
-                    <span class="text-[11px] font-bold text-gray-500 uppercase">${p.name || 'Anonymous'}</span>
+        stats.innerText = `মোট ${posts.length}টি ফলাফল পাওয়া গেছে`;
+        stats.classList.remove('hidden');
+
+        container.innerHTML = posts.map(p => {
+            const highlightedMsg = highlightText(p.msg || '', term);
+            const highlightedName = highlightText(p.name || 'Anonymous', term);
+
+            return `
+                <div class="forum-card bg-white dark:bg-darkCard p-5 rounded-2xl border dark:border-darkBorder shadow-sm cursor-pointer" 
+                     onclick="saveSearch('${term}'); location.href='post.html?id=${p.id}'">
+                    <div class="flex items-center gap-3 mb-3">
+                        <img src="${p.photoURL || 'https://ui-avatars.com/api/?name=' + p.name}" class="w-6 h-6 rounded-full border dark:border-gray-700">
+                        <span class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">${highlightedName}</span>
+                    </div>
+                    <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${highlightedMsg}</p>
                 </div>
-                <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-2">${p.msg || ''}</p>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
-    // Auto Dark Mode
+    function highlightText(text, term) {
+        if (!term) return text;
+        const regex = new RegExp(`(${term})`, 'gi');
+        return text.replace(regex, `<span class="highlight">$1</span>`);
+    }
+
+    function showDefault() {
+        stats.classList.add('hidden');
+        container.innerHTML = `
+            <div class="text-center py-20 text-gray-400">
+                <p>আপনার পছন্দের লেখা বা লেখক খুঁজুন</p>
+            </div>
+        `;
+        renderHistory();
+    }
+
+    // Search History Logic
+    window.saveSearch = (term) => {
+        let history = JSON.parse(localStorage.getItem('search_history') || '[]');
+        if (!history.includes(term)) {
+            history.unshift(term);
+            localStorage.setItem('search_history', JSON.stringify(history.slice(0, 5)));
+        }
+    };
+
+    function renderHistory() {
+        const history = JSON.parse(localStorage.getItem('search_history') || '[]');
+        if (history.length > 0) {
+            historySection.classList.remove('hidden');
+            historyChips.innerHTML = history.map(h => `
+                <button onclick="fillSearch('${h}')" class="px-3 py-1.5 bg-gray-200 dark:bg-darkBorder rounded-full text-xs hover:bg-accent hover:text-white transition-colors">
+                    ${h}
+                </button>
+            `).join('');
+        }
+    }
+
+    window.fillSearch = (term) => {
+        searchInput.value = term;
+        searchInput.dispatchEvent(new Event('input'));
+    };
+
+    // Auto Dark Mode & Initial Load
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark');
     }
+    renderHistory();
 </script>
 </body>
 </html>
