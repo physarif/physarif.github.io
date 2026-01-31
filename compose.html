@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নতুন লেখা - লেখক ফোরাম</title>
+    <title>নতুন লেখা - CKEditor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -24,16 +24,21 @@
     </script>
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
-        .ql-container { font-family: 'Hind Siliguri', sans-serif; font-size: 1.125rem; border: none !important; }
-        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; border-radius: 12px 12px 0 0; padding: 10px !important; }
-        .dark .ql-editor.ql-blank::before { color: #9ca3af; }
-        .dark .ql-snow .ql-stroke { stroke: #fff; }
-        .dark .ql-snow .ql-fill { fill: #fff; }
-        .dark .ql-snow .ql-picker { color: #fff; }
-        .ql-editor { min-height: 300px; }
-        .ql-video, .ql-editor img { width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
-        /* টুলবার ডিজাইন একটু উন্নত করা */
-        .ql-formats { margin-right: 15px !important; }
+        .ck-editor__editable { min-height: 300px !important; border-radius: 0 0 12px 12px !important; }
+        .ck-toolbar { border-radius: 12px 12px 0 0 !important; border: 1px solid #2d333b !important; }
+        .dark .ck-editor__editable { background-color: #15191c !important; color: white !important; border-color: #2d333b !important; }
+        .dark .ck-toolbar { background-color: #15191c !important; border-color: #2d333b !important; }
+        .dark .ck-toolbar__items { background-color: #15191c !important; }
+        .dark .ck.ck-button { color: white !important; cursor: pointer; }
+        .dark .ck.ck-button:hover { background: #2d333b !important; }
+        .dark .ck.ck-button.ck-on { background: #3498db !important; }
+        
+        /* টুলবার আইটেমগুলোকে দুই পাশে সরানোর জন্য */
+        .ck-toolbar__items { 
+            display: flex !important; 
+            justify-content: space-between !important; 
+            width: 100%;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -53,16 +58,16 @@
     </div>
 
     <div class="mb-4">
-        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent">
+        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কোডিং #JavaScript)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent">
     </div>
 
-    <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden">
+    <div id="editor-container" class="bg-white dark:bg-darkCard rounded-xl overflow-hidden">
         <div id="editor"></div>
     </div>
 
     <div class="flex justify-between items-center mt-3 px-1">
         <span id="draft-status" class="text-[11px] font-medium text-green-500"></span>
-        <span id="char-count" class="text-xs text-gray-400">০ / ২০০০ শব্দ</span>
+        <span id="char-count" class="text-xs text-gray-400">০ শব্দ</span>
     </div>
 </main>
 
@@ -80,14 +85,6 @@
     </div>
 </div>
 
-<div id="loading-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-[100]">
-    <div class="bg-white dark:bg-darkCard p-8 rounded-2xl text-center shadow-2xl">
-        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-accent mx-auto mb-4"></div>
-        <p class="text-sm font-medium">পোস্ট হচ্ছে...</p>
-    </div>
-</div>
-
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
@@ -107,103 +104,63 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    // Toolbar logic: Video button in a separate array for a new line
-    const quill = new Quill('#editor', {
-        theme: 'snow',
-        placeholder: 'আপনার মনের কথা এখানে লিখুন...',
-        modules: {
-            toolbar: [
-                ['bold', 'italic', 'underline', 'blockquote'],
-                ['link', 'image'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['video'] // This will push it to a new line if it wraps
-            ]
-        }
-    });
-
-    const toolbar = quill.getModule('toolbar');
-    
-    toolbar.addHandler('link', function(value) {
-        if (value) {
-            const href = prompt('লিংক (URL) দিন:');
-            if(href) this.quill.format('link', href);
-        } else {
-            this.quill.format('link', false);
-        }
-    });
-
-    toolbar.addHandler('image', () => {
-        const range = quill.getSelection();
-        const value = prompt('ইমেজ ইউআরএল (URL) দিন:');
-        if (value) {
-            quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
-        }
-    });
-
+    let editorInstance;
     let currentUser = null;
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-            const savedDraft = localStorage.getItem('post_draft');
-            if (savedDraft) quill.root.innerHTML = savedDraft;
-        } else {
-            alert('পোস্ট করতে আগে লগইন করুন!');
-            location.href = 'index.html';
-        }
-    });
 
-    quill.on('text-change', () => {
-        localStorage.setItem('post_draft', quill.root.innerHTML);
-        document.getElementById('char-count').innerText = `${quill.getText().trim().length} / ২০০০ শব্দ`;
-        document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
-        setTimeout(() => document.getElementById('draft-status').innerText = "সেভ হয়েছে", 1000);
+    ClassicEditor
+        .create(document.querySelector('#editor'), {
+            toolbar: {
+                items: [
+                    // বাম পাশে ফরম্যাটিং
+                    'bold', 'italic', 'underline', 'blockQuote', 'numberedList', 'bulletedList', 'codeBlock', '|',
+                    // ডান পাশে মিডিয়া এবং লিঙ্ক
+                    'mediaEmbed', 'link'
+                ],
+                shouldNotGroupWhenFull: true
+            }
+        })
+        .then(editor => {
+            editorInstance = editor;
+            const savedDraft = localStorage.getItem('ck_draft');
+            if (savedDraft) editor.setData(savedDraft);
+            editor.model.document.on('change:data', () => {
+                localStorage.setItem('ck_draft', editor.getData());
+                document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
+                setTimeout(() => document.getElementById('draft-status').innerText = "সেভ হয়েছে", 1000);
+            });
+        });
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) currentUser = user;
     });
 
     document.getElementById('preview-btn').onclick = () => {
-        document.getElementById('preview-content').innerHTML = quill.root.innerHTML;
-        const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
-        document.getElementById('preview-tags').innerText = tags.join(' ');
+        if (!editorInstance) return;
+        document.getElementById('preview-content').innerHTML = editorInstance.getData();
         document.getElementById('preview-modal').classList.remove('hidden');
     };
 
-    const submitBtn = document.getElementById('submit-post');
-    const loader = document.getElementById('loading-overlay');
-
-    submitBtn.onclick = async () => {
-        const msgHtml = quill.root.innerHTML;
-        const msgText = quill.getText().trim();
+    document.getElementById('submit-post').onclick = async () => {
+        if (!editorInstance || !currentUser) return;
+        const msgHtml = editorInstance.getData();
         const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
-
-        if (!msgText && !msgHtml.includes('<img')) { alert('কিছু তো লিখুন!'); return; }
-        if (!currentUser) return;
-
-        loader.classList.remove('hidden');
-
         try {
             await addDoc(collection(db, BASE_PATH), {
                 msg: msgHtml,
                 hashtags: tags,
                 name: currentUser.displayName,
-                email: currentUser.email,
                 uid: currentUser.uid,
-                photoURL: currentUser.photoURL,
                 at: serverTimestamp(),
-                votes: 0,
                 status: 'pending'
             });
-            localStorage.removeItem('post_draft');
-            alert('সফলভাবে পাবলিশ করা হয়েছে!');
+            localStorage.removeItem('ck_draft');
+            alert('পাবলিশ হয়েছে!');
             location.href = 'index.html';
-        } catch (error) {
-            alert('ত্রুটি হয়েছে, আবার চেষ্টা করুন।');
-        } finally {
-            loader.classList.add('hidden');
-        }
+        } catch (e) { alert('ত্রুটি হয়েছে'); }
     };
 
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-    }
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
 </script>
 </body>
 </html>
+
