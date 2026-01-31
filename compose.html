@@ -31,7 +31,7 @@
         .dark .ql-snow .ql-fill { fill: #fff; }
         .dark .ql-snow .ql-picker { color: #fff; }
         .ql-editor { min-height: 300px; }
-        .ql-video { width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; }
+        .ql-video, .ql-editor img { width: 100%; max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -51,10 +51,14 @@
     </div>
 
     <div class="mb-4">
-        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition-all">
+        <input type="text" id="post-title" placeholder="পোস্টের শিরোনাম দিন" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-lg font-bold outline-none focus:border-accent transition-all shadow-sm">
     </div>
 
-    <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden">
+    <div class="mb-4">
+        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition-all shadow-sm">
+    </div>
+
+    <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden shadow-sm">
         <div id="editor"></div>
     </div>
 
@@ -72,7 +76,8 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <div id="preview-content" class="prose dark:prose-invert max-w-none"></div>
+        <div id="preview-content" class="prose dark:prose-invert max-w-none">
+        </div>
         <div id="preview-tags" class="mt-4 flex flex-wrap gap-2 font-medium text-accent"></div>
         <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-8 w-full py-3 bg-accent text-white rounded-xl font-bold">ফিরে যান</button>
     </div>
@@ -112,7 +117,7 @@
             toolbar: [
                 ['bold', 'italic', 'underline', 'blockquote'],
                 [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['link', 'video', 'clean']
+                ['link', 'image', 'video', 'clean']
             ]
         }
     });
@@ -123,11 +128,17 @@
         if (user) {
             currentUser = user;
             const savedDraft = localStorage.getItem('post_draft');
+            const savedTitle = localStorage.getItem('post_title_draft');
             if (savedDraft) quill.root.innerHTML = savedDraft;
+            if (savedTitle) document.getElementById('post-title').value = savedTitle;
         } else {
             alert('পোস্ট করতে আগে লগইন করুন!');
             location.href = 'index.html';
         }
+    });
+
+    document.getElementById('post-title').addEventListener('input', (e) => {
+        localStorage.setItem('post_title_draft', e.target.value);
     });
 
     quill.on('text-change', () => {
@@ -138,8 +149,14 @@
     });
 
     document.getElementById('preview-btn').onclick = () => {
-        document.getElementById('preview-content').innerHTML = quill.root.innerHTML;
+        const title = document.getElementById('post-title').value || "শিরোনামহীন";
+        const content = quill.root.innerHTML;
         const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
+        
+        document.getElementById('preview-content').innerHTML = `
+            <h1 class="text-2xl font-bold mb-4">${title}</h1>
+            <div>${content}</div>
+        `;
         document.getElementById('preview-tags').innerText = tags.join(' ');
         document.getElementById('preview-modal').classList.remove('hidden');
     };
@@ -148,17 +165,20 @@
     const loader = document.getElementById('loading-overlay');
 
     submitBtn.onclick = async () => {
+        const title = document.getElementById('post-title').value.trim();
         const msgHtml = quill.root.innerHTML;
         const msgText = quill.getText().trim();
         const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
 
-        if (!msgText) { alert('কিছু তো লিখুন!'); return; }
+        if (!title) { alert('একটি শিরোনাম দিন!'); return; }
+        if (!msgText || msgText === "") { alert('কিছু তো লিখুন!'); return; }
         if (!currentUser) return;
 
         loader.classList.remove('hidden');
 
         try {
             await addDoc(collection(db, BASE_PATH), {
+                title: title,
                 msg: msgHtml,
                 hashtags: tags,
                 name: currentUser.displayName,
@@ -169,10 +189,14 @@
                 votes: 0,
                 status: 'pending'
             });
+            
             localStorage.removeItem('post_draft');
+            localStorage.removeItem('post_title_draft');
+            
             alert('সফলভাবে পাবলিশ করা হয়েছে!');
             location.href = 'index.html';
         } catch (error) {
+            console.error("Error adding document: ", error);
             alert('ত্রুটি হয়েছে, আবার চেষ্টা করুন।');
         } finally {
             loader.classList.add('hidden');
