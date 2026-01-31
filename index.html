@@ -40,6 +40,8 @@
         .dropdown-menu { display: none; position: absolute; right: 0; top: 100%; margin-top: 0.5rem; width: 160px; background: white; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 200; }
         .dark .dropdown-menu { background: #15191c; border-color: #2d333b; }
         .dropdown-active { display: block !important; }
+        /* কাস্টম স্ক্রলবার যাতে ক্যাটাগরি ক্লিকের সময় লেআউট না লাফায় */
+        aside .overflow-x-auto { -webkit-overflow-scrolling: touch; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100" onclick="closeAllDropdowns(event)">
@@ -340,8 +342,11 @@
         
         if (filter === 'category' && category) {
             document.getElementById('filter-categories').classList.add('filter-active');
-            document.getElementById('category-dropdown').classList.add('hidden');
-            document.getElementById('cat-arrow').style.transform = 'rotate(0deg)';
+            // মোবাইল বা ডেস্কটপে ড্রপডাউন বন্ধ করার সময় লেআউট যাতে না লাফায়
+            setTimeout(() => {
+                document.getElementById('category-dropdown').classList.add('hidden');
+                document.getElementById('cat-arrow').style.transform = 'rotate(0deg)';
+            }, 50);
         } else {
             const activeBtn = document.getElementById(`filter-${filter}`);
             if(activeBtn) activeBtn.classList.add('filter-active');
