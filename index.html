@@ -381,7 +381,8 @@
             await addDoc(collection(db, BASE_PATH), {
                 name: currentUser.displayName, msg, parentId: null, votes: 0,
                 photoURL: currentUser.photoURL, userId: currentUser.uid, at: serverTimestamp(),
-                status: isAdmin ? 'approved' : 'pending', isFeatured: false
+                status: isAdmin ? 'approved' : 'pending', isFeatured: false,
+                upvoters: [], downvoters: []
             });
             showToast(isAdmin ? 'পাবলিশ হয়েছে' : 'অনুমোদনের অপেক্ষায়...');
         }
@@ -525,13 +526,21 @@
 
         if(posts.length === 0) { container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`; return; }
 
-        container.innerHTML = posts.map(c => `
+        container.innerHTML = posts.map(c => {
+            const isUpvoted = c.upvoters && currentUser && c.upvoters.includes(currentUser.uid);
+            const isDownvoted = c.downvoters && currentUser && c.downvoters.includes(currentUser.uid);
+            
+            return `
             <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border ${c.isFeatured ? 'featured-card border-featured' : 'dark:border-darkBorder'}">
                 <div class="flex gap-4">
                     <div class="flex flex-col items-center gap-2 bg-gray-50 dark:bg-darkBg p-2 rounded-lg min-w-[42px] h-fit">
-                        <button onclick="handleVote('${c.id}', 1)" class="text-gray-400 hover:text-accent"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
-                        <span class="font-bold text-xs text-accent">${toBN(c.votes || 0)}</span>
-                        <button onclick="handleVote('${c.id}', -1)" class="text-gray-400 hover:text-red-500"><svg class="w-5 h-5 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
+                        <button onclick="handleVote('${c.id}', 1)" class="${isUpvoted ? 'text-accent' : 'text-gray-400'} hover:text-accent">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg>
+                        </button>
+                        <span class="font-bold text-xs ${isUpvoted ? 'text-accent' : (isDownvoted ? 'text-red-500' : 'text-gray-500')}">${toBN(c.votes || 0)}</span>
+                        <button onclick="handleVote('${c.id}', -1)" class="${isDownvoted ? 'text-red-500' : 'text-gray-400'} hover:text-red-500">
+                            <svg class="w-5 h-5 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg>
+                        </button>
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <div class="flex items-center justify-between mb-1 text-[10px] font-bold text-gray-400 uppercase">
@@ -539,8 +548,7 @@
                                 <img src="${c.photoURL}" class="w-4 h-4 rounded-full cursor-pointer" onclick="openProfile('${c.userId}')">
                                 <span class="user-link" onclick="openProfile('${c.userId}')">${c.name}</span>
                                 <span> • ${formatTime(c.at)}</span>
-${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}
-
+                                ${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}
                             </div>
                         </div>
                         <div class="cursor-pointer" onclick="openDetails('${c.id}')">
@@ -548,7 +556,8 @@ ${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পা�
                         </div>
                     </div>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
 
     function updateDetails() {
@@ -563,12 +572,11 @@ ${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পা�
         document.getElementById('edit-post-btn').classList.toggle('hidden', !(isAdmin || isOwner));
         
         // Approve বাটন কন্ট্রোল
-const approveBtn = document.getElementById('admin-approve-btn');
-if(approveBtn) {
-    approveBtn.classList.toggle('hidden', !(isAdmin && post.status === 'pending'));
-}
+        const approveBtn = document.getElementById('admin-approve-btn');
+        if(approveBtn) {
+            approveBtn.classList.toggle('hidden', !(isAdmin && post.status === 'pending'));
+        }
 
-        
         const featureIcon = document.getElementById('feature-icon-svg');
         featureIcon.setAttribute('fill', post.isFeatured ? 'currentColor' : 'none');
 
@@ -586,9 +594,9 @@ if(approveBtn) {
                             <div class="flex justify-between items-start mb-1">
                                 
                                 <div class="flex items-center gap-2">
-    <div class="font-bold text-[10px] user-link" onclick="openProfile('${comment.userId}')">${comment.name}</div>
-    ${comment.edited ? `<span class="text-[8px] text-accent italic">(সম্পাদিত)</span>` : ''}
-</div>
+                                    <div class="font-bold text-[10px] user-link" onclick="openProfile('${comment.userId}')">${comment.name}</div>
+                                    ${comment.edited ? `<span class="text-[8px] text-accent italic">(সম্পাদিত)</span>` : ''}
+                                </div>
 
                                 <div class="flex gap-2">
                                     ${isAdmin ? `<button onclick="adminDeleteComment('${comment.id}')" class="text-red-400 text-[9px] font-bold">Delete</button>` : ''}
@@ -621,61 +629,60 @@ if(approveBtn) {
 
     window.prepareReply = (id, userName) => { replyingToId = id; replyingToName = userName; const tagUi = document.getElementById('reply-tag-ui'); document.getElementById('replying-to-text').innerText = `${userName} কে উত্তর দিচ্ছেন`; tagUi.classList.remove('hidden'); document.getElementById('reply-input').focus(); };
     window.cancelReplyTag = () => { replyingToId = null; replyingToName = null; editCommentId = null; document.getElementById('reply-tag-ui').classList.add('hidden'); document.getElementById('reply-send-btn').innerText = "পাঠান"; };
-    window.handleVote = async (id, val) => {
-    if (!currentUser) return googleLogin();
-
-    const postRef = doc(db, BASE_PATH, id);
-    const postSnap = await getDoc(postRef);
-    if (!postSnap.exists()) return;
-
-    const data = postSnap.data();
-    const uid = currentUser.uid;
     
-    let upvoters = data.upvoters || [];
-    let downvoters = data.downvoters || [];
-    let currentVotes = data.votes || 0;
+    window.handleVote = async (id, val) => {
+        if (!currentUser) return googleLogin();
 
-    if (val === 1) { 
-        if (upvoters.includes(uid)) {
-            upvoters = upvoters.filter(item => item !== uid);
-            currentVotes -= 1;
-        } else {
-            if (downvoters.includes(uid)) {
-                downvoters = downvoters.filter(item => item !== uid);
-                currentVotes += 2; 
-            } else {
-                currentVotes += 1;
-            }
-            upvoters.push(uid);
-        }
-    } else if (val === -1) { 
-        if (downvoters.includes(uid)) {
-            downvoters = downvoters.filter(item => item !== uid);
-            currentVotes += 1;
-        } else {
+        const postRef = doc(db, BASE_PATH, id);
+        const postSnap = await getDoc(postRef);
+        if (!postSnap.exists()) return;
+
+        const data = postSnap.data();
+        const uid = currentUser.uid;
+        
+        let upvoters = data.upvoters || [];
+        let downvoters = data.downvoters || [];
+        let currentVotes = data.votes || 0;
+
+        if (val === 1) { 
             if (upvoters.includes(uid)) {
                 upvoters = upvoters.filter(item => item !== uid);
-                currentVotes -= 2; 
-            } else {
                 currentVotes -= 1;
+            } else {
+                if (downvoters.includes(uid)) {
+                    downvoters = downvoters.filter(item => item !== uid);
+                    currentVotes += 2; 
+                } else {
+                    currentVotes += 1;
+                }
+                upvoters.push(uid);
             }
-            downvoters.push(uid);
+        } else if (val === -1) { 
+            if (downvoters.includes(uid)) {
+                downvoters = downvoters.filter(item => item !== uid);
+                currentVotes += 1;
+            } else {
+                if (upvoters.includes(uid)) {
+                    upvoters = upvoters.filter(item => item !== uid);
+                    currentVotes -= 2; 
+                } else {
+                    currentVotes -= 1;
+                }
+                downvoters.push(uid);
+            }
         }
-    }
 
-    try {
-        await updateDoc(postRef, {
-            votes: currentVotes,
-            upvoters: upvoters,
-            downvoters: downvoters
-        });
-    } catch (e) {
-        console.error("Error voting:", e);
-    }
-};
+        try {
+            await updateDoc(postRef, {
+                votes: currentVotes,
+                upvoters: upvoters,
+                downvoters: downvoters
+            });
+        } catch (e) {
+            console.error("Error voting:", e);
+        }
+    };
 
-
-    
     window.openDetails = (id) => { activeThreadId = id; cancelReplyTag(); document.getElementById('details-view').style.display = 'block'; updateDetails(); updateBookmarkIcon(); };
     window.closeView = () => { document.getElementById('details-view').style.display = 'none'; activeThreadId = null; };
 
