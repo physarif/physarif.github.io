@@ -756,6 +756,21 @@
     };
     setDarkMode(localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches));
     document.getElementById('theme-toggle').onclick = () => setDarkMode(!document.documentElement.classList.contains('dark'));
+// পেজ লোড হওয়ার সময় URL এ কোনো পোস্ট আইডি আছে কি না চেক করবে
+window.addEventListener('load', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('post');
+    
+    if (postId) {
+        // একটু সময় নিয়ে ডেটা লোড হলে পোস্টটি ওপেন করবে
+        setTimeout(() => {
+            if (allData.find(p => p.id === postId)) {
+                openDetails(postId);
+            }
+        }, 2000); 
+    }
+});
+
 </script>
 </body>
 </html>
