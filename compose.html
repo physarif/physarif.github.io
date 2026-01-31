@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নতুন লেখা - CKEditor</title>
+    <title>নতুন লেখা - Summernote</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
-    <script src="https://cdn.ckeditor.com/ckeditor5/40.0.0/classic/ckeditor.js"></script>
+    
+    <!-- jQuery required for Summernote -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <!-- Summernote Lite -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -24,21 +30,26 @@
     </script>
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
-        .ck-editor__editable { min-height: 300px !important; border-radius: 0 0 12px 12px !important; }
-        .ck-toolbar { border-radius: 12px 12px 0 0 !important; border: 1px solid #2d333b !important; }
-        .dark .ck-editor__editable { background-color: #15191c !important; color: white !important; border-color: #2d333b !important; }
-        .dark .ck-toolbar { background-color: #15191c !important; border-color: #2d333b !important; }
-        .dark .ck-toolbar__items { background-color: #15191c !important; }
-        .dark .ck.ck-button { color: white !important; cursor: pointer; }
-        .dark .ck.ck-button:hover { background: #2d333b !important; }
-        .dark .ck.ck-button.ck-on { background: #3498db !important; }
+        .note-editor { border-radius: 12px !important; overflow: hidden; border: 1px solid #2d333b !important; }
         
-        /* টুলবার আইটেমগুলোকে দুই পাশে সরানোর জন্য */
-        .ck-toolbar__items { 
-            display: flex !important; 
-            justify-content: space-between !important; 
-            width: 100%;
+        /* টুলবার কাস্টমাইজেশন */
+        .note-toolbar { 
+            background: #f8f9fa !important; 
+            border-bottom: 1px solid #2d333b !important; 
+            padding: 10px !important;
         }
+        
+        /* ফ্লেক্স বক্স ব্যবহার করে দুই লাইন নিশ্চিত করা */
+        .note-toolbar > .note-btn-group {
+            display: inline-block !important;
+            margin-bottom: 5px !important;
+        }
+
+        .dark .note-editor { background: #15191c !important; color: white !important; }
+        .dark .note-toolbar { background: #15191c !important; color: white !important; border-color: #2d333b !important; }
+        .dark .note-btn { background: #2d333b !important; color: white !important; border: none; }
+        .dark .note-editable { background: #15191c !important; color: white !important; }
+        .note-modal-content { border-radius: 16px !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
@@ -61,9 +72,7 @@
         <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কোডিং #JavaScript)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent">
     </div>
 
-    <div id="editor-container" class="bg-white dark:bg-darkCard rounded-xl overflow-hidden">
-        <div id="editor"></div>
-    </div>
+    <div id="editor"></div>
 
     <div class="flex justify-between items-center mt-3 px-1">
         <span id="draft-status" class="text-[11px] font-medium text-green-500"></span>
@@ -80,7 +89,6 @@
             </button>
         </div>
         <div id="preview-content" class="prose dark:prose-invert max-w-none"></div>
-        <div id="preview-tags" class="mt-4 flex flex-wrap gap-2 font-medium text-accent"></div>
         <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-8 w-full py-3 bg-accent text-white rounded-xl font-bold">ফিরে যান</button>
     </div>
 </div>
@@ -104,46 +112,51 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    let editorInstance;
     let currentUser = null;
 
-    ClassicEditor
-        .create(document.querySelector('#editor'), {
-            toolbar: {
-                items: [
-                    // বাম পাশে ফরম্যাটিং
-                    'bold', 'italic', 'underline', 'blockQuote', 'numberedList', 'bulletedList', 'codeBlock', '|',
-                    // ডান পাশে মিডিয়া এবং লিঙ্ক
-                    'mediaEmbed', 'link'
-                ],
-                shouldNotGroupWhenFull: true
+    $(document).ready(function() {
+        $('#editor').summernote({
+            placeholder: 'আপনার মনের কথা এখানে লিখুন...',
+            height: 350,
+            toolbar: [
+                // প্রথম লাইন: ফরম্যাটিং
+                ['style', ['bold', 'italic', 'underline']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['linebreak', []], // একটি খালি ব্রেক গ্রপ
+                // দ্বিতীয় লাইন: লিঙ্ক, ফটো, ভিডিও, কোড
+                ['insert', ['link', 'picture', 'video', 'codeview']]
+            ],
+            callbacks: {
+                onChange: function(contents) {
+                    localStorage.setItem('sn_draft', contents);
+                    document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
+                    setTimeout(() => document.getElementById('draft-status').innerText = "সেভ হয়েছে", 1000);
+                }
             }
-        })
-        .then(editor => {
-            editorInstance = editor;
-            const savedDraft = localStorage.getItem('ck_draft');
-            if (savedDraft) editor.setData(savedDraft);
-            editor.model.document.on('change:data', () => {
-                localStorage.setItem('ck_draft', editor.getData());
-                document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
-                setTimeout(() => document.getElementById('draft-status').innerText = "সেভ হয়েছে", 1000);
-            });
         });
+
+        // টুলবার দুই লাইনে দেখানোর জন্য সামান্য CSS হ্যাক
+        $('.note-toolbar').find('.note-btn-group:has(button[data-original-title="Link"])').before('<div style="display:block; width:100%; height:0; margin: 5px 0; border-top: 1px solid #ddd;"></div>');
+
+        const saved = localStorage.getItem('sn_draft');
+        if (saved) $('#editor').summernote('code', saved);
+    });
 
     onAuthStateChanged(auth, (user) => {
         if (user) currentUser = user;
     });
 
     document.getElementById('preview-btn').onclick = () => {
-        if (!editorInstance) return;
-        document.getElementById('preview-content').innerHTML = editorInstance.getData();
+        const content = $('#editor').summernote('code');
+        document.getElementById('preview-content').innerHTML = content;
         document.getElementById('preview-modal').classList.remove('hidden');
     };
 
     document.getElementById('submit-post').onclick = async () => {
-        if (!editorInstance || !currentUser) return;
-        const msgHtml = editorInstance.getData();
+        if (!currentUser) return;
+        const msgHtml = $('#editor').summernote('code');
         const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
+
         try {
             await addDoc(collection(db, BASE_PATH), {
                 msg: msgHtml,
@@ -153,14 +166,15 @@
                 at: serverTimestamp(),
                 status: 'pending'
             });
-            localStorage.removeItem('ck_draft');
-            alert('পাবলিশ হয়েছে!');
+            localStorage.removeItem('sn_draft');
+            alert('সফলভাবে পাবলিশ হয়েছে!');
             location.href = 'index.html';
-        } catch (e) { alert('ত্রুটি হয়েছে'); }
+        } catch (e) { 
+            alert('পাবলিশ করতে সমস্যা হয়েছে।'); 
+        }
     };
 
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
 </script>
 </body>
 </html>
-
