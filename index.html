@@ -692,22 +692,26 @@
         }
     };
     window.handleShare = async () => {
-        const post = allData.find(d => d.id === activeThreadId);
-        if(!post) return;
+    const post = allData.find(d => d.id === activeThreadId);
+    if(!post) return;
 
-        try {
-            if (navigator.share) {
-                await navigator.share({
-                    title: 'লেখক ফোরাম',
-                    text: post.msg.substring(0, 100),
-                    url: window.location.href
-                });
-            } else {
-                await navigator.clipboard.writeText(window.location.href);
-                showToast('লিংক কপি করা হয়েছে!');
-            }
-        } catch (e) { console.log(e); }
-    };
+    // বর্তমান URL এর সাথে পোস্টের ID যোগ করে একটি ইউনিক লিংক তৈরি
+    const shareUrl = window.location.origin + window.location.pathname + '?post=' + activeThreadId;
+
+    try {
+        if (navigator.share) {
+            await navigator.share({
+                title: 'লেখক ফোরাম',
+                text: post.msg.substring(0, 100) + '...',
+                url: shareUrl
+            });
+        } else {
+            await navigator.clipboard.writeText(shareUrl);
+            showToast('লিংক কপি করা হয়েছে!');
+        }
+    } catch (e) { console.log(e); }
+};
+
     
     window.openDetails = (id) => { activeThreadId = id; cancelReplyTag(); document.getElementById('details-view').style.display = 'block'; updateDetails(); updateBookmarkIcon(); };
     window.closeView = () => { document.getElementById('details-view').style.display = 'none'; activeThreadId = null; };
