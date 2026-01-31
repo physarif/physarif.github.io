@@ -58,7 +58,6 @@
                     <span id="noti-badge" class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-darkCard hidden"></span>
                 </button>
                 <div id="notification-dropdown" class="absolute right-[-50px] md:right-0 mt-2 w-[calc(100vw-32px)] sm:w-80 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-2xl shadow-2xl z-[100] hidden">
-
                     <div class="p-3 border-b dark:border-darkBorder flex items-center justify-between">
                         <span class="text-xs font-black uppercase">নোটিফিকেশন</span>
                         <button onclick="clearAllNotifications()" class="text-[10px] text-accent font-bold hover:underline">সব মুছুন</button>
@@ -155,12 +154,9 @@
                 <button id="edit-post-btn" onclick="openEditPost()" class="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/10 rounded-lg hidden">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                 </button>
-                <button id="admin-approve-btn" onclick="adminApprovePost(activeThreadId)" class="p-2 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg hidden">
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-    </svg>
-</button>
-
+                <button id="admin-approve-btn" onclick="adminApprovePost()" class="p-2 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/10 rounded-lg hidden">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </button>
                 <button id="bookmark-btn" onclick="toggleBookmark()" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-lg text-gray-400 hidden">
                     <svg id="bookmark-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
                 </button>
@@ -212,7 +208,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, increment, onSnapshot, serverTimestamp, query, where, orderBy, limit, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -243,8 +239,6 @@
     let userNotis = [];
     let replyingToId = null;
     let replyingToName = null;
-    
-    // এডিট স্টেটস
     let editPostId = null;
     let editCommentId = null;
 
@@ -272,13 +266,11 @@
         if (isUser) {
             document.getElementById('user-avatar').src = user.photoURL;
             document.getElementById('display-name').innerText = user.displayName.split(' ')[0];
-            
             onSnapshot(doc(db, BOOKMARKS_PATH, user.uid), (docSnap) => {
                 userBookmarks = docSnap.exists() ? (docSnap.data().postIds || []) : [];
                 updateBookmarkIcon();
                 if(currentFilter === 'bookmarks') render();
             });
-
             onSnapshot(collection(db, NOTI_PATH, user.uid, 'items'), (snap) => {
                 userNotis = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
                 renderNotifications();
@@ -288,17 +280,8 @@
     });
 
     window.googleLogin = async () => { try { await signInWithPopup(auth, provider); } catch(e){} };
-    
-    window.googleLogout = async () => { 
-        if(!confirm('আপনি কি লগ আউট করতে চান?')) return;
-        try { await signOut(auth); location.reload(); } catch(e){} 
-    };
-
-    window.toggleUserDropdown = (e) => {
-        e.stopPropagation();
-        document.getElementById('user-dropdown').classList.toggle('dropdown-active');
-    };
-
+    window.googleLogout = async () => { if(!confirm('আপনি কি লগ আউট করতে চান?')) return; try { await signOut(auth); location.reload(); } catch(e){} };
+    window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('dropdown-active'); };
     window.closeAllDropdowns = (e) => {
         document.getElementById('user-dropdown').classList.remove('dropdown-active');
         if (!e.target.closest('#noti-trigger') && !e.target.closest('#notification-dropdown')) {
@@ -313,12 +296,7 @@
         render();
     };
 
-    window.toggleNotifications = (e) => {
-        e.stopPropagation();
-        const drop = document.getElementById('notification-dropdown');
-        drop.classList.toggle('hidden');
-        if(!drop.classList.contains('hidden')) markNotisAsRead();
-    };
+    window.toggleNotifications = (e) => { e.stopPropagation(); const drop = document.getElementById('notification-dropdown'); drop.classList.toggle('hidden'); if(!drop.classList.contains('hidden')) markNotisAsRead(); };
 
     async function markNotisAsRead() {
         if(!currentUser) return;
@@ -340,10 +318,7 @@
         const badge = document.getElementById('noti-badge');
         const unreadCount = userNotis.filter(n => !n.read).length;
         badge.classList.toggle('hidden', unreadCount === 0);
-        if(userNotis.length === 0) {
-            list.innerHTML = `<div class="p-8 text-center text-gray-400 text-[10px]">কোনো নোটিফিকেশন নেই</div>`;
-            return;
-        }
+        if(userNotis.length === 0) { list.innerHTML = `<div class="p-8 text-center text-gray-400 text-[10px]">কোনো নোটিফিকেশন নেই</div>`; return; }
         list.innerHTML = userNotis.map(n => `
             <div onclick="openFromNoti('${n.postId}')" class="p-3 flex gap-3 hover:bg-gray-50 dark:hover:bg-darkBg border-b dark:border-darkBorder cursor-pointer ${!n.read ? 'bg-blue-50/20 dark:bg-blue-900/10' : ''}">
                 <img src="${n.senderPhoto}" class="w-8 h-8 rounded-lg">
@@ -354,93 +329,41 @@
             </div>`).join('');
     }
 
-    window.openFromNoti = (postId) => {
-        document.getElementById('notification-dropdown').classList.add('hidden');
-        openDetails(postId);
-    };
+    window.openFromNoti = (postId) => { document.getElementById('notification-dropdown').classList.add('hidden'); openDetails(postId); };
 
     function updateBadges() {
         const pCount = allData.filter(p => !p.parentId && p.status === 'pending').length;
         const pBadge = document.getElementById('pending-badge');
-        if(pBadge) {
-            pBadge.innerText = toBN(pCount); 
-            pBadge.classList.toggle('hidden', !isAdmin || pCount === 0);
-        }
+        if(pBadge) { pBadge.innerText = toBN(pCount); pBadge.classList.toggle('hidden', !isAdmin || pCount === 0); }
     }
 
-    // পোস্ট সাবমিশন এবং এডিট
     window.submitPost = async () => {
         const msg = document.getElementById('user-comment').value.trim();
         if(!msg || !currentUser) return;
-
-        if (editPostId) {
-            await updateDoc(doc(db, BASE_PATH, editPostId), { msg, edited: true });
-            showToast('সংশোধন করা হয়েছে');
-        } else {
-            await addDoc(collection(db, BASE_PATH), {
-                name: currentUser.displayName, msg, parentId: null, votes: 0,
-                photoURL: currentUser.photoURL, userId: currentUser.uid, at: serverTimestamp(),
-                status: isAdmin ? 'approved' : 'pending', isFeatured: false,
-                upvoters: [], downvoters: []
-            });
-            showToast(isAdmin ? 'পাবলিশ হয়েছে' : 'অনুমোদনের অপেক্ষায়...');
-        }
+        if (editPostId) { await updateDoc(doc(db, BASE_PATH, editPostId), { msg, edited: true }); showToast('সংশোধন করা হয়েছে'); } 
+        else { await addDoc(collection(db, BASE_PATH), { name: currentUser.displayName, msg, parentId: null, votes: 0, photoURL: currentUser.photoURL, userId: currentUser.uid, at: serverTimestamp(), status: isAdmin ? 'approved' : 'pending', isFeatured: false, upvoters: [], downvoters: [] }); showToast(isAdmin ? 'পাবলিশ হয়েছে' : 'অনুমোদনের অপেক্ষায়...'); }
         togglePostModal(false);
     };
 
-    window.openEditPost = () => {
-        const post = allData.find(p => p.id === activeThreadId);
-        if(!post) return;
-        editPostId = post.id;
-        document.getElementById('modal-title').innerText = "আলোচনা সংশোধন";
-        document.getElementById('user-comment').value = post.msg;
-        document.getElementById('post-submit-btn').innerText = "আপডেট করুন";
-        togglePostModal(true);
-    };
+    window.openEditPost = () => { const post = allData.find(p => p.id === activeThreadId); if(!post) return; editPostId = post.id; document.getElementById('modal-title').innerText = "আলোচনা সংশোধন"; document.getElementById('user-comment').value = post.msg; document.getElementById('post-submit-btn').innerText = "আপডেট করুন"; togglePostModal(true); };
 
-    // মন্তব্য সাবমিশন এবং এডিট
     window.postReply = async () => {
         const rawMsg = document.getElementById('reply-input').value.trim();
         if(!rawMsg || !currentUser || !activeThreadId) return;
-
-        if (editCommentId) {
-            await updateDoc(doc(db, BASE_PATH, editCommentId), { msg: rawMsg, edited: true });
-            showToast('মন্তব্য সংশোধন হয়েছে');
-            cancelCommentEdit();
-        } else {
+        if (editCommentId) { await updateDoc(doc(db, BASE_PATH, editCommentId), { msg: rawMsg, edited: true }); showToast('মন্তব্য সংশোধন হয়েছে'); cancelCommentEdit(); } 
+        else {
             const parentPost = allData.find(d => d.id === activeThreadId);
-            await addDoc(collection(db, BASE_PATH), {
-                name: currentUser.displayName, msg: rawMsg, 
-                parentId: activeThreadId, replyToId: replyingToId || null,
-                replyToName: replyingToName || null,
-                photoURL: currentUser.photoURL, userId: currentUser.uid, at: serverTimestamp()
-            });
-            if(replyingToId) {
-                const targetComment = allData.find(d => d.id === replyingToId);
-                if(targetComment) addNotification(targetComment.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'reply');
-            } else {
-                addNotification(parentPost.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'comment');
-            }
+            await addDoc(collection(db, BASE_PATH), { name: currentUser.displayName, msg: rawMsg, parentId: activeThreadId, replyToId: replyingToId || null, replyToName: replyingToName || null, photoURL: currentUser.photoURL, userId: currentUser.uid, at: serverTimestamp() });
+            if(replyingToId) { const targetComment = allData.find(d => d.id === replyingToId); if(targetComment) addNotification(targetComment.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'reply'); } 
+            else { addNotification(parentPost.userId, currentUser.displayName, currentUser.photoURL, activeThreadId, rawMsg, 'comment'); }
             showToast('মন্তব্য করা হয়েছে');
         }
         document.getElementById('reply-input').value = '';
         cancelReplyTag();
     };
 
-    window.prepareCommentEdit = (id, msg) => {
-        editCommentId = id;
-        document.getElementById('reply-input').value = msg;
-        document.getElementById('replying-to-text').innerText = "মন্তব্য সংশোধন করছেন...";
-        document.getElementById('reply-tag-ui').classList.remove('hidden');
-        document.getElementById('reply-send-btn').innerText = "আপডেট";
-        document.getElementById('reply-input').focus();
-    };
-
-    window.cancelCommentEdit = () => {
-        editCommentId = null;
-        document.getElementById('reply-send-btn').innerText = "পাঠান";
-        cancelReplyTag();
-    };
+    window.prepareCommentEdit = (id, msg) => { editCommentId = id; document.getElementById('reply-input').value = msg; document.getElementById('replying-to-text').innerText = "মন্তব্য সংশোধন করছেন..."; document.getElementById('reply-tag-ui').classList.remove('hidden'); document.getElementById('reply-send-btn').innerText = "আপডেট"; document.getElementById('reply-input').focus(); };
+    window.cancelCommentEdit = () => { editCommentId = null; document.getElementById('reply-send-btn').innerText = "পাঠান"; cancelReplyTag(); };
 
     window.openProfile = (uid) => {
         const userDocs = allData.filter(d => d.userId === uid);
@@ -455,115 +378,64 @@
                 <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">${uid === ADMIN_EMAIL ? 'Admin' : 'Member'}</p>
             </div>
             <div class="grid grid-cols-3 gap-3 mb-8">
-                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder">
-                    <div class="text-lg font-black text-accent">${toBN(userPosts.length)}</div>
-                    <div class="text-[9px] text-gray-400 font-bold uppercase">আলোচনা</div>
-                </div>
-                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder">
-                    <div class="text-lg font-black text-accent">${toBN(userComments.length)}</div>
-                    <div class="text-[9px] text-gray-400 font-bold uppercase">মন্তব্য</div>
-                </div>
-                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder">
-                    <div class="text-lg font-black text-accent">${toBN(totalVotes)}</div>
-                    <div class="text-[9px] text-gray-400 font-bold uppercase">ভোট</div>
-                </div>
+                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder"><div class="text-lg font-black text-accent">${toBN(userPosts.length)}</div><div class="text-[9px] text-gray-400 font-bold uppercase">আলোচনা</div></div>
+                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder"><div class="text-lg font-black text-accent">${toBN(userComments.length)}</div><div class="text-[9px] text-gray-400 font-bold uppercase">মন্তব্য</div></div>
+                <div class="bg-gray-50 dark:bg-darkCard p-4 rounded-xl text-center border dark:border-darkBorder"><div class="text-lg font-black text-accent">${toBN(totalVotes)}</div><div class="text-[9px] text-gray-400 font-bold uppercase">ভোট</div></div>
             </div>
-            <div class="space-y-3">
-                ${userPosts.slice(0, 10).map(p => `<div onclick="closeProfile(); openDetails('${p.id}')" class="p-3 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl cursor-pointer hover:border-accent"><p class="text-xs font-semibold line-clamp-2">${p.msg}</p><span class="text-[9px] text-gray-400 font-bold">${formatTime(p.at)}</span></div>`).join('') || '<p class="text-center text-gray-400 text-xs py-10">কোনো আলোচনা নেই</p>'}
-            </div>`;
+            <div class="space-y-3">${userPosts.slice(0, 10).map(p => `<div onclick="closeProfile(); openDetails('${p.id}')" class="p-3 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl cursor-pointer hover:border-accent"><p class="text-xs font-semibold line-clamp-2">${p.msg}</p><span class="text-[9px] text-gray-400 font-bold">${formatTime(p.at)}</span></div>`).join('') || '<p class="text-center text-gray-400 text-xs py-10">কোনো আলোচনা নেই</p>'}</div>`;
         document.getElementById('profile-view').style.display = 'block';
     };
 
     window.closeProfile = () => { document.getElementById('profile-view').style.display = 'none'; };
 
-    window.adminApprovePost = async (id) => {
-        if(!isAdmin || !id) return;
+    // ফিক্সড এডমিন অ্যাপ্রুভ ফাংশন
+    window.adminApprovePost = async () => {
+        if(!isAdmin || !activeThreadId) return;
         try {
-            await updateDoc(doc(db, BASE_PATH, id), { status: 'approved' });
+            await updateDoc(doc(db, BASE_PATH, activeThreadId), { status: 'approved' });
             showToast('অ্যাপ্রুভ করা হয়েছে');
-            // ডাটাবেস আপডেট হওয়ার পর UI আপডেট নিশ্চিত করা
-            const postIndex = allData.findIndex(p => p.id === id);
-            if (postIndex > -1) {
-                allData[postIndex].status = 'approved';
-                updateDetails();
-                render();
-            }
-        } catch (e) {
-            showToast('সমস্যা হয়েছে');
-        }
+            // আপডেট দেখার জন্য রি-রেন্ডার কল করা (Firebase onSnapshot এমনিতেও করবে, তবুও সাবধানতা)
+            updateDetails();
+        } catch (e) { showToast('সমস্যা হয়েছে'); }
     };
 
-    // পোস্ট ডিলিট হ্যান্ডলার (এডমিন এবং ইউজার উভয়ের জন্য)
     window.handleDeletePost = async () => {
         const post = allData.find(d => d.id === activeThreadId);
         if(!post) return;
-        
         const isOwner = currentUser && post.userId === currentUser.uid;
         if(!isAdmin && !isOwner) return;
-
         if(!confirm('আপনি কি এই আলোচনাটি মুছে ফেলতে চান?')) return;
-        
-        try {
-            await deleteDoc(doc(db, BASE_PATH, activeThreadId));
-            showToast('আলোচনা মুছে ফেলা হয়েছে');
-            closeView();
-        } catch(e) {
-            showToast('কিছু সমস্যা হয়েছে');
-        }
+        try { await deleteDoc(doc(db, BASE_PATH, activeThreadId)); showToast('আলোচনা মুছে ফেলা হয়েছে'); closeView(); } catch(e) { showToast('কিছু সমস্যা হয়েছে'); }
     };
 
-    window.adminToggleFeature = async () => {
-        const post = allData.find(d => d.id === activeThreadId);
-        await updateDoc(doc(db, BASE_PATH, activeThreadId), { isFeatured: !post.isFeatured });
-    };
-
-    window.adminDeleteComment = async (id) => {
-        if(!confirm('এই মন্তব্যটি মুছতে চান?')) return;
-        await deleteDoc(doc(db, BASE_PATH, id));
-        showToast('মন্তব্য মোছা হয়েছে');
-    };
+    window.adminToggleFeature = async () => { const post = allData.find(d => d.id === activeThreadId); await updateDoc(doc(db, BASE_PATH, activeThreadId), { isFeatured: !post.isFeatured }); };
+    window.adminDeleteComment = async (id) => { if(!confirm('এই মন্তব্যটি মুছতে চান?')) return; await deleteDoc(doc(db, BASE_PATH, id)); showToast('মন্তব্য মোছা হয়েছে'); };
 
     function render() {
         const container = document.getElementById('posts-container');
         let posts = allData.filter(c => !c.parentId);
-        
         if(currentFilter === 'pending') posts = posts.filter(p => p.status === 'pending');
         else if(currentFilter === 'featured') posts = posts.filter(p => p.status === 'approved' && p.isFeatured === true);
         else if(currentFilter === 'bookmarks') posts = posts.filter(p => userBookmarks.includes(p.id));
         else posts = posts.filter(p => p.status === 'approved');
-
         posts.sort((a, b) => currentFilter === 'popular' ? (b.votes || 0) - (a.votes || 0) : (b.at?.seconds || 0) - (a.at?.seconds || 0));
-
         if(posts.length === 0) { container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`; return; }
-
         container.innerHTML = posts.map(c => {
             const isUpvoted = c.upvoters && currentUser && c.upvoters.includes(currentUser.uid);
             const isDownvoted = c.downvoters && currentUser && c.downvoters.includes(currentUser.uid);
-            
             return `
             <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border ${c.isFeatured ? 'featured-card border-featured' : 'dark:border-darkBorder'}">
                 <div class="flex gap-4">
                     <div class="flex flex-col items-center gap-2 bg-gray-50 dark:bg-darkBg p-2 rounded-lg min-w-[42px] h-fit">
-                        <button onclick="handleVote('${c.id}', 1)" class="${isUpvoted ? 'text-accent' : 'text-gray-400'} hover:text-accent">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg>
-                        </button>
+                        <button onclick="handleVote('${c.id}', 1)" class="${isUpvoted ? 'text-accent' : 'text-gray-400'} hover:text-accent"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
                         <span class="font-bold text-xs ${isUpvoted ? 'text-accent' : (isDownvoted ? 'text-red-500' : 'text-gray-500')}">${toBN(c.votes || 0)}</span>
-                        <button onclick="handleVote('${c.id}', -1)" class="${isDownvoted ? 'text-red-500' : 'text-gray-400'} hover:text-red-500">
-                            <svg class="w-5 h-5 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg>
-                        </button>
+                        <button onclick="handleVote('${c.id}', -1)" class="${isDownvoted ? 'text-red-500' : 'text-gray-400'} hover:text-red-500"><svg class="w-5 h-5 rotate-180" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10z"/></svg></button>
                     </div>
                     <div class="flex-1 overflow-hidden">
                         <div class="flex items-center justify-between mb-1 text-[10px] font-bold text-gray-400 uppercase">
-                            <div class="flex items-center gap-2">
-                                <img src="${c.photoURL}" class="w-4 h-4 rounded-full cursor-pointer" onclick="openProfile('${c.userId}')">
-                                <span class="user-link" onclick="openProfile('${c.userId}')">${c.name}</span>
-                                <span> • ${formatTime(c.at)}</span>
-                                ${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}
-                            </div>
+                            <div class="flex items-center gap-2"><img src="${c.photoURL}" class="w-4 h-4 rounded-full cursor-pointer" onclick="openProfile('${c.userId}')"><span class="user-link" onclick="openProfile('${c.userId}')">${c.name}</span><span> • ${formatTime(c.at)}</span>${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}</div>
                         </div>
-                        <div class="cursor-pointer" onclick="openDetails('${c.id}')">
-                            <h2 class="text-sm font-semibold mb-2 line-clamp-3 text-gray-800 dark:text-gray-200 leading-relaxed">${c.msg}</h2>
-                        </div>
+                        <div class="cursor-pointer" onclick="openDetails('${c.id}')"><h2 class="text-sm font-semibold mb-2 line-clamp-3 text-gray-800 dark:text-gray-200 leading-relaxed">${c.msg}</h2></div>
                     </div>
                 </div>
             </div>`;
@@ -573,26 +445,14 @@
     function updateDetails() {
         const post = allData.find(c => c.id === activeThreadId);
         if(!post) return;
-        
         const isOwner = currentUser && post.userId === currentUser.uid;
-        
-        // ডিলিট বাটন দেখানো (এডমিন অথবা নিজের পোস্ট হলে)
         document.getElementById('post-delete-btn').classList.toggle('hidden', !(isAdmin || isOwner));
         document.getElementById('admin-feature-btn').classList.toggle('hidden', !isAdmin);
         document.getElementById('edit-post-btn').classList.toggle('hidden', !(isAdmin || isOwner));
-        
-        // Approve বাটন কন্ট্রোল
-        const approveBtn = document.getElementById('admin-approve-btn');
-        if(approveBtn) {
-            approveBtn.classList.toggle('hidden', !(isAdmin && post.status === 'pending'));
-        }
-
-        const featureIcon = document.getElementById('feature-icon-svg');
-        featureIcon.setAttribute('fill', post.isFeatured ? 'currentColor' : 'none');
-
+        document.getElementById('admin-approve-btn').classList.toggle('hidden', !(isAdmin && post.status === 'pending'));
+        const featureIcon = document.getElementById('feature-icon-svg'); featureIcon.setAttribute('fill', post.isFeatured ? 'currentColor' : 'none');
         const allReplies = allData.filter(r => r.parentId === activeThreadId).sort((a,b) => (a.at?.seconds || 0) - (b.at?.seconds || 0));
         const rootComments = allReplies.filter(r => !r.replyToId);
-        
         const renderComment = (comment, isReply = false) => {
             const nestedReplies = allReplies.filter(r => r.replyToId === comment.id);
             const canEdit = isAdmin || (currentUser && comment.userId === currentUser.uid);
@@ -602,45 +462,24 @@
                         <img src="${comment.photoURL}" class="w-8 h-8 rounded-lg cursor-pointer" onclick="openProfile('${comment.userId}')">
                         <div class="bg-gray-100 dark:bg-darkCard p-3 rounded-xl border dark:border-darkBorder text-xs flex-1">
                             <div class="flex justify-between items-start mb-1">
-                                
-                                <div class="flex items-center gap-2">
-                                    <div class="font-bold text-[10px] user-link" onclick="openProfile('${comment.userId}')">${comment.name}</div>
-                                    ${comment.edited ? `<span class="text-[8px] text-accent italic">(সম্পাদিত)</span>` : ''}
-                                </div>
-
-                                <div class="flex gap-2">
-                                    ${isAdmin ? `<button onclick="adminDeleteComment('${comment.id}')" class="text-red-400 text-[9px] font-bold">Delete</button>` : ''}
-                                    ${canEdit ? `<button onclick="prepareCommentEdit('${comment.id}', '${comment.msg.replace(/'/g, "\\'")}')" class="text-blue-500 text-[9px] font-bold">Edit</button>` : ''}
-                                    ${currentUser ? `<button onclick="prepareReply('${comment.id}', '${comment.name}')" class="text-accent text-[9px] font-bold">উত্তর দিন</button>` : ''}
-                                </div>
+                                <div class="flex items-center gap-2"><div class="font-bold text-[10px] user-link" onclick="openProfile('${comment.userId}')">${comment.name}</div>${comment.edited ? `<span class="text-[8px] text-accent italic">(সম্পাদিত)</span>` : ''}</div>
+                                <div class="flex gap-2">${isAdmin ? `<button onclick="adminDeleteComment('${comment.id}')" class="text-red-400 text-[9px] font-bold">Delete</button>` : ''}${canEdit ? `<button onclick="prepareCommentEdit('${comment.id}', '${comment.msg.replace(/'/g, "\\'")}')" class="text-blue-500 text-[9px] font-bold">Edit</button>` : ''}${currentUser ? `<button onclick="prepareReply('${comment.id}', '${comment.name}')" class="text-accent text-[9px] font-bold">উত্তর দিন</button>` : ''}</div>
                             </div>
-                            <div class="text-gray-700 dark:text-gray-300 text-[11px] leading-relaxed">
-                                ${comment.replyToName ? `<span class="text-accent font-bold mr-1 cursor-pointer" onclick="openProfile('${allData.find(u => u.id === comment.replyToId)?.userId}')">@${comment.replyToName}</span>` : ''}
-                                ${DOMPurify.sanitize(marked.parse(comment.msg))}
-                            </div>
+                            <div class="text-gray-700 dark:text-gray-300 text-[11px] leading-relaxed">${comment.replyToName ? `<span class="text-accent font-bold mr-1 cursor-pointer" onclick="openProfile('${allData.find(u => u.id === comment.replyToId)?.userId}')">@${comment.replyToName}</span>` : ''}${DOMPurify.sanitize(marked.parse(comment.msg))}</div>
                         </div>
                     </div>
                     ${nestedReplies.map(nr => renderComment(nr, true)).join('')}
                 </div>`;
         };
         document.getElementById('details-content').innerHTML = `
-    <div class="mb-6">
-        <div class="flex items-center justify-between mb-4"> 
-            <div class="flex items-center gap-3">
-                <img src="${post.photoURL}" class="w-10 h-10 rounded-lg cursor-pointer" onclick="openProfile('${post.userId}')">
-                <div>
-                    <div class="font-black text-sm user-link" onclick="openProfile('${post.userId}')">${post.name} ${post.isFeatured ? '⭐' : ''}</div>
-                    <div class="text-[10px] text-gray-400 uppercase">${formatTime(post.at)} ${post.edited ? '• সম্পাদিত' : ''}</div>
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-4"> 
+                    <div class="flex items-center gap-3">
+                        <img src="${post.photoURL}" class="w-10 h-10 rounded-lg cursor-pointer" onclick="openProfile('${post.userId}')">
+                        <div><div class="font-black text-sm user-link" onclick="openProfile('${post.userId}')">${post.name} ${post.isFeatured ? '⭐' : ''}</div><div class="text-[10px] text-gray-400 uppercase">${formatTime(post.at)} ${post.edited ? '• সম্পাদিত' : ''}</div></div>
+                    </div>
+                    <button onclick="handleShare()" class="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg></button>
                 </div>
-            </div>
-
-            <button onclick="handleShare()" class="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
-                </svg>
-            </button>
-        </div>
-
                 <div class="text-base mb-6 border-b dark:border-darkBorder pb-6 whitespace-pre-line text-gray-800 dark:text-gray-200">${DOMPurify.sanitize(marked.parse(post.msg))}</div>
                 <div class="space-y-4">${rootComments.map(rc => renderComment(rc)).join('')}</div>
             </div>`;
@@ -651,88 +490,31 @@
     
     window.handleVote = async (id, val) => {
         if (!currentUser) return googleLogin();
-
         const postRef = doc(db, BASE_PATH, id);
         const postSnap = await getDoc(postRef);
         if (!postSnap.exists()) return;
-
         const data = postSnap.data();
         const uid = currentUser.uid;
-        
         let upvoters = data.upvoters || [];
         let downvoters = data.downvoters || [];
         let currentVotes = data.votes || 0;
-
-        if (val === 1) { 
-            if (upvoters.includes(uid)) {
-                upvoters = upvoters.filter(item => item !== uid);
-                currentVotes -= 1;
-            } else {
-                if (downvoters.includes(uid)) {
-                    downvoters = downvoters.filter(item => item !== uid);
-                    currentVotes += 2; 
-                } else {
-                    currentVotes += 1;
-                }
-                upvoters.push(uid);
-            }
-        } else if (val === -1) { 
-            if (downvoters.includes(uid)) {
-                downvoters = downvoters.filter(item => item !== uid);
-                currentVotes += 1;
-            } else {
-                if (upvoters.includes(uid)) {
-                    upvoters = upvoters.filter(item => item !== uid);
-                    currentVotes -= 2; 
-                } else {
-                    currentVotes -= 1;
-                }
-                downvoters.push(uid);
-            }
-        }
-
-        try {
-            await updateDoc(postRef, {
-                votes: currentVotes,
-                upvoters: upvoters,
-                downvoters: downvoters
-            });
-        } catch (e) {
-            console.error("Error voting:", e);
-        }
+        if (val === 1) { if (upvoters.includes(uid)) { upvoters = upvoters.filter(item => item !== uid); currentVotes -= 1; } else { if (downvoters.includes(uid)) { downvoters = downvoters.filter(item => item !== uid); currentVotes += 2; } else { currentVotes += 1; } upvoters.push(uid); } } 
+        else if (val === -1) { if (downvoters.includes(uid)) { downvoters = downvoters.filter(item => item !== uid); currentVotes += 1; } else { if (upvoters.includes(uid)) { upvoters = upvoters.filter(item => item !== uid); currentVotes -= 2; } else { currentVotes -= 1; } downvoters.push(uid); } }
+        try { await updateDoc(postRef, { votes: currentVotes, upvoters: upvoters, downvoters: downvoters }); } catch (e) { console.error("Error voting:", e); }
     };
+
     window.handleShare = async () => {
-    const post = allData.find(d => d.id === activeThreadId);
-    if(!post) return;
+        const post = allData.find(d => d.id === activeThreadId);
+        if(!post) return;
+        const shareUrl = window.location.origin + window.location.pathname + '?post=' + activeThreadId;
+        try { if (navigator.share) { await navigator.share({ title: 'লেখক ফোরাম', text: post.msg.substring(0, 100) + '...', url: shareUrl }); } else { await navigator.clipboard.writeText(shareUrl); showToast('লিংক কপি করা হয়েছে!'); } } catch (e) { console.log(e); }
+    };
 
-    // বর্তমান URL এর সাথে পোস্টের ID যোগ করে একটি ইউনিক লিংক তৈরি
-    const shareUrl = window.location.origin + window.location.pathname + '?post=' + activeThreadId;
-
-    try {
-        if (navigator.share) {
-            await navigator.share({
-                title: 'লেখক ফোরাম',
-                text: post.msg.substring(0, 100) + '...',
-                url: shareUrl
-            });
-        } else {
-            await navigator.clipboard.writeText(shareUrl);
-            showToast('লিংক কপি করা হয়েছে!');
-        }
-    } catch (e) { console.log(e); }
-};
-
-    
     window.openDetails = (id) => { activeThreadId = id; cancelReplyTag(); document.getElementById('details-view').style.display = 'block'; updateDetails(); updateBookmarkIcon(); };
     window.closeView = () => { document.getElementById('details-view').style.display = 'none'; activeThreadId = null; };
 
     window.togglePostModal = (show) => { 
-        if(!show) {
-            editPostId = null;
-            document.getElementById('modal-title').innerText = "নতুন আলোচনা";
-            document.getElementById('user-comment').value = '';
-            document.getElementById('post-submit-btn').innerText = "পাবলিশ";
-        }
+        if(!show) { editPostId = null; document.getElementById('modal-title').innerText = "নতুন আলোচনা"; document.getElementById('user-comment').value = ''; document.getElementById('post-submit-btn').innerText = "পাবলিশ"; }
         document.getElementById('post-modal-overlay').style.display = show ? 'flex' : 'none'; 
     };
     
@@ -746,14 +528,7 @@
         showToast(exists ? 'বুকমার্ক সরানো হয়েছে' : 'বুকমার্ক করা হয়েছে');
     };
 
-    function updateBookmarkIcon() { 
-        const icon = document.getElementById('bookmark-icon'); 
-        const btn = document.getElementById('bookmark-btn'); 
-        if(!icon || !activeThreadId) return; 
-        const isBookmarked = userBookmarks.includes(activeThreadId); 
-        icon.setAttribute('fill', isBookmarked ? 'currentColor' : 'none'); 
-        btn.classList.toggle('text-accent', isBookmarked); 
-    }
+    function updateBookmarkIcon() { const icon = document.getElementById('bookmark-icon'); const btn = document.getElementById('bookmark-btn'); if(!icon || !activeThreadId) return; const isBookmarked = userBookmarks.includes(activeThreadId); icon.setAttribute('fill', isBookmarked ? 'currentColor' : 'none'); btn.classList.toggle('text-accent', isBookmarked); }
 
     const toBN = (n) => n.toString().replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
     function formatTime(ts) { if(!ts) return 'এখন'; const s = Math.floor((new Date() - new Date(ts.seconds * 1000))/1000); if(s < 60) return 'এইমাত্র'; if(s < 3600) return toBN(Math.floor(s/60)) + 'মি আগে'; if(s < 86400) return toBN(Math.floor(s/3600)) + 'ঘ আগে'; return new Date(ts.seconds*1000).toLocaleDateString('bn-BD', {day:'numeric', month:'short'}); }
@@ -766,30 +541,16 @@
     };
     setDarkMode(localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches));
     document.getElementById('theme-toggle').onclick = () => setDarkMode(!document.documentElement.classList.contains('dark'));
-// পেজ লোড হওয়ার সময় URL এ কোনো পোস্ট আইডি আছে কি না চেক করবে
-// URL থেকে পোস্ট আইডি চেক করার ফাংশন
-function checkDirectLink() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const postId = urlParams.get('post');
-    
-    if (postId) {
-        // যদি ডেটা লোড হয়ে থাকে
-        if (allData && allData.length > 0) {
-            const postExists = allData.find(p => p.id === postId);
-            if (postExists) {
-                openDetails(postId);
-            }
-        } else {
-            // ডেটা এখনও না আসলে প্রতি ১ সেকেন্ড পর আবার চেক করবে
-            setTimeout(checkDirectLink, 1000);
+
+    function checkDirectLink() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('post');
+        if (postId) {
+            if (allData && allData.length > 0) { const postExists = allData.find(p => p.id === postId); if (postExists) openDetails(postId); } 
+            else setTimeout(checkDirectLink, 1000);
         }
     }
-}
-
-// ফাংশনটি কল করা হলো
-checkDirectLink();
-
-
+    checkDirectLink();
 </script>
 </body>
 </html>
