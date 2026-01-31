@@ -1,1 +1,149 @@
-.
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অনুসন্ধান - লেখক ফোরাম</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
+        .forum-card { 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-left: 3px solid transparent; 
+        }
+        .forum-card:hover { border-left-color: #3498db; }
+        .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; }
+        .search-input:focus { ring: 2px; ring-color: #3498db; outline: none; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-20">
+
+<main class="max-w-2xl mx-auto px-4 py-6">
+    <div class="flex items-center gap-4 mb-6">
+        <button onclick="history.back()" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <h1 class="text-xl font-bold">অনুসন্ধান</h1>
+    </div>
+
+    <div class="relative mb-8">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+        <input type="text" id="search-input" placeholder="লেখকের নাম বা লেখা খুঁজুন..." 
+            class="search-input w-full pl-10 pr-4 py-3 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl shadow-sm text-sm">
+    </div>
+
+    <div id="results-container" class="space-y-4">
+        <div class="text-center py-10 text-gray-400 text-sm">কিছু লিখে অনুসন্ধান শুরু করুন</div>
+    </div>
+</main>
+
+<div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-darkCard border-t dark:border-darkBorder z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+    <div class="flex h-16 w-full max-w-4xl mx-auto">
+        <button onclick="location.href='index.html'" class="bottom-nav-item text-gray-500 dark:text-gray-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </button>
+        <button onclick="location.href='search.html'" class="bottom-nav-item text-accent">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </button>
+        <button onclick="location.href='notification.html'" class="bottom-nav-item text-gray-500 dark:text-gray-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        </button>
+        <button id="profile-btn" class="bottom-nav-item text-gray-500 dark:text-gray-400">
+            <div id="profile-img-container">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            </div>
+        </button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
+        authDomain: "myblogcomments-22808.firebaseapp.com",
+        projectId: "myblogcomments-22808",
+        storageBucket: "myblogcomments-22808.firebasestorage.app",
+        messagingSenderId: "1067155293144",
+        appId: "1:1067155293144:web:8f10b016462b52d36628ad"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
+
+    let allPosts = [];
+    onSnapshot(collection(db, BASE_PATH), (snapshot) => {
+        allPosts = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+                    .filter(p => !p.parentId);
+    });
+
+    const searchInput = document.getElementById('search-input');
+    const container = document.getElementById('results-container');
+
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        if (term.length < 2) {
+            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">কমপক্ষে ২ টি অক্ষর লিখুন</div>`;
+            return;
+        }
+
+        const filtered = allPosts.filter(p => 
+            (p.msg && p.msg.toLowerCase().includes(term)) || 
+            (p.name && p.name.toLowerCase().includes(term))
+        );
+
+        renderResults(filtered);
+    });
+
+    function renderResults(posts) {
+        if (posts.length === 0) {
+            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">কোনো ফলাফল পাওয়া যায়নি</div>`;
+            return;
+        }
+
+        container.innerHTML = posts.map(p => `
+            <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm cursor-pointer" onclick="location.href='post.html?id=${p.id}'">
+                <div class="flex items-center gap-2 mb-2">
+                    <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
+                    <span class="text-xs font-bold text-gray-500 uppercase">${p.name || 'Anonymous'}</span>
+                </div>
+                <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-2">${p.msg || ''}</p>
+            </div>
+        `).join('');
+    }
+
+    // Auth & Dark Mode logic
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('profile-img-container').innerHTML = `<img src="${user.photoURL}" class="w-6 h-6 rounded-full border border-accent">`;
+        }
+    });
+
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+</body>
+</html>
