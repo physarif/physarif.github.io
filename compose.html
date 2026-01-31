@@ -30,8 +30,7 @@
         .dark .ql-snow .ql-stroke { stroke: #fff; }
         .dark .ql-snow .ql-fill { fill: #fff; }
         .dark .ql-snow .ql-picker { color: #fff; }
-        .ql-editor { min-height: 250px; }
-        /* Video embedding responsiveness */
+        .ql-editor { min-height: 300px; }
         .ql-video { width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; }
     </style>
 </head>
@@ -51,33 +50,8 @@
         </div>
     </div>
 
-    <div id="auth-check" class="mb-6 flex items-center gap-3 p-3 bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder">
-        <img id="current-user-img" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full border dark:border-darkBorder">
-        <div>
-            <p id="current-user-name" class="text-sm font-bold">লোড হচ্ছে...</p>
-            <p class="text-[10px] text-gray-400">আপনার প্রোফাইল থেকে পোস্ট করা হচ্ছে</p>
-        </div>
-    </div>
-
-    <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-            <label class="block text-xs text-gray-500 mb-1 ml-1">ক্যাটাগরি</label>
-            <select id="post-category" class="bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-3 py-2.5 text-sm w-full outline-none focus:border-accent transition-all">
-                <option value="সাধারণ">সাধারণ পোস্ট</option>
-                <option value="কবিতা">কবিতা</option>
-                <option value="গল্প">গল্প</option>
-                <option value="প্রবন্ধ">প্রবন্ধ</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-xs text-gray-500 mb-1 ml-1">শিডিউল (ঐচ্ছিক)</label>
-            <input type="datetime-local" id="schedule-time" class="bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-3 py-2.5 text-sm w-full outline-none focus:border-accent">
-        </div>
-    </div>
-
     <div class="mb-4">
-        <label class="block text-xs text-gray-500 mb-1 ml-1">হ্যাশট্যাগ</label>
-        <input type="text" id="post-hashtags" placeholder="যেমন: #কবিতা #গল্প" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent">
+        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition-all">
     </div>
 
     <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden">
@@ -93,21 +67,21 @@
 <div id="preview-modal" class="fixed inset-0 bg-black/80 hidden z-[110] p-4 flex items-center justify-center backdrop-blur-sm">
     <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-2xl p-6 max-h-[85vh] overflow-y-auto shadow-2xl">
         <div class="flex justify-between items-center mb-4 border-b dark:border-darkBorder pb-3">
-            <h2 class="text-lg font-bold">পোস্ট প্রিভিউ</h2>
+            <h2 class="text-lg font-bold">প্রিভিউ</h2>
             <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="text-gray-500 hover:text-red-500">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
         <div id="preview-content" class="prose dark:prose-invert max-w-none"></div>
-        <div id="preview-tags" class="mt-4 flex flex-wrap gap-2"></div>
-        <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-8 w-full py-3 bg-accent text-white rounded-xl font-bold">বন্ধ করুন</button>
+        <div id="preview-tags" class="mt-4 flex flex-wrap gap-2 font-medium text-accent"></div>
+        <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-8 w-full py-3 bg-accent text-white rounded-xl font-bold">ফিরে যান</button>
     </div>
 </div>
 
 <div id="loading-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-[100]">
     <div class="bg-white dark:bg-darkCard p-8 rounded-2xl text-center shadow-2xl">
         <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-accent mx-auto mb-4"></div>
-        <p class="text-sm font-medium">পোস্ট প্রসেস হচ্ছে...</p>
+        <p class="text-sm font-medium">পোস্ট হচ্ছে...</p>
     </div>
 </div>
 
@@ -131,7 +105,6 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    // Quill Initialization with Video/Link support
     const quill = new Quill('#editor', {
         theme: 'snow',
         placeholder: 'আপনার মনের কথা এখানে লিখুন...',
@@ -139,7 +112,7 @@
             toolbar: [
                 ['bold', 'italic', 'underline', 'blockquote'],
                 [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['link', 'video', 'clean'] // Video button added
+                ['link', 'video', 'clean']
             ]
         }
     });
@@ -149,8 +122,6 @@
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
-            document.getElementById('current-user-img').src = user.photoURL || 'https://via.placeholder.com/40';
-            document.getElementById('current-user-name').innerText = user.displayName;
             const savedDraft = localStorage.getItem('post_draft');
             if (savedDraft) quill.root.innerHTML = savedDraft;
         } else {
@@ -159,7 +130,6 @@
         }
     });
 
-    // Auto-save & Char count
     quill.on('text-change', () => {
         localStorage.setItem('post_draft', quill.root.innerHTML);
         document.getElementById('char-count').innerText = `${quill.getText().trim().length} / ২০০০ শব্দ`;
@@ -167,11 +137,10 @@
         setTimeout(() => document.getElementById('draft-status').innerText = "সেভ হয়েছে", 1000);
     });
 
-    // Preview
     document.getElementById('preview-btn').onclick = () => {
         document.getElementById('preview-content').innerHTML = quill.root.innerHTML;
         const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
-        document.getElementById('preview-tags').innerHTML = tags.map(t => `<span class="text-accent">#${t.replace('#','')}</span>`).join(' ');
+        document.getElementById('preview-tags').innerText = tags.join(' ');
         document.getElementById('preview-modal').classList.remove('hidden');
     };
 
@@ -181,8 +150,6 @@
     submitBtn.onclick = async () => {
         const msgHtml = quill.root.innerHTML;
         const msgText = quill.getText().trim();
-        const category = document.getElementById('post-category').value;
-        const scheduleTime = document.getElementById('schedule-time').value;
         const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
 
         if (!msgText) { alert('কিছু তো লিখুন!'); return; }
@@ -191,9 +158,8 @@
         loader.classList.remove('hidden');
 
         try {
-            const postData = {
+            await addDoc(collection(db, BASE_PATH), {
                 msg: msgHtml,
-                category: category,
                 hashtags: tags,
                 name: currentUser.displayName,
                 email: currentUser.email,
@@ -201,16 +167,13 @@
                 photoURL: currentUser.photoURL,
                 at: serverTimestamp(),
                 votes: 0,
-                status: scheduleTime ? 'scheduled' : 'pending'
-            };
-            if (scheduleTime) postData.scheduledFor = new Date(scheduleTime).toISOString();
-
-            await addDoc(collection(db, BASE_PATH), postData);
+                status: 'pending'
+            });
             localStorage.removeItem('post_draft');
-            alert('সফলভাবে জমা দেওয়া হয়েছে!');
+            alert('সফলভাবে পাবলিশ করা হয়েছে!');
             location.href = 'index.html';
         } catch (error) {
-            alert('ভুল হয়েছে! আবার চেষ্টা করুন।');
+            alert('ত্রুটি হয়েছে, আবার চেষ্টা করুন।');
         } finally {
             loader.classList.add('hidden');
         }
