@@ -28,10 +28,12 @@
         }
 
         .line-clamp-3 {
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;  
-            overflow: hidden;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 3 !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
+            white-space: normal !important;
+            word-break: break-word;
         }
 
         .forum-card { 
@@ -119,11 +121,11 @@
         <button onclick="location.href='index.html'" class="bottom-nav-item text-accent">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         </button>
-        <button onclick="location.href='search.html'" class="bottom-nav-item text-gray-500 dark:text-gray-400">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <button onclick="location.href='explore.html'" class="bottom-nav-item text-gray-500 dark:text-gray-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
         </button>
-        <button onclick="location.href='notification.html'" class="bottom-nav-item text-gray-500 dark:text-gray-400">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        <button onclick="location.href='bookmark.html'" class="bottom-nav-item text-gray-500 dark:text-gray-400">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
         </button>
         <button id="profile-btn" onclick="handleProfileClick()" class="bottom-nav-item text-gray-500 dark:text-gray-400">
             <div id="profile-icon-container" class="relative">
@@ -218,7 +220,11 @@
             return;
         }
 
-        container.innerHTML = posts.map(p => `
+        container.innerHTML = posts.map(p => {
+            // যদি পোস্টে ইমেজের লিঙ্ক থাকে তবে তা রেন্ডার করবে
+            const postImage = p.image ? `<img src="${p.image}" class="mt-3 rounded-lg w-full max-h-64 object-cover border dark:border-darkBorder">` : '';
+            
+            return `
             <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm" onclick="location.href='post.html?id=${p.id}'">
                 <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1 h-fit">
                     <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
@@ -231,9 +237,11 @@
                         <span class="text-[11px] font-bold text-gray-500 uppercase truncate">${p.name || 'Anonymous'}</span>
                         <span class="text-[10px] text-gray-300">• ${p.at ? new Date(p.at.seconds * 1000).toLocaleDateString('bn-BD') : 'নতুন'}</span>
                     </div>
-                    <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${p.msg || ''}</p>
+                    <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${(p.msg || '').replace(/<[^>]*>?/gm, ' ')}</p>
+                    ${postImage}
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     };
 
     window.handleProfileClick = () => {
@@ -253,3 +261,4 @@
 </script>
 </body>
 </html>
+
