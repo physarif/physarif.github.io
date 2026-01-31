@@ -47,9 +47,21 @@
 
 <main class="max-w-4xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
     <aside class="w-full lg:w-48">
-        <div class="sticky top-20 space-y-1">
-            <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active w-full text-left px-3 py-2 rounded-xl text-sm font-semibold transition-all">সর্বশেষ</button>
-            <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn w-full text-left px-3 py-2 rounded-xl text-sm font-semibold transition-all">জনপ্রিয়</button>
+        <div class="sticky top-20 space-y-2">
+            <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                সর্বশেষ
+            </button>
+            
+            <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                জনপ্রিয়
+            </button>
+
+            <button id="filter-featured" onclick="setFilter('featured')" class="filter-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
+                ফিচারড
+            </button>
         </div>
     </aside>
 
@@ -112,7 +124,14 @@
         const container = document.getElementById('posts-container');
         let posts = allData.filter(p => !p.parentId && p.status === 'approved');
         
-        posts.sort((a, b) => currentFilter === 'popular' ? (b.votes || 0) - (a.votes || 0) : (b.at?.seconds || 0) - (a.at?.seconds || 0));
+        // ফিল্টারিং লজিক
+        if (currentFilter === 'popular') {
+            posts.sort((a, b) => (b.votes || 0) - (a.votes || 0));
+        } else if (currentFilter === 'featured') {
+            posts = posts.filter(p => p.featured === true);
+        } else {
+            posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
+        }
 
         if(posts.length === 0) {
             container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কোনো আলোচনা পাওয়া যায়নি</div>`;
@@ -120,7 +139,7 @@
         }
 
         container.innerHTML = posts.map(p => `
-            <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm transition-all" onclick="openDetails('${p.id}')">
+            <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm transition-all ${p.featured ? 'featured-card' : ''}" onclick="openDetails('${p.id}')">
                 <div class="flex flex-col items-center gap-1 min-w-[30px]">
                     <button onclick="event.stopPropagation();" class="vote-btn p-1 text-gray-400 hover:text-accent">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg>
@@ -136,7 +155,7 @@
                         <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full border dark:border-gray-700">
                         <span class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">${p.name}</span>
                         <span class="text-[10px] text-gray-300">• কিছুক্ষণ আগে</span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent uppercase ml-auto">${p.category || 'General'}</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent uppercase ml-auto">${p.category || 'সাধারণ'}</span>
                     </div>
                     <h2 class="text-sm md:text-base leading-relaxed text-gray-800 dark:text-gray-200 font-medium line-clamp-3">
                         ${p.msg}
@@ -160,7 +179,10 @@
     window.openDetails = (id) => { window.location.href = `post.html?id=${id}`; };
     window.openProfile = (uid) => { window.location.href = `profile.html?uid=${uid}`; };
     window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('dropdown-active'); };
-    window.closeAllDropdowns = () => document.getElementById('user-dropdown').classList.remove('dropdown-active');
+    window.closeAllDropdowns = () => {
+        const dd = document.getElementById('user-dropdown');
+        if(dd) dd.classList.remove('dropdown-active');
+    };
     window.showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 3000); };
 
     const setDarkMode = (dark) => {
