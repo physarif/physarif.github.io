@@ -28,33 +28,40 @@
             border-left: 3px solid transparent; 
         }
         .forum-card:hover { border-left-color: #3498db; }
+        .tab-active { border-bottom: 2px solid #3498db; color: #3498db; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
 
 <main class="max-w-2xl mx-auto px-4 py-6">
+    <!-- Header -->
     <div class="flex items-center gap-4 mb-8">
-        <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+        <button onclick="window.history.back()" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
         <h1 class="text-xl font-bold">প্রোফাইল</h1>
     </div>
 
-    <div id="user-info" class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm mb-8 text-center">
-        <div class="flex justify-center mb-4">
-            <img id="user-photo" src="https://via.placeholder.com/80" class="w-20 h-20 rounded-full border-4 border-accent/20 object-cover">
+    <!-- User Info Section -->
+    <div id="user-info" class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm mb-8">
+        <div class="flex items-center gap-6">
+            <img id="user-photo" src="https://via.placeholder.com/80" class="w-20 h-20 rounded-full border-2 border-accent/20 object-cover shadow-lg">
+            <div class="flex-1">
+                <h2 id="user-name" class="text-xl font-bold mb-1">লোড হচ্ছে...</h2>
+                <p id="user-email" class="text-sm text-gray-500 mb-3 italic truncate max-w-[200px]">...</p>
+                <button id="logout-btn" class="px-4 py-1.5 bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-xs font-bold hover:bg-red-100 transition-all">লগ আউট</button>
+            </div>
         </div>
-        <h2 id="user-name" class="text-xl font-bold mb-1">...</h2>
-        <p id="user-email" class="text-sm text-gray-500 mb-4 italic">...</p>
-        <button id="logout-btn" class="px-6 py-2 bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-sm font-bold hover:bg-red-100 transition-all">লগ আউট</button>
     </div>
 
-    <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
-        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z"></path></svg>
-        আপনার পোস্টসমূহ
-    </h3>
+    <!-- Tabs Navigation -->
+    <div class="flex border-b dark:border-darkBorder mb-6">
+        <button id="tab-posts" class="flex-1 py-3 text-sm font-bold tab-active transition-all">পোস্টসমূহ</button>
+        <button id="tab-comments" class="flex-1 py-3 text-sm font-bold text-gray-400 hover:text-accent transition-all">মন্তব্যসমূহ</button>
+    </div>
     
-    <div id="user-posts" class="space-y-4">
+    <!-- Content Area -->
+    <div id="content-container" class="space-y-4">
         <div class="flex justify-center py-10"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
     </div>
 </main>
@@ -78,50 +85,87 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
+    let currentTab = 'posts';
+    let currentUser = null;
+
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Update UI with user info
-            document.getElementById('user-photo').src = user.photoURL;
+            currentUser = user;
+            document.getElementById('user-photo').src = user.photoURL || 'https://via.placeholder.com/80';
             document.getElementById('user-name').innerText = user.displayName;
             document.getElementById('user-email').innerText = user.email;
-
-            // Fetch User's Posts
-            const q = query(collection(db, BASE_PATH), where("uid", "==", user.uid), orderBy("at", "desc"));
-            onSnapshot(q, (snapshot) => {
-                const posts = snapshot.docs.map(d => ({ id: d.id, ...d.data() })).filter(p => !p.parentId);
-                renderUserPosts(posts);
-            });
+            fetchData();
         } else {
             location.href = 'index.html';
         }
     });
 
-    function renderUserPosts(posts) {
-        const container = document.getElementById('user-posts');
-        if (posts.length === 0) {
-            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm italic bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder">আপনি এখনো কোনো পোস্ট করেননি</div>`;
+    function fetchData() {
+        const container = document.getElementById('content-container');
+        container.innerHTML = '<div class="flex justify-center py-10"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>';
+
+        const q = query(collection(db, BASE_PATH), where("uid", "==", currentUser.uid), orderBy("at", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
+            const allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            
+            if (currentTab === 'posts') {
+                const posts = allData.filter(p => !p.parentId);
+                renderItems(posts, 'আপনি এখনো কোনো পোস্ট করেননি');
+            } else {
+                const comments = allData.filter(p => p.parentId);
+                renderItems(comments, 'আপনি এখনো কোনো মন্তব্য করেননি');
+            }
+        });
+    }
+
+    function renderItems(items, emptyMsg) {
+        const container = document.getElementById('content-container');
+        if (items.length === 0) {
+            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm italic bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder">${emptyMsg}</div>`;
             return;
         }
 
-        container.innerHTML = posts.map(p => `
-            <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm cursor-pointer" onclick="location.href='post.html?id=${p.id}'">
+        container.innerHTML = items.map(item => `
+            <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm cursor-pointer" 
+                 onclick="location.href='post.html?id=${item.parentId || item.id}'">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] text-gray-400">${p.at ? new Date(p.at.seconds * 1000).toLocaleDateString('bn-BD') : ''}</span>
-                    <span class="text-xs font-bold text-accent">ভোট: ${p.votes || 0}</span>
+                    <span class="text-[10px] text-gray-400">${item.at ? new Date(item.at.seconds * 1000).toLocaleDateString('bn-BD') : ''}</span>
+                    <span class="text-xs font-bold text-accent">${currentTab === 'posts' ? 'ভোট' : 'লাইক'}: ${item.votes || 0}</span>
                 </div>
-                <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-2">${p.msg || ''}</p>
+                <p class="text-sm text-gray-800 dark:text-gray-200 line-clamp-2">${item.msg || ''}</p>
+                ${item.parentId ? `<p class="text-[10px] text-accent mt-2 font-medium">মূল পোস্ট দেখতে ক্লিক করুন</p>` : ''}
             </div>
         `).join('');
     }
+
+    // Tab Logic
+    document.getElementById('tab-posts').onclick = () => {
+        currentTab = 'posts';
+        document.getElementById('tab-posts').classList.add('tab-active');
+        document.getElementById('tab-posts').classList.remove('text-gray-400');
+        document.getElementById('tab-comments').classList.remove('tab-active');
+        document.getElementById('tab-comments').classList.add('text-gray-400');
+        fetchData();
+    };
+
+    document.getElementById('tab-comments').onclick = () => {
+        currentTab = 'comments';
+        document.getElementById('tab-comments').classList.add('tab-active');
+        document.getElementById('tab-comments').classList.remove('text-gray-400');
+        document.getElementById('tab-posts').classList.remove('tab-active');
+        document.getElementById('tab-posts').classList.add('text-gray-400');
+        fetchData();
+    };
 
     document.getElementById('logout-btn').onclick = () => {
         signOut(auth).then(() => location.href = 'index.html');
     };
 
-    // Auto Dark Mode
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark');
     }
 </script>
 </body>
 </html>
+
