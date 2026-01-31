@@ -32,15 +32,7 @@
         .dark .ql-snow .ql-picker { color: #fff; }
         .ql-editor { min-height: 300px; }
         .ql-video, .ql-editor img { width: 100%; height: auto; border-radius: 8px; margin: 10px 0; }
-        
-        .ql-snow .ql-editor pre.ql-syntax {
-            background-color: #23241f;
-            color: #f8f8f2;
-            border-radius: 8px;
-            padding: 15px;
-            overflow: visible;
-            font-family: 'Courier New', Courier, monospace;
-        }
+        /* টুলবার ডিজাইন একটু উন্নত করা */
         .ql-formats { margin-right: 15px !important; }
     </style>
 </head>
@@ -61,7 +53,7 @@
     </div>
 
     <div class="mb-4">
-        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কোডিং #JavaScript)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent">
+        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent">
     </div>
 
     <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden">
@@ -115,16 +107,36 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
+    // Toolbar logic: Video button in a separate array for a new line
     const quill = new Quill('#editor', {
         theme: 'snow',
-        placeholder: 'আপনার মনের কথা বা কোড এখানে লিখুন...',
+        placeholder: 'আপনার মনের কথা এখানে লিখুন...',
         modules: {
             toolbar: [
                 ['bold', 'italic', 'underline', 'blockquote'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }], // তালিকা অপশন blockquote এর পরেই
-                ['link', 'image', 'code-block'], 
-                ['video'] 
+                ['link', 'image'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['video'] // This will push it to a new line if it wraps
             ]
+        }
+    });
+
+    const toolbar = quill.getModule('toolbar');
+    
+    toolbar.addHandler('link', function(value) {
+        if (value) {
+            const href = prompt('লিংক (URL) দিন:');
+            if(href) this.quill.format('link', href);
+        } else {
+            this.quill.format('link', false);
+        }
+    });
+
+    toolbar.addHandler('image', () => {
+        const range = quill.getSelection();
+        const value = prompt('ইমেজ ইউআরএল (URL) দিন:');
+        if (value) {
+            quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
         }
     });
 
@@ -195,4 +207,3 @@
 </script>
 </body>
 </html>
-
