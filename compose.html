@@ -105,15 +105,13 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    // Toolbar without 'clean' (T-cross) button
+    // Toolbar set to a single line group
     const quill = new Quill('#editor', {
         theme: 'snow',
         placeholder: 'আপনার মনের কথা এখানে লিখুন...',
         modules: {
             toolbar: [
-                ['bold', 'italic', 'underline', 'blockquote'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['link', 'image', 'video'] // 'clean' removed from here
+                ['bold', 'italic', 'underline', 'blockquote', 'link', 'image', 'video', { 'list': 'ordered'}, { 'list': 'bullet' }]
             ]
         }
     });
