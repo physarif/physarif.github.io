@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>লেখক ফোরাম - হোম</title>
+    <title>লেখন ফোরাম - হোম</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <script>
@@ -23,12 +23,12 @@
                 <svg id="theme-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
             </button>
             <div id="auth-section">
-                <button id="login-ui" onclick="googleLogin()" class="bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold">Login</button>
+                <button id="login-ui" onclick="googleLogin()" class="bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-lg">Login</button>
                 <div id="user-info-wrapper" class="hidden flex items-center gap-2 cursor-pointer" onclick="toggleUserDropdown(event)">
                     <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent">
                     <div id="user-dropdown" class="dropdown-menu">
-                        <button onclick="window.location.href='profile.html'" class="w-full text-left px-4 py-3 text-xs font-bold">আমার প্রোফাইল</button>
-                        <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500">লগ আউট</button>
+                        <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg">আমার প্রোফাইল</button>
+                        <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">লগ আউট</button>
                     </div>
                 </div>
             </div>
@@ -39,8 +39,8 @@
 <main class="max-w-6xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
     <aside class="w-full lg:w-56">
         <div class="sticky top-20 space-y-1">
-            <button onclick="setFilter('latest')" class="filter-active w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold">সর্বশেষ</button>
-            <button onclick="setFilter('popular')" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold">জনপ্রিয়</button>
+            <button id="filter-latest" onclick="setFilter('latest')" class="filter-active w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold transition-all">সর্বশেষ</button>
+            <button id="filter-popular" onclick="setFilter('popular')" class="w-full text-left px-3 py-2.5 rounded-xl text-sm font-semibold transition-all">জনপ্রিয়</button>
         </div>
     </aside>
 
@@ -51,41 +51,99 @@
     </section>
 </main>
 
-<div id="fab-post" class="fab-post" onclick="togglePostModal(true)">
+<div id="fab-post" class="fab-post" onclick="showToast('নতুন পোস্ট করতে লগইন করুন')">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
 </div>
 
 <div id="toast"></div>
 
 <script type="module">
-    // এখানে তোমার Firebase Config এবং onSnapshot লজিক থাকবে।
-    // শুধু openDetails ফাংশনটি পরিবর্তন হবে:
-    window.openDetails = (id) => {
-        window.location.href = `post.html?id=${id}`;
-    };
-    
-    // প্রোফাইল ওপেন করার লজিক:
-    window.openProfile = (uid) => {
-        window.location.href = `profile.html?uid=${uid}`;
-    };
-// index.html এর ভেতর এই অংশটুকু আপডেট করো
-window.openDetails = (id) => {
-    window.location.href = `post.html?id=${id}`;
-};
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
-window.openProfile = (uid) => {
-    window.location.href = `profile.html?uid=${uid}`;
-};
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
+        authDomain: "myblogcomments-22808.firebaseapp.com",
+        projectId: "myblogcomments-22808",
+        storageBucket: "myblogcomments-22808.firebasestorage.app",
+        messagingSenderId: "1067155293144",
+        appId: "1:1067155293144:web:8f10b016462b52d36628ad"
+    };
 
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
+
+    window.currentUser = null;
+    let allData = [];
+    let currentFilter = 'latest';
+
+    // ১. ডেটা লোড করা
+    onSnapshot(collection(db, BASE_PATH), (snapshot) => {
+        allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        render();
+    });
+
+    // ২. অথেনটিকেশন চেক
+    onAuthStateChanged(auth, (user) => {
+        window.currentUser = user;
+        const isUser = !!user;
+        document.getElementById('user-info-wrapper').classList.toggle('hidden', !isUser);
+        document.getElementById('login-ui').classList.toggle('hidden', isUser);
+        if (isUser) {
+            document.getElementById('user-avatar').src = user.photoURL;
+            document.getElementById('fab-post').style.display = 'flex';
+        }
+    });
+
+    // ৩. রেন্ডার ফাংশন
+    window.render = () => {
+        const container = document.getElementById('posts-container');
+        let posts = allData.filter(p => !p.parentId && p.status === 'approved');
+        
+        posts.sort((a, b) => currentFilter === 'popular' ? (b.votes || 0) - (a.votes || 0) : (b.at?.seconds || 0) - (a.at?.seconds || 0));
+
+        if(posts.length === 0) {
+            container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কোনো আলোচনা পাওয়া যায়নি</div>`;
+            return;
+        }
+
+        container.innerHTML = posts.map(p => `
+            <div onclick="openDetails('${p.id}')" class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder cursor-pointer">
+                <div class="flex items-center gap-2 mb-2 text-[10px] font-bold text-gray-400 uppercase">
+                    <img src="${p.photoURL}" class="w-4 h-4 rounded-full">
+                    <span>${p.name}</span>
+                    <span>• ${p.category || 'সাধারণ'}</span>
+                </div>
+                <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-200">${p.msg}</h2>
+                <div class="mt-3 flex items-center gap-4 text-[10px] font-bold text-accent">
+                    <span>${p.votes || 0} ভোট</span>
+                </div>
+            </div>`).join('');
+    };
+
+    // ৪. ফাংশনসমূহ
+    window.googleLogin = () => signInWithPopup(auth, provider);
+    window.googleLogout = () => signOut(auth).then(() => location.reload());
+    window.setFilter = (f) => { currentFilter = f; render(); };
+    window.openDetails = (id) => { window.location.href = `post.html?id=${id}`; };
+    window.openProfile = (uid) => { window.location.href = `profile.html?uid=${uid}`; };
+    window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('dropdown-active'); };
+    window.closeAllDropdowns = () => document.getElementById('user-dropdown').classList.remove('dropdown-active');
+    window.showToast = (msg) => { const t = document.getElementById('toast'); t.innerText = msg; t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 3000); };
+
+    // ডার্ক মোড লজিক
+    const setDarkMode = (dark) => {
+        document.documentElement.classList.toggle('dark', dark);
+        const icon = document.getElementById('theme-icon');
+        icon.innerHTML = dark ? '<path d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2"></path>' : '<path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke="currentColor" stroke-width="2"></path>';
+    };
+    setDarkMode(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.getElementById('theme-toggle').onclick = () => setDarkMode(!document.documentElement.classList.contains('dark'));
 </script>
-// index.html এর ভেতর এই অংশটুকু আপডেট করো
-window.openDetails = (id) => {
-    window.location.href = `post.html?id=${id}`;
-};
-
-window.openProfile = (uid) => {
-    window.location.href = `profile.html?uid=${uid}`;
-};
 
 </body>
 </html>
