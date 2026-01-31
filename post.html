@@ -3,55 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>আলোচনা - লেখক ফোরাম</title>
+    <title>পোস্ট - লেখক ফোরাম</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: { colors: { darkBg: '#0b0e11', darkCard: '#15191c', darkBorder: '#2d333b', accent: '#3498db', featured: '#f1c40f' } } }
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
         }
     </script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
+        .reply-card { border-left: 2px solid #e5e7eb; }
+        .dark .reply-card { border-left-color: #2d333b; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-10">
 
-<nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
-    <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-        <button onclick="history.back()" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-lg flex items-center gap-2 text-sm font-bold">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            পিছনে
+<main class="max-w-2xl mx-auto px-4 py-6">
+    <div class="flex items-center gap-4 mb-6">
+        <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
         </button>
-        <h1 class="text-xl font-black text-accent tracking-tighter cursor-pointer" onclick="location.href='index.html'">লেখক.</h1>
-        <div id="auth-section">
-            <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent hidden">
-        </div>
-    </div>
-</nav>
-
-<main class="max-w-4xl mx-auto px-4 py-6">
-    <div id="post-details" class="bg-white dark:bg-darkCard rounded-2xl border dark:border-darkBorder p-6 shadow-sm">
-        <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div></div>
+        <h1 class="text-xl font-bold">বিস্তারিত</h1>
     </div>
 
-    <div id="reply-input-section" class="mt-6 hidden">
-        <div class="bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm">
-            <div id="reply-tag-ui" class="hidden text-[10px] text-accent font-bold mb-2"></div>
-            <div class="flex gap-2">
-                <input id="reply-input" type="text" placeholder="আপনার মন্তব্য লিখুন..." class="flex-1 bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 ring-accent">
-                <button onclick="postReply()" class="bg-accent text-white px-6 py-2 rounded-lg text-sm font-bold">পাঠান</button>
+    <div id="main-post-container">
+        <div class="flex justify-center py-10"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
+    </div>
+
+    <div class="mt-8">
+        <h3 class="text-lg font-bold mb-4">মন্তব্যসমূহ</h3>
+        <div id="replies-container" class="space-y-4">
             </div>
-        </div>
     </div>
 </main>
 
-<div id="toast"></div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, collection, addDoc, serverTimestamp, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, doc, onSnapshot, collection, query, where, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
@@ -64,85 +63,71 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
+    // Get Post ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
-    window.currentUser = null;
 
-    onAuthStateChanged(auth, (user) => {
-        window.currentUser = user;
-        if(user) {
-            document.getElementById('user-avatar').src = user.photoURL;
-            document.getElementById('user-avatar').classList.remove('hidden');
-            document.getElementById('reply-input-section').classList.remove('hidden');
+    if (!postId) {
+        location.href = 'index.html';
+    }
+
+    // Load Main Post
+    onSnapshot(doc(db, BASE_PATH, postId), (docSnap) => {
+        if (docSnap.exists()) {
+            const p = docSnap.data();
+            document.getElementById('main-post-container').innerHTML = `
+                <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <img src="${p.photoURL || 'https://via.placeholder.com/40'}" class="w-10 h-10 rounded-full">
+                        <div>
+                            <p class="text-sm font-bold">${p.name || 'Anonymous'}</p>
+                            <p class="text-[10px] text-gray-400">${p.at ? new Date(p.at.seconds * 1000).toLocaleString('bn-BD') : ''}</p>
+                        </div>
+                    </div>
+                    <p class="text-base leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap">${p.msg || ''}</p>
+                    <div class="mt-6 pt-4 border-t dark:border-darkBorder flex items-center gap-6">
+                        <div class="flex items-center gap-1">
+                            <span class="text-accent font-bold">${p.votes || 0}</span>
+                            <span class="text-xs text-gray-400">ভোট</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            document.getElementById('main-post-container').innerHTML = `<p class="text-center py-10 text-gray-400">পোস্টটি খুঁজে পাওয়া যায়নি।</p>`;
         }
     });
 
-    if (postId) {
-        // ১. মূল পোস্ট লোড করা
-        onSnapshot(doc(db, BASE_PATH, postId), (docSnap) => {
-            if(docSnap.exists()) {
-                const post = docSnap.data();
-                renderPost(post);
-                // ২. ওই পোস্টের সব কমেন্ট লোড করা
-                loadComments(postId);
-            } else {
-                document.getElementById('post-details').innerHTML = "পোস্টটি খুঁজে পাওয়া যায়নি।";
-            }
-        });
-    }
+    // Load Replies
+    const q = query(collection(db, BASE_PATH), where("parentId", "==", postId), orderBy("at", "asc"));
+    onSnapshot(q, (snapshot) => {
+        const replies = snapshot.docs.map(d => d.data());
+        const container = document.getElementById('replies-container');
+        
+        if (replies.length === 0) {
+            container.innerHTML = `<p class="text-sm text-gray-400 italic">এখনো কোনো মন্তব্য নেই।</p>`;
+            return;
+        }
 
-    function renderPost(post) {
-        document.getElementById('post-details').innerHTML = `
-            <div class="flex items-center gap-3 mb-6">
-                <img src="${post.photoURL}" class="w-12 h-12 rounded-xl border-2 border-accent">
-                <div>
-                    <h2 class="font-black text-lg">${post.name}</h2>
-                    <p class="text-xs text-gray-400 font-bold uppercase">${post.category || 'সাধারণ'}</p>
+        container.innerHTML = replies.map(r => `
+            <div class="reply-card pl-4 py-1">
+                <div class="bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <img src="${r.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
+                        <span class="text-[11px] font-bold text-gray-500">${r.name || 'Anonymous'}</span>
+                    </div>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">${r.msg || ''}</p>
                 </div>
             </div>
-            <div class="text-lg leading-relaxed text-gray-800 dark:text-gray-200 border-b dark:border-darkBorder pb-6 mb-6">
-                ${DOMPurify.sanitize(marked.parse(post.msg))}
-            </div>
-            <div id="comments-container" class="space-y-4">
-                <h3 class="font-bold text-sm text-accent">মন্তব্যসমূহ</h3>
-                <div id="comments-list"></div>
-            </div>`;
-    }
+        `).join('');
+    });
 
-    async function loadComments(id) {
-        const q = query(collection(db, BASE_PATH), where("parentId", "==", id));
-        onSnapshot(q, (snap) => {
-            const list = document.getElementById('comments-list');
-            list.innerHTML = snap.docs.map(d => {
-                const c = d.data();
-                return `
-                <div class="flex gap-3 bg-gray-50 dark:bg-darkBg p-3 rounded-xl border dark:border-darkBorder">
-                    <img src="${c.photoURL}" class="w-8 h-8 rounded-lg">
-                    <div class="flex-1 text-xs">
-                        <div class="font-bold mb-1">${c.name}</div>
-                        <div class="text-gray-600 dark:text-gray-300">${DOMPurify.sanitize(marked.parse(c.msg))}</div>
-                    </div>
-                </div>`;
-            }).join('') || '<p class="text-gray-400 text-[10px] py-4">এখনো কোনো মন্তব্য নেই।</p>';
-        });
+    // Auto Dark Mode
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
     }
-
-    window.postReply = async () => {
-        const msg = document.getElementById('reply-input').value.trim();
-        if(!msg || !currentUser) return;
-        await addDoc(collection(db, BASE_PATH), {
-            name: currentUser.displayName,
-            msg,
-            parentId: postId,
-            photoURL: currentUser.photoURL,
-            userId: currentUser.uid,
-            at: serverTimestamp()
-        });
-        document.getElementById('reply-input').value = '';
-    };
 </script>
 </body>
 </html>
