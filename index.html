@@ -24,7 +24,7 @@
                         darkBg: '#0b0e11', 
                         darkCard: '#15191c', 
                         darkBorder: '#2d333b', 
-                        accent: '#1d9bf0' // টুইটার ব্লু কালার
+                        accent: '#1d9bf0'
                     }
                 } 
             }
@@ -71,7 +71,7 @@
             transform: scale(0.9);
         }
 
-        /* টুইটার স্টাইল FAB */
+        /* আপডেট করা FAB বাটন */
         .fab-post { 
             position: fixed; 
             bottom: 85px; 
@@ -84,15 +84,18 @@
             display: none; 
             align-items: center; 
             justify-content: center; 
-            box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 28px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
             cursor: pointer; 
             z-index: 90; 
-            transition: background-color 0.2s, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            /* সাদা বর্ডার দাগ */
+            border: 2px solid white;
         }
 
         .fab-post:hover {
+            transform: scale(1.1) rotate(90deg);
             background-color: #1a8cd8;
-            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
         }
 
         .fab-post:active {
@@ -128,7 +131,7 @@
         </div>
 
         <div class="flex justify-center cursor-pointer" onclick="location.href='index.html'">
-            <h1 class="text-2xl font-black text-accent tracking-tighter">লেখক.</h1>
+            <h1 class="text-2xl font-black text-accent tracking-tighter">লেখনী.</h1>
         </div>
 
         <div class="flex justify-end">
@@ -163,9 +166,11 @@
     </div>
 </div>
 
-<!-- টুইটার স্টাইল পোস্ট বাটন -->
+<!-- পোস্ট বাটন (+) -->
 <div id="fab-post" class="fab-post" onclick="location.href='compose.html'">
-    <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current"><g><path d="M23 3.5c0-.276-.224-.5-.5-.5h-2c-.276 0-.5.224-.5.5v2.293L17.293 3h-2.586L18 6.293V8.5c0 .276.224.5.5.5h2c.276 0 .5-.224.5-.5V6.207L22.707 4.5c.188-.188.293-.442.293-.707zM15.707 13.293L13 10.586V4.5c0-.276-.224-.5-.5-.5h-2c-.276 0-.5.224-.5.5v7.293l-3.293-3.293c-.391-.391-1.023-.391-1.414 0l-1.5 1.5c-.391.391-.391 1.023 0 1.414l9 9c.188.188.442.293.707.293s.52-.105.707-.293l9-9c.391-.391.391-1.023 0-1.414l-1.5-1.5c-.391-.391-1.024-.391-1.414 0l-2.086 2.086z"></path><path d="M20 19v1c0 .552-.448 1-1 1H5c-.552 0-1-.448-1-1v-1c0-.552.448-1 1-1h14c.552 0 1 .448 1 1z"></path></g></svg>
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path>
+    </svg>
 </div>
 
 <script type="module">
