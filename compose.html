@@ -1,1 +1,133 @@
-.
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>নতুন পোস্ট তৈরি করুন</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { colors: { darkBg: '#0b0e11', darkCard: '#15191c', darkBorder: '#2d333b', accent: '#3498db' } } }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+
+<nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
+    <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+        <button onclick="history.back()" class="text-gray-500 hover:text-accent flex items-center gap-1 font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            ফিরে যান
+        </button>
+        <h1 class="text-sm font-bold uppercase tracking-widest text-gray-400">নতুন আলোচনা</h1>
+        <div class="w-10"></div> </div>
+</nav>
+
+<main class="max-w-2xl mx-auto px-4 py-8">
+    <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm">
+        <div id="user-preview" class="flex items-center gap-3 mb-6">
+            <img id="post-avatar" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-xl border-2 border-accent">
+            <div>
+                <p id="post-username" class="text-sm font-bold">লোড হচ্ছে...</p>
+                <p class="text-[10px] text-gray-400 uppercase font-black">প্রকাশক</p>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="block text-[10px] font-black uppercase text-gray-400 mb-1">বিভাগ নির্বাচন করুন</label>
+                <select id="post-category" class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-xl px-4 py-3 text-sm focus:ring-2 ring-accent outline-none">
+                    <option value="সাধারণ">সাধারণ</option>
+                    <option value="গল্প">গল্প</option>
+                    <option value="কবিতা">কবিতা</option>
+                    <option value="তথ্য">তথ্য</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-black uppercase text-gray-400 mb-1">আপনার লেখা</label>
+                <textarea id="post-msg" rows="6" placeholder="এখানে লিখতে শুরু করুন..." class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-xl px-4 py-3 text-sm focus:ring-2 ring-accent outline-none resize-none"></textarea>
+            </div>
+
+            <button onclick="submitPost()" id="submit-btn" class="w-full bg-accent text-white font-bold py-3 rounded-xl shadow-lg shadow-accent/20 hover:scale-[1.02] active:scale-95 transition-all">
+                পোস্ট করুন
+            </button>
+        </div>
+    </div>
+</main>
+
+<div id="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    // তোমার Firebase Config (আগের ফাইল থেকে)
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
+        authDomain: "myblogcomments-22808.firebaseapp.com",
+        projectId: "myblogcomments-22808",
+        storageBucket: "myblogcomments-22808.firebasestorage.app",
+        messagingSenderId: "1067155293144",
+        appId: "1:1067155293144:web:8f10b016462b52d36628ad"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    let currentUser = null;
+
+    // ইউজার চেক
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('post-avatar').src = user.photoURL;
+            document.getElementById('post-username').innerText = user.displayName;
+        } else {
+            window.location.href = 'index.html'; // লগইন না থাকলে হোমে পাঠিয়ে দেবে
+        }
+    });
+
+    window.submitPost = async () => {
+        const msg = document.getElementById('post-msg').value.trim();
+        const category = document.getElementById('post-category').value;
+        const btn = document.getElementById('submit-btn');
+
+        if (!msg) return showToast('কিছু তো লিখুন!');
+
+        btn.disabled = true;
+        btn.innerText = 'পোস্ট হচ্ছে...';
+
+        try {
+            await addDoc(collection(db, 'blog_comments/pages/forum_v2_voted'), {
+                name: currentUser.displayName,
+                photoURL: currentUser.photoURL,
+                uid: currentUser.uid,
+                msg: msg,
+                category: category,
+                votes: 0,
+                status: 'approved', // সরাসরি অ্যাপ্রুভড হিসেবে দিচ্ছি
+                at: serverTimestamp()
+            });
+            showToast('পোস্ট সফল হয়েছে!');
+            setTimeout(() => window.location.href = 'index.html', 1500);
+        } catch (e) {
+            showToast('কিছু একটা সমস্যা হয়েছে');
+            btn.disabled = false;
+            btn.innerText = 'পোস্ট করুন';
+        }
+    };
+
+    window.showToast = (msg) => {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.opacity = '1';
+        setTimeout(() => t.style.opacity = '0', 3000);
+    };
+</script>
+
+</body>
+</html>
