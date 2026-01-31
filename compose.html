@@ -51,10 +51,6 @@
     </div>
 
     <div class="mb-4">
-        <input type="text" id="post-title" placeholder="পোস্টের শিরোনাম দিন" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-lg font-bold outline-none focus:border-accent transition-all shadow-sm">
-    </div>
-
-    <div class="mb-4">
         <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition-all shadow-sm">
     </div>
 
@@ -110,6 +106,7 @@
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
+    // Quill Initialization
     const quill = new Quill('#editor', {
         theme: 'snow',
         placeholder: 'আপনার মনের কথা এখানে লিখুন...',
@@ -122,41 +119,43 @@
         }
     });
 
+    // Overriding the image handler to use a URL prompt
+    const toolbar = quill.getModule('toolbar');
+    toolbar.addHandler('image', () => {
+        const url = prompt('ছবির সরাসরি লিঙ্ক (Image URL) দিন:');
+        if (url) {
+            const range = quill.getSelection();
+            quill.insertEmbed(range ? range.index : 0, 'image', url);
+        }
+    });
+
     let currentUser = null;
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
             const savedDraft = localStorage.getItem('post_draft');
-            const savedTitle = localStorage.getItem('post_title_draft');
             if (savedDraft) quill.root.innerHTML = savedDraft;
-            if (savedTitle) document.getElementById('post-title').value = savedTitle;
         } else {
-            alert('পোস্ট করতে আগে লগইন করুন!');
             location.href = 'index.html';
         }
-    });
-
-    document.getElementById('post-title').addEventListener('input', (e) => {
-        localStorage.setItem('post_title_draft', e.target.value);
     });
 
     quill.on('text-change', () => {
         localStorage.setItem('post_draft', quill.root.innerHTML);
         document.getElementById('char-count').innerText = `${quill.getText().trim().length} / ২০০০ শব্দ`;
         document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
-        setTimeout(() => document.getElementById('draft-status').innerText = "সেভ হয়েছে", 1000);
+        setTimeout(() => {
+            const status = document.getElementById('draft-status');
+            if(status) status.innerText = "সেভ হয়েছে";
+        }, 1000);
     });
 
     document.getElementById('preview-btn').onclick = () => {
-        const title = document.getElementById('post-title').value || "শিরোনামহীন";
         const content = quill.root.innerHTML;
         const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
         
-        document.getElementById('preview-content').innerHTML = `
-            <h1 class="text-2xl font-bold mb-4">${title}</h1>
-            <div>${content}</div>
-        `;
+        document.getElementById('preview-content').innerHTML = `<div>${content}</div>`;
         document.getElementById('preview-tags').innerText = tags.join(' ');
         document.getElementById('preview-modal').classList.remove('hidden');
     };
@@ -165,20 +164,19 @@
     const loader = document.getElementById('loading-overlay');
 
     submitBtn.onclick = async () => {
-        const title = document.getElementById('post-title').value.trim();
         const msgHtml = quill.root.innerHTML;
         const msgText = quill.getText().trim();
         const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
 
-        if (!title) { alert('একটি শিরোনাম দিন!'); return; }
-        if (!msgText || msgText === "") { alert('কিছু তো লিখুন!'); return; }
+        if (!msgText || msgText === "") { 
+            return; 
+        }
         if (!currentUser) return;
 
         loader.classList.remove('hidden');
 
         try {
             await addDoc(collection(db, BASE_PATH), {
-                title: title,
                 msg: msgHtml,
                 hashtags: tags,
                 name: currentUser.displayName,
@@ -191,14 +189,9 @@
             });
             
             localStorage.removeItem('post_draft');
-            localStorage.removeItem('post_title_draft');
-            
-            alert('সফলভাবে পাবলিশ করা হয়েছে!');
             location.href = 'index.html';
         } catch (error) {
             console.error("Error adding document: ", error);
-            alert('ত্রুটি হয়েছে, আবার চেষ্টা করুন।');
-        } finally {
             loader.classList.add('hidden');
         }
     };
@@ -209,3 +202,4 @@
 </script>
 </body>
 </html>
+
