@@ -28,10 +28,16 @@
     <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         <div class="flex items-center gap-2 cursor-pointer" onclick="location.href='index.html'">
             <h1 class="text-xl font-black text-accent tracking-tighter">লেখন. 📝</h1>
-            <span id="admin-badge" class="hidden bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase cursor-pointer hover:bg-red-600 transition-colors" onclick="location.href='control-panel.html'">Admin Panel</span>
+            <span class="bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Admin</span>
         </div>
         
         <div class="flex items-center gap-4">
+            <button class="text-gray-500 dark:text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+            
             <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
                 <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
             </button>
@@ -39,7 +45,7 @@
             <div id="auth-section">
                 <button id="login-ui" onclick="googleLogin()" class="hidden bg-accent text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-lg">Login</button>
                 <div id="user-info-wrapper" class="flex items-center gap-2 cursor-pointer relative" onclick="toggleUserDropdown(event)">
-                    <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent" src="">
+                    <img id="user-avatar" class="w-8 h-8 rounded-lg border-2 border-accent" src="https://via.placeholder.com/32">
                     <div id="user-dropdown" class="dropdown-menu">
                         <button onclick="openProfile(window.currentUser.uid)" class="w-full text-left px-4 py-3 text-xs font-bold hover:bg-gray-50 dark:hover:bg-darkBg">আমার প্রোফাইল</button>
                         <button onclick="googleLogout()" class="w-full text-left px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">লগ আউট</button>
@@ -53,12 +59,17 @@
 <main class="max-w-4xl mx-auto px-4 py-6">
     <div class="flex items-center gap-4 mb-6 overflow-x-auto pb-1 scrollbar-hide border-b dark:border-darkBorder">
         <button id="filter-latest" onclick="setFilter('latest')" class="filter-btn filter-active flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             সর্বশেষ
         </button>
+        
         <button id="filter-popular" onclick="setFilter('popular')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500 hover:text-accent">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
             জনপ্রিয়
         </button>
+
         <button id="filter-featured" onclick="setFilter('featured')" class="filter-btn flex items-center gap-2 pb-3 px-4 text-sm font-bold transition-all border-b-2 border-transparent text-gray-500 hover:text-accent">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-7.714 2.143L11 21l-2.286-6.857L1 12l7.714-2.143L11 3z"></path></svg>
             ফিচারড
         </button>
     </div>
@@ -71,6 +82,8 @@
 <div id="fab-post" class="fab-post" onclick="handleFabClick()">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
 </div>
+
+<div id="toast"></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
@@ -91,7 +104,6 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
-    const ADMIN_EMAIL = "phys.arif@gmail.com";
 
     window.currentUser = null;
     let allData = [];
@@ -105,12 +117,8 @@
     onAuthStateChanged(auth, (user) => {
         window.currentUser = user;
         const isUser = !!user;
-        const isAdmin = user && user.email === ADMIN_EMAIL;
-
-        document.getElementById('admin-badge').classList.toggle('hidden', !isAdmin);
         document.getElementById('user-info-wrapper').classList.toggle('hidden', !isUser);
         document.getElementById('login-ui').classList.toggle('hidden', isUser);
-        
         if (isUser) {
             document.getElementById('user-avatar').src = user.photoURL;
             document.getElementById('fab-post').style.display = 'flex';
@@ -127,24 +135,34 @@
         else if (currentFilter === 'featured') posts = posts.filter(p => p.featured);
         else posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
 
+        if(posts.length === 0) {
+            container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কোনো পোস্ট পাওয়া যায়নি</div>`;
+            return;
+        }
+
         container.innerHTML = posts.map(p => `
             <div class="forum-card flex gap-4 bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm transition-all" onclick="openDetails('${p.id}')">
                 <div class="flex flex-col items-center gap-1 min-w-[32px] bg-gray-50 dark:bg-darkBg rounded-lg p-1">
-                    <button class="text-gray-400 hover:text-accent"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
+                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-accent"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625l-8-10z"></path></svg></button>
                     <span class="text-xs font-bold text-accent">${p.votes || 0}</span>
+                    <button onclick="event.stopPropagation();" class="text-gray-400 hover:text-red-500"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20.941 11a1.001 1.001 0 0 0-.781-1.625H16V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v6.375H4a1.001 1.001 0 0 0-.781 1.625l8 10c.381.475 1.181.475 1.562 0l8-10z"></path></svg></button>
                 </div>
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-2">
-                        <img src="${p.photoURL}" class="w-5 h-5 rounded-full">
+                        <img src="${p.photoURL || 'https://via.placeholder.com/20'}" class="w-5 h-5 rounded-full">
                         <span class="text-[11px] font-bold text-gray-500 uppercase">${p.name}</span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent ml-auto">${p.category || 'General'}</span>
+                        <span class="text-[10px] text-gray-300">• কিছুক্ষণ আগে</span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 bg-gray-100 dark:bg-darkBg rounded text-accent ml-auto">${p.category || 'সাধারণ'}</span>
                     </div>
                     <p class="text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">${p.msg}</p>
                 </div>
             </div>`).join('');
     };
 
-    window.openDetails = (id) => { if(id) window.location.href = `post.html?id=${id}`; };
+    window.openDetails = (id) => {
+        if(id) window.location.href = `post.html?id=${id}`;
+    };
+
     window.setFilter = (f) => {
         currentFilter = f;
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -162,6 +180,7 @@
     window.googleLogout = () => signOut(auth).then(() => location.reload());
     window.toggleUserDropdown = (e) => { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('dropdown-active'); };
     window.closeAllDropdowns = () => document.getElementById('user-dropdown')?.classList.remove('dropdown-active');
+    window.openProfile = (uid) => { window.location.href = `profile.html?uid=${uid}`; };
 
     const setDarkMode = (dark) => {
         document.documentElement.classList.toggle('dark', dark);
