@@ -575,30 +575,21 @@
     function render() {
         const container = document.getElementById('posts-container');
         const loadMoreContainer = document.getElementById('load-more-container');
-        
         let posts = allData.filter(c => !c.parentId);
-        
         if(currentFilter === 'pending') posts = posts.filter(p => p.status === 'pending');
         else if(currentFilter === 'featured') posts = posts.filter(p => p.status === 'approved' && p.isFeatured === true);
         else if(currentFilter === 'bookmarks') posts = posts.filter(p => userBookmarks.includes(p.id));
         else if(currentFilter === 'category' && currentCategory) posts = posts.filter(p => p.status === 'approved' && p.category === currentCategory);
         else posts = posts.filter(p => p.status === 'approved');
-        
         posts.sort((a, b) => currentFilter === 'popular' ? (b.votes || 0) - (a.votes || 0) : (b.at?.seconds || 0) - (a.at?.seconds || 0));
-
         const totalPosts = posts.length;
         const paginatedPosts = posts.slice(0, visibleCount);
-
         if(totalPosts === 0) {
             container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`;
             if(loadMoreContainer) loadMoreContainer.classList.add('hidden');
             return;
         }
-
-        if(loadMoreContainer) {
-            loadMoreContainer.classList.toggle('hidden', visibleCount >= totalPosts);
-        }
-
+        if(loadMoreContainer) { loadMoreContainer.classList.toggle('hidden', visibleCount >= totalPosts); }
         container.innerHTML = paginatedPosts.map(c => {
             const isUpvoted = c.upvoters && currentUser && c.upvoters.includes(currentUser.uid);
             const isDownvoted = c.downvoters && currentUser && c.downvoters.includes(currentUser.uid);
@@ -638,10 +629,8 @@
         document.getElementById('edit-post-btn').classList.toggle('hidden', !(isAdmin || isOwner));
         document.getElementById('admin-approve-btn').classList.toggle('hidden', !(isAdmin && post.status === 'pending'));
         const featureIcon = document.getElementById('feature-icon-svg'); featureIcon.setAttribute('fill', post.isFeatured ? 'currentColor' : 'none');
-        
         const allReplies = allData.filter(r => r.parentId === activeThreadId).sort((a,b) => (a.at?.seconds || 0) - (b.at?.seconds || 0));
         const rootComments = allReplies.filter(r => !r.replyToId);
-        
         const renderComment = (comment, isReply = false) => {
             const nestedReplies = allReplies.filter(r => r.replyToId === comment.id);
             const canEdit = isAdmin || (currentUser && comment.userId === currentUser.uid);
@@ -660,7 +649,6 @@
                     ${nestedReplies.map(nr => renderComment(nr, true)).join('')}
                 </div>`;
         };
-
         document.getElementById('details-content').innerHTML = `
             <div class="mb-6">
                 <div class="flex items-center justify-between mb-4"> 
@@ -676,17 +664,14 @@
     }
 
     window.prepareReply = (id, userName) => { 
-        replyingToId = id; 
-        replyingToName = userName; 
+        replyingToId = id; replyingToName = userName; 
         document.getElementById('replying-to-text').innerText = `${userName} কে উত্তর দিচ্ছেন`; 
         document.getElementById('reply-tag-ui').classList.remove('hidden'); 
         document.getElementById('reply-input').focus(); 
     };
 
     window.cancelReplyTag = () => { 
-        replyingToId = null; 
-        replyingToName = null; 
-        editCommentId = null; 
+        replyingToId = null; replyingToName = null; editCommentId = null; 
         document.getElementById('reply-tag-ui').classList.add('hidden'); 
         document.getElementById('reply-send-btn').innerText = "পাঠান"; 
     };
@@ -701,24 +686,12 @@
         let upvoters = data.upvoters || [];
         let downvoters = data.downvoters || [];
         let currentVotes = data.votes || 0;
-        
         if (val === 1) { 
-            if (upvoters.includes(uid)) { 
-                upvoters = upvoters.filter(item => item !== uid); currentVotes -= 1; 
-            } else { 
-                if (downvoters.includes(uid)) { downvoters = downvoters.filter(item => item !== uid); currentVotes += 2; } 
-                else { currentVotes += 1; } 
-                upvoters.push(uid); 
-            } 
-        } 
-        else if (val === -1) { 
-            if (downvoters.includes(uid)) { 
-                downvoters = downvoters.filter(item => item !== uid); currentVotes += 1; 
-            } else { 
-                if (upvoters.includes(uid)) { upvoters = upvoters.filter(item => item !== uid); currentVotes -= 2; } 
-                else { currentVotes -= 1; } 
-                downvoters.push(uid); 
-            } 
+            if (upvoters.includes(uid)) { upvoters = upvoters.filter(item => item !== uid); currentVotes -= 1; } 
+            else { if (downvoters.includes(uid)) { downvoters = downvoters.filter(item => item !== uid); currentVotes += 2; } else { currentVotes += 1; } upvoters.push(uid); } 
+        } else if (val === -1) { 
+            if (downvoters.includes(uid)) { downvoters = downvoters.filter(item => item !== uid); currentVotes += 1; } 
+            else { if (upvoters.includes(uid)) { upvoters = upvoters.filter(item => item !== uid); currentVotes -= 2; } else { currentVotes -= 1; } downvoters.push(uid); } 
         }
         try { await updateDoc(postRef, { votes: currentVotes, upvoters, downvoters }); } catch (e) { console.error("Error voting:", e); }
     };
@@ -727,43 +700,25 @@
         const post = allData.find(d => d.id === activeThreadId);
         if(!post) return;
         const shareUrl = window.location.origin + window.location.pathname + '?post=' + activeThreadId;
-        try { 
-            if (navigator.share) { 
-                await navigator.share({ title: 'লেখক ফোরাম', text: post.msg.substring(0, 100) + '...', url: shareUrl }); 
-            } else { 
-                await navigator.clipboard.writeText(shareUrl); 
-                showToast('লিংক কপি করা হয়েছে!'); 
-            } 
-        } catch (e) { console.log(e); }
+        try { if (navigator.share) { await navigator.share({ title: 'লেখক ফোরাম', text: post.msg.substring(0, 100) + '...', url: shareUrl }); } else { await navigator.clipboard.writeText(shareUrl); showToast('লিংক কপি করা হয়েছে!'); } } catch (e) { console.log(e); }
     };
 
     window.openDetails = (id) => { 
-        activeThreadId = id; 
-        cancelReplyTag(); 
+        activeThreadId = id; cancelReplyTag(); 
         document.getElementById('details-view').style.display = 'block'; 
-        updateDetails(); 
-        updateBookmarkIcon(); 
+        updateDetails(); updateBookmarkIcon(); 
     };
 
-    window.closeView = () => { 
-        document.getElementById('details-view').style.display = 'none'; 
-        activeThreadId = null; 
-    };
+    window.closeView = () => { document.getElementById('details-view').style.display = 'none'; activeThreadId = null; };
 
     window.togglePostModal = (show) => { 
-        if(!show) { 
-            editPostId = null; 
-            document.getElementById('modal-title').innerText = "নতুন আলোচনা"; 
-            document.getElementById('user-comment').value = ''; 
-            document.getElementById('post-submit-btn').innerText = "পাবলিশ"; 
-        }
+        if(!show) { editPostId = null; document.getElementById('modal-title').innerText = "নতুন আলোচনা"; document.getElementById('user-comment').value = ''; document.getElementById('post-submit-btn').innerText = "পাবলিশ"; }
         document.getElementById('post-modal-overlay').style.display = show ? 'flex' : 'none'; 
     };
     
     window.showToast = (msg) => { 
         const t = document.getElementById('toast'); 
-        t.innerText = msg; 
-        t.style.opacity = '1'; 
+        t.innerText = msg; t.style.opacity = '1'; 
         setTimeout(() => t.style.opacity = '0', 3000); 
     };
 
