@@ -12,10 +12,7 @@
             theme: { 
                 extend: { 
                     colors: { 
-                        darkBg: '#0b0e11', 
-                        darkCard: '#15191c', 
-                        darkBorder: '#2d333b', 
-                        accent: '#3498db'
+                        darkBg: '#0b0e11', darkCard: '#15191c', darkBorder: '#2d333b', accent: '#3498db'
                     } 
                 } 
             }
@@ -50,10 +47,6 @@
         </div>
     </div>
 
-    <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-bold">মডারেটর অ্যাকশন প্যানেল</h2>
-    </div>
-
     <div id="admin-posts-container" class="space-y-4">
         <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
     </div>
@@ -77,18 +70,15 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
+    const ADMIN_EMAIL = "phys.arif@gmail.com";
 
-    // *** এখানে তোমার ইমেইলটি দাও ***
-    const ADMIN_EMAIL = "your-email@gmail.com"; 
-
-    // সিকিউরিটি চেক
     onAuthStateChanged(auth, (user) => {
         if (user && user.email === ADMIN_EMAIL) {
             document.getElementById('admin-body').classList.remove('hidden');
-            document.getElementById('admin-name').innerText = user.displayName;
+            document.getElementById('admin-name').innerText = "হ্যালো, আরিফ!";
             loadData();
         } else {
-            alert("আপনার এই পেজে প্রবেশের অনুমতি নেই!");
+            alert("প্রবেশ নিষেধ!");
             window.location.href = "index.html";
         }
     });
@@ -96,61 +86,35 @@
     function loadData() {
         onSnapshot(collection(db, BASE_PATH), (snapshot) => {
             const allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-            
-            // Stats Update
             document.getElementById('total-posts').innerText = allData.length;
             document.getElementById('pending-count').innerText = allData.filter(p => p.status === 'pending').length;
-            document.getElementById('featured-count').innerText = allData.filter(p => p.featured === true).length;
-
+            document.getElementById('featured-count').innerText = allData.filter(p => p.featured).length;
             renderAdminPosts(allData);
         });
     }
 
     function renderAdminPosts(posts) {
         const container = document.getElementById('admin-posts-container');
-        // লেটেস্ট পোস্ট উপরে দেখানোর জন্য সর্ট করা
         posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
-
         container.innerHTML = posts.map(p => `
-            <div class="bg-white dark:bg-darkCard p-5 rounded-xl border dark:border-darkBorder shadow-sm flex flex-col md:flex-row gap-4 items-start">
-                <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-2">
-                        <img src="${p.photoURL}" class="w-6 h-6 rounded-full">
-                        <span class="text-xs font-bold">${p.name}</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded ${p.status === 'pending' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'} font-bold uppercase">${p.status}</span>
-                        ${p.featured ? '<span class="text-[10px] px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded font-bold uppercase">Featured</span>' : ''}
-                    </div>
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">${p.msg}</p>
-                    
-                    <div class="flex flex-wrap gap-2">
-                        ${p.status === 'pending' ? 
-                            `<button onclick="updateStatus('${p.id}', 'approved')" class="bg-green-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold">Approve</button>` : ''
-                        }
-                        
-                        <button onclick="toggleFeature('${p.id}', ${p.featured || false})" class="bg-blue-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold">
-                            ${p.featured ? 'Unfeature' : 'Feature'}
-                        </button>
-
-                        <button onclick="deletePost('${p.id}')" class="bg-red-500 text-white px-4 py-1.5 rounded-lg text-xs font-bold">Delete</button>
-                    </div>
+            <div class="bg-white dark:bg-darkCard p-5 rounded-xl border dark:border-darkBorder shadow-sm">
+                <div class="flex items-center gap-2 mb-2">
+                    <img src="${p.photoURL}" class="w-6 h-6 rounded-full">
+                    <span class="text-xs font-bold">${p.name}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded ${p.status === 'pending' ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'} font-bold uppercase">${p.status}</span>
                 </div>
-            </div>
-        `).join('');
+                <p class="text-sm text-gray-700 dark:text-gray-300 mb-4">${p.msg}</p>
+                <div class="flex gap-2">
+                    ${p.status === 'pending' ? `<button onclick="updateStatus('${p.id}', 'approved')" class="bg-green-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">APPROVE</button>` : ''}
+                    <button onclick="toggleFeature('${p.id}', ${p.featured || false})" class="bg-blue-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">${p.featured ? 'UNFEATURE' : 'FEATURE'}</button>
+                    <button onclick="deletePost('${p.id}')" class="bg-red-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">DELETE</button>
+                </div>
+            </div>`).join('');
     }
 
-    window.updateStatus = async (id, status) => {
-        await updateDoc(doc(db, BASE_PATH, id), { status });
-    };
-
-    window.toggleFeature = async (id, currentStatus) => {
-        await updateDoc(doc(db, BASE_PATH, id), { featured: !currentStatus });
-    };
-
-    window.deletePost = async (id) => {
-        if(confirm('আপনি কি নিশ্চিত যে পোস্টটি ডিলিট করতে চান?')) {
-            await deleteDoc(doc(db, BASE_PATH, id));
-        }
-    };
+    window.updateStatus = async (id, status) => { await updateDoc(doc(db, BASE_PATH, id), { status }); };
+    window.toggleFeature = async (id, cur) => { await updateDoc(doc(db, BASE_PATH, id), { featured: !cur }); };
+    window.deletePost = async (id) => { if(confirm('ডিলিট করবেন?')) await deleteDoc(doc(db, BASE_PATH, id)); };
 </script>
 </body>
 </html>
