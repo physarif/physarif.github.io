@@ -134,7 +134,7 @@
     </div>
 </div>
 
-<div id="fab-post" class="fab-post" onclick="location.href='create-post.html'">
+<div id="fab-post" class="fab-post" onclick="location.href='compose.html'">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
 </div>
 
@@ -189,7 +189,8 @@
     };
 
     window.closeDropdowns = (e) => {
-        document.getElementById('filter-dropdown').classList.remove('show');
+        const dropdown = document.getElementById('filter-dropdown');
+        if (dropdown) dropdown.classList.remove('show');
     };
 
     window.applyFilter = (filter) => {
