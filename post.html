@@ -3,16 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নতুন লেখা - Summernote</title>
+    <title>পোস্ট - লেখক ফোরাম</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
-    
-    <!-- jQuery required for Summernote -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-    <!-- Summernote Lite -->
-    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -30,74 +23,78 @@
     </script>
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
-        .note-editor { border-radius: 12px !important; overflow: hidden; border: 1px solid #2d333b !important; }
-        
-        /* টুলবার কাস্টমাইজেশন */
-        .note-toolbar { 
-            background: #f8f9fa !important; 
-            border-bottom: 1px solid #2d333b !important; 
-            padding: 10px !important;
-        }
-        
-        /* ফ্লেক্স বক্স ব্যবহার করে দুই লাইন নিশ্চিত করা */
-        .note-toolbar > .note-btn-group {
-            display: inline-block !important;
-            margin-bottom: 5px !important;
-        }
-
-        .dark .note-editor { background: #15191c !important; color: white !important; }
-        .dark .note-toolbar { background: #15191c !important; color: white !important; border-color: #2d333b !important; }
-        .dark .note-btn { background: #2d333b !important; color: white !important; border: none; }
-        .dark .note-editable { background: #15191c !important; color: white !important; }
-        .note-modal-content { border-radius: 16px !important; }
+        .prose img { border-radius: 12px; margin: 1.5rem 0; }
+        .prose iframe { width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; }
+        /* ডার্ক মোডে কন্টেন্টের রং ঠিক রাখা */
+        .dark .prose { color: #d1d5db; }
+        .dark .prose h1, .dark .prose h2, .dark .prose strong { color: #fff; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
 
+<!-- টপ নেভিগেশন -->
+<header class="sticky top-0 z-50 bg-white/80 dark:bg-darkBg/80 backdrop-blur-md border-b dark:border-darkBorder">
+    <div class="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+        <button onclick="history.back()" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <span class="font-bold text-lg">পোস্ট বিস্তারিত</span>
+        <button class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+        </button>
+    </div>
+</header>
+
 <main class="max-w-2xl mx-auto px-4 py-6">
-    <div class="flex items-center justify-between mb-8">
+    <!-- লেখক পরিচিতি -->
+    <div class="flex items-center gap-3 mb-6">
+        <img id="author-img" src="https://ui-avatars.com/api/?name=Author&background=random" alt="" class="w-12 h-12 rounded-full object-cover ring-2 ring-accent/20">
+        <div>
+            <h3 id="author-name" class="font-bold text-base">লেখকের নাম</h3>
+            <p id="post-date" class="text-xs text-gray-500 dark:text-gray-400">১০ মিনিট আগে</p>
+        </div>
+    </div>
+
+    <!-- মূল কন্টেন্ট -->
+    <article class="bg-white dark:bg-darkCard rounded-2xl p-6 border dark:border-darkBorder shadow-sm">
+        <div id="post-content" class="prose prose-lg dark:prose-invert max-w-none leading-relaxed">
+            <!-- কন্টেন্ট এখানে লোড হবে -->
+            <div class="animate-pulse space-y-4">
+                <div class="h-4 bg-gray-200 dark:bg-darkBorder rounded w-3/4"></div>
+                <div class="h-4 bg-gray-200 dark:bg-darkBorder rounded"></div>
+                <div class="h-4 bg-gray-200 dark:bg-darkBorder rounded w-5/6"></div>
+            </div>
+        </div>
+
+        <!-- হ্যাশট্যাগ -->
+        <div id="post-tags" class="mt-6 flex flex-wrap gap-2 text-accent font-medium text-sm">
+            <!-- হ্যাশট্যাগ এখানে আসবে -->
+        </div>
+    </article>
+
+    <!-- ভোট এবং রিঅ্যাকশন সেকশন -->
+    <div class="flex items-center justify-between mt-6 px-2">
         <div class="flex items-center gap-4">
-            <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            <button class="flex items-center gap-2 group">
+                <div class="p-2 bg-gray-100 dark:bg-darkCard rounded-lg group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
+                    <svg class="w-6 h-6 text-gray-600 dark:text-gray-400 group-hover:text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.757c1.246 0 2.25 1.004 2.25 2.25 0 .403-.105.783-.29 1.114l-3 5.4c-.382.688-1.1 1.136-1.896 1.136H7V10l5-5V3.75C12 3.336 12.336 3 12.75 3h.5c.414 0 .75.336.75.75V10z"></path></svg>
+                </div>
+                <span id="vote-count" class="font-bold">০</span>
             </button>
-            <h1 class="text-xl font-bold">নতুন পোস্ট</h1>
+            
+            <div class="flex items-center gap-2 text-gray-500 text-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                <span>১২০ বার দেখা হয়েছে</span>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <button id="preview-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkCard rounded-full text-sm font-bold hover:bg-opacity-80 transition-all">প্রিভিউ</button>
-            <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg hover:bg-opacity-90 transition-all">পাবলিশ</button>
-        </div>
-    </div>
-
-    <div class="mb-4">
-        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কোডিং #JavaScript)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent">
-    </div>
-
-    <div id="editor"></div>
-
-    <div class="flex justify-between items-center mt-3 px-1">
-        <span id="draft-status" class="text-[11px] font-medium text-green-500"></span>
-        <span id="char-count" class="text-xs text-gray-400">০ শব্দ</span>
     </div>
 </main>
 
-<div id="preview-modal" class="fixed inset-0 bg-black/80 hidden z-[110] p-4 flex items-center justify-center backdrop-blur-sm">
-    <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-2xl p-6 max-h-[85vh] overflow-y-auto shadow-2xl">
-        <div class="flex justify-between items-center mb-4 border-b dark:border-darkBorder pb-3">
-            <h2 class="text-lg font-bold">প্রিভিউ</h2>
-            <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="text-gray-500 hover:text-red-500">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-        <div id="preview-content" class="prose dark:prose-invert max-w-none"></div>
-        <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-8 w-full py-3 bg-accent text-white rounded-xl font-bold">ফিরে যান</button>
-    </div>
-</div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
+    // আপনার দেওয়া একই কনফিগ
     const firebaseConfig = {
         apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
         authDomain: "myblogcomments-22808.firebaseapp.com",
@@ -109,72 +106,55 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app);
     const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    let currentUser = null;
+    // URL থেকে পোস্ট আইডি নেওয়া (ধরা যাক index.html থেকে ?id=xxx আসবে)
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
 
-    $(document).ready(function() {
-        $('#editor').summernote({
-            placeholder: 'আপনার মনের কথা এখানে লিখুন...',
-            height: 350,
-            toolbar: [
-                // প্রথম লাইন: ফরম্যাটিং
-                ['style', ['bold', 'italic', 'underline']],
-                ['para', ['ul', 'ol', 'paragraph']],
-                ['linebreak', []], // একটি খালি ব্রেক গ্রপ
-                // দ্বিতীয় লাইন: লিঙ্ক, ফটো, ভিডিও, কোড
-                ['insert', ['link', 'picture', 'video', 'codeview']]
-            ],
-            callbacks: {
-                onChange: function(contents) {
-                    localStorage.setItem('sn_draft', contents);
-                    document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
-                    setTimeout(() => document.getElementById('draft-status').innerText = "সেভ হয়েছে", 1000);
-                }
-            }
-        });
-
-        // টুলবার দুই লাইনে দেখানোর জন্য সামান্য CSS হ্যাক
-        $('.note-toolbar').find('.note-btn-group:has(button[data-original-title="Link"])').before('<div style="display:block; width:100%; height:0; margin: 5px 0; border-top: 1px solid #ddd;"></div>');
-
-        const saved = localStorage.getItem('sn_draft');
-        if (saved) $('#editor').summernote('code', saved);
-    });
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) currentUser = user;
-    });
-
-    document.getElementById('preview-btn').onclick = () => {
-        const content = $('#editor').summernote('code');
-        document.getElementById('preview-content').innerHTML = content;
-        document.getElementById('preview-modal').classList.remove('hidden');
-    };
-
-    document.getElementById('submit-post').onclick = async () => {
-        if (!currentUser) return;
-        const msgHtml = $('#editor').summernote('code');
-        const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
+    async function loadPost() {
+        if (!postId) {
+            document.getElementById('post-content').innerHTML = "পোস্ট পাওয়া যায়নি।";
+            return;
+        }
 
         try {
-            await addDoc(collection(db, BASE_PATH), {
-                msg: msgHtml,
-                hashtags: tags,
-                name: currentUser.displayName,
-                uid: currentUser.uid,
-                at: serverTimestamp(),
-                status: 'pending'
-            });
-            localStorage.removeItem('sn_draft');
-            alert('সফলভাবে পাবলিশ হয়েছে!');
-            location.href = 'index.html';
-        } catch (e) { 
-            alert('পাবলিশ করতে সমস্যা হয়েছে।'); 
-        }
-    };
+            const docRef = doc(db, BASE_PATH, postId);
+            const docSnap = await getDoc(docRef);
 
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                
+                // তথ্য সেট করা
+                document.getElementById('post-content').innerHTML = data.msg;
+                document.getElementById('author-name').innerText = data.name || "অজ্ঞাত লেখক";
+                document.getElementById('author-img').src = data.photoURL || `https://ui-avatars.com/api/?name=${data.name}&background=random`;
+                document.getElementById('vote-count').innerText = data.votes || 0;
+                
+                if (data.hashtags && data.hashtags.length > 0) {
+                    document.getElementById('post-tags').innerHTML = data.hashtags.map(tag => `<span>${tag}</span>`).join(' ');
+                }
+
+                // সময় ফরমেট (সহজ পদ্ধতি)
+                if (data.at) {
+                    const date = data.at.toDate();
+                    document.getElementById('post-date').innerText = date.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+                }
+            } else {
+                document.getElementById('post-content').innerHTML = "দুঃখিত, এই পোস্টটি মুছে ফেলা হয়েছে।";
+            }
+        } catch (error) {
+            console.error("Error fetching post:", error);
+            document.getElementById('post-content').innerHTML = "কন্টেন্ট লোড করতে সমস্যা হয়েছে।";
+        }
+    }
+
+    // ডার্ক মোড চেক
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
+
+    loadPost();
 </script>
 </body>
 </html>
