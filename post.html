@@ -49,7 +49,8 @@
             ফিরে যান
         </button>
         
-        <div id="action-icons" class="flex items-center gap-1"></div>
+        <!-- Icons container with gap-2 for spacing -->
+        <div id="action-icons" class="flex items-center gap-2"></div>
     </div>
 </nav>
 
@@ -119,6 +120,7 @@
     let currentUser = null;
     const ADMIN_EMAIL = "phys.arif@gmail.com";
 
+    // Icons definitions
     const icons = {
         bookmark: `<button class="nav-icon" title="বুকমার্ক"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg></button>`,
         edit: `<button class="nav-icon" title="এডিট"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>`,
@@ -138,8 +140,11 @@
             document.getElementById('current-user-name').innerText = user.displayName;
             document.getElementById('current-user-img').src = user.photoURL;
 
-            let html = icons.bookmark + icons.edit + icons.delete;
-            if (user.email === ADMIN_EMAIL) html = icons.featured + html;
+            // Ordered: Featured (left) -> Delete -> Edit -> Bookmark (right)
+            let html = "";
+            if (user.email === ADMIN_EMAIL) html += icons.featured;
+            html += icons.delete + icons.edit + icons.bookmark;
+            
             actionIcons.innerHTML = html;
         } else {
             currentUser = null;
