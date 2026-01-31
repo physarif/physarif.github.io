@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>অ্যাডমিন ড্যাশবোর্ড - লেখন ফোরাম</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+
+<nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
+    <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+        <h1 class="text-xl font-black text-accent tracking-tighter cursor-pointer" onclick="location.href='index.html'">লেখন অ্যাডমিন. 🛡️</h1>
+        <button onclick="location.href='index.html'" class="text-xs font-bold bg-gray-200 dark:bg-darkCard px-3 py-1.5 rounded-lg">হোম পেজ</button>
+    </div>
+</nav>
+
+<main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold">পেন্ডিং পোস্টসমূহ</h2>
+        <span id="pending-count" class="bg-accent text-white px-3 py-1 rounded-full text-xs font-bold">0</span>
+    </div>
+
+    <div id="admin-posts-container" class="space-y-4">
+        <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
+    </div>
+</main>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
+        authDomain: "myblogcomments-22808.firebaseapp.com",
+        projectId: "myblogcomments-22808",
+        storageBucket: "myblogcomments-22808.firebasestorage.app",
+        messagingSenderId: "1067155293144",
+        appId: "1:1067155293144:web:8f10b016462b52d36628ad"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
+
+    // ডেটা লোড করা (শুধুমাত্র Pending পোস্ট)
+    onSnapshot(collection(db, BASE_PATH), (snapshot) => {
+        const allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        const pendingPosts = allData.filter(p => p.status === 'pending');
+        document.getElementById('pending-count').innerText = pendingPosts.length;
+        renderAdminPosts(pendingPosts);
+    });
+
+    function renderAdminPosts(posts) {
+        const container = document.getElementById('admin-posts-container');
+        if (posts.length === 0) {
+            container.innerHTML = `<div class="p-20 text-center text-gray-400 border-2 border-dashed border-gray-200 dark:border-darkBorder rounded-2xl">কোনো পেন্ডিং পোস্ট নেই</div>`;
+            return;
+        }
+
+        container.innerHTML = posts.map(p => `
+            <div class="bg-white dark:bg-darkCard p-6 rounded-xl border dark:border-darkBorder shadow-sm">
+                <div class="flex items-center gap-3 mb-4">
+                    <img src="${p.photoURL}" class="w-8 h-8 rounded-full">
+                    <div>
+                        <p class="text-sm font-bold">${p.name}</p>
+                        <p class="text-[10px] text-gray-400">${p.category || 'সাধারণ'}</p>
+                    </div>
+                </div>
+                <p class="text-sm leading-relaxed mb-6 text-gray-700 dark:text-gray-300">${p.msg}</p>
+                <div class="flex gap-3">
+                    <button onclick="approvePost('${p.id}')" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg text-xs font-bold transition-all">Approve</button>
+                    <button onclick="rejectPost('${p.id}')" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-xs font-bold transition-all">Reject</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // পোস্ট অ্যাপ্রুভ করার ফাংশন
+    window.approvePost = async (id) => {
+        if(confirm('আপনি কি এই পোস্টটি অ্যাপ্রুভ করতে চান?')) {
+            const postRef = doc(db, BASE_PATH, id);
+            await updateDoc(postRef, { status: 'approved' });
+        }
+    };
+
+    // পোস্ট রিজেক্ট/ডিলিট করার ফাংশন
+    window.rejectPost = async (id) => {
+        if(confirm('আপনি কি এই পোস্টটি রিজেক্ট করতে চান? এটি ডিলিট হয়ে যাবে।')) {
+            const postRef = doc(db, BASE_PATH, id);
+            await deleteDoc(postRef);
+        }
+    };
+</script>
+</body>
+</html>
