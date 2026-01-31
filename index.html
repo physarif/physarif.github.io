@@ -132,6 +132,11 @@
         <div id="posts-container" class="space-y-3">
             <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
         </div>
+        <div id="load-more-container" class="py-4 text-center hidden">
+            <button onclick="fetchPosts(true)" class="px-8 py-2.5 rounded-xl bg-white dark:bg-darkCard border dark:border-darkBorder text-xs font-bold hover:ring-2 ring-accent transition-all">
+                আরও দেখুন
+            </button>
+        </div>
     </section>
 </main>
 
@@ -208,7 +213,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, getDoc, query, orderBy, limit, startAfter, getDocs, where } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -242,12 +247,78 @@
     let editPostId = null;
     let editCommentId = null;
 
+    // Load More Variables
+    let lastDoc = null;
+    const POST_LIMIT = 10;
+    let isLoading = false;
+
+    // Real-time listener for Replies & Updates to current posts
     onSnapshot(collection(db, BASE_PATH), (snapshot) => {
-        allData = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        snapshot.docChanges().forEach(change => {
+            const data = { id: change.doc.id, ...change.doc.data() };
+            const index = allData.findIndex(p => p.id === data.id);
+            if (change.type === "modified") {
+                if (index > -1) allData[index] = data;
+            } else if (change.type === "removed") {
+                if (index > -1) allData.splice(index, 1);
+            }
+        });
         render();
         updateBadges();
         if(activeThreadId) updateDetails();
     });
+
+    window.fetchPosts = async (isNextPage = false) => {
+        if (isLoading) return;
+        isLoading = true;
+
+        try {
+            let q;
+            const collectionRef = collection(db, BASE_PATH);
+            
+            // Build Query based on filter
+            let constraints = [where("parentId", "==", null)];
+            
+            if (currentFilter === 'pending') constraints.push(where("status", "==", "pending"));
+            else if (currentFilter === 'featured') {
+                constraints.push(where("status", "==", "approved"));
+                constraints.push(where("isFeatured", "==", true));
+            } else {
+                constraints.push(where("status", "==", "approved"));
+            }
+
+            // Ordering
+            if (currentFilter === 'popular') constraints.push(orderBy("votes", "desc"));
+            else constraints.push(orderBy("at", "desc"));
+
+            // Pagination
+            constraints.push(limit(POST_LIMIT));
+            if (isNextPage && lastDoc) constraints.push(startAfter(lastDoc));
+
+            q = query(collectionRef, ...constraints);
+            const snap = await getDocs(q);
+            
+            const newPosts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            lastDoc = snap.docs[snap.docs.length - 1];
+
+            if (isNextPage) {
+                // Merge unique
+                newPosts.forEach(post => {
+                    if (!allData.find(p => p.id === post.id)) allData.push(post);
+                });
+            } else {
+                // Fresh load
+                allData = [...newPosts, ...allData.filter(p => p.parentId !== null)];
+            }
+
+            document.getElementById('load-more-container').classList.toggle('hidden', snap.docs.length < POST_LIMIT);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            isLoading = false;
+            render();
+        }
+    };
 
     onAuthStateChanged(auth, (user) => {
         window.currentUser = user;
@@ -269,14 +340,13 @@
             onSnapshot(doc(db, BOOKMARKS_PATH, user.uid), (docSnap) => {
                 userBookmarks = docSnap.exists() ? (docSnap.data().postIds || []) : [];
                 updateBookmarkIcon();
-                if(currentFilter === 'bookmarks') render();
             });
             onSnapshot(collection(db, NOTI_PATH, user.uid, 'items'), (snap) => {
                 userNotis = snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
                 renderNotifications();
             });
         }
-        render();
+        fetchPosts();
     });
 
     window.googleLogin = async () => { try { await signInWithPopup(auth, provider); } catch(e){} };
@@ -291,9 +361,10 @@
 
     window.setFilter = (filter) => {
         currentFilter = filter;
+        lastDoc = null;
         document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('filter-active'));
         document.getElementById(`filter-${filter}`).classList.add('filter-active');
-        render();
+        fetchPosts();
     };
 
     window.toggleNotifications = (e) => { e.stopPropagation(); const drop = document.getElementById('notification-dropdown'); drop.classList.toggle('hidden'); if(!drop.classList.contains('hidden')) markNotisAsRead(); };
@@ -343,6 +414,7 @@
         if (editPostId) { await updateDoc(doc(db, BASE_PATH, editPostId), { msg, edited: true }); showToast('সংশোধন করা হয়েছে'); } 
         else { await addDoc(collection(db, BASE_PATH), { name: currentUser.displayName, msg, parentId: null, votes: 0, photoURL: currentUser.photoURL, userId: currentUser.uid, at: serverTimestamp(), status: isAdmin ? 'approved' : 'pending', isFeatured: false, upvoters: [], downvoters: [] }); showToast(isAdmin ? 'পাবলিশ হয়েছে' : 'অনুমোদনের অপেক্ষায়...'); }
         togglePostModal(false);
+        fetchPosts();
     };
 
     window.openEditPost = () => { const post = allData.find(p => p.id === activeThreadId); if(!post) return; editPostId = post.id; document.getElementById('modal-title').innerText = "আলোচনা সংশোধন"; document.getElementById('user-comment').value = post.msg; document.getElementById('post-submit-btn').innerText = "আপডেট করুন"; togglePostModal(true); };
@@ -388,13 +460,11 @@
 
     window.closeProfile = () => { document.getElementById('profile-view').style.display = 'none'; };
 
-    // ফিক্সড এডমিন অ্যাপ্রুভ ফাংশন
     window.adminApprovePost = async () => {
         if(!isAdmin || !activeThreadId) return;
         try {
             await updateDoc(doc(db, BASE_PATH, activeThreadId), { status: 'approved' });
             showToast('অ্যাপ্রুভ করা হয়েছে');
-            // আপডেট দেখার জন্য রি-রেন্ডার কল করা (Firebase onSnapshot এমনিতেও করবে, তবুও সাবধানতা)
             updateDetails();
         } catch (e) { showToast('সমস্যা হয়েছে'); }
     };
@@ -414,12 +484,17 @@
     function render() {
         const container = document.getElementById('posts-container');
         let posts = allData.filter(c => !c.parentId);
+        
         if(currentFilter === 'pending') posts = posts.filter(p => p.status === 'pending');
         else if(currentFilter === 'featured') posts = posts.filter(p => p.status === 'approved' && p.isFeatured === true);
         else if(currentFilter === 'bookmarks') posts = posts.filter(p => userBookmarks.includes(p.id));
         else posts = posts.filter(p => p.status === 'approved');
+        
+        // Final Sort in Memory
         posts.sort((a, b) => currentFilter === 'popular' ? (b.votes || 0) - (a.votes || 0) : (b.at?.seconds || 0) - (a.at?.seconds || 0));
-        if(posts.length === 0) { container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`; return; }
+        
+        if(posts.length === 0 && !isLoading) { container.innerHTML = `<div class="p-20 text-center text-gray-400 text-sm">কিছু পাওয়া যায়নি</div>`; return; }
+        
         container.innerHTML = posts.map(c => {
             const isUpvoted = c.upvoters && currentUser && c.upvoters.includes(currentUser.uid);
             const isDownvoted = c.downvoters && currentUser && c.downvoters.includes(currentUser.uid);
@@ -546,8 +621,12 @@
         const urlParams = new URLSearchParams(window.location.search);
         const postId = urlParams.get('post');
         if (postId) {
-            if (allData && allData.length > 0) { const postExists = allData.find(p => p.id === postId); if (postExists) openDetails(postId); } 
-            else setTimeout(checkDirectLink, 1000);
+            const check = () => {
+                const post = allData.find(p => p.id === postId);
+                if (post) openDetails(postId);
+                else setTimeout(check, 1000);
+            };
+            check();
         }
     }
     checkDirectLink();
