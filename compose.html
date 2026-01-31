@@ -3,69 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নতুন পোস্ট তৈরি করুন</title>
+    <title>নতুন লেখা - লেখক ফোরাম</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: { colors: { darkBg: '#0b0e11', darkCard: '#15191c', darkBorder: '#2d333b', accent: '#3498db' } } }
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
         }
     </script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
+        textarea { resize: none; }
+        .publish-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
 
-<nav class="sticky top-0 z-50 bg-white/90 dark:bg-darkBg/90 backdrop-blur-md border-b dark:border-darkBorder">
-    <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-        <button onclick="history.back()" class="text-gray-500 hover:text-accent flex items-center gap-1 font-bold">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            ফিরে যান
-        </button>
-        <h1 class="text-sm font-bold uppercase tracking-widest text-gray-400">নতুন আলোচনা</h1>
-        <div class="w-10"></div> </div>
-</nav>
-
-<main class="max-w-2xl mx-auto px-4 py-8">
-    <div class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm">
-        <div id="user-preview" class="flex items-center gap-3 mb-6">
-            <img id="post-avatar" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-xl border-2 border-accent">
-            <div>
-                <p id="post-username" class="text-sm font-bold">লোড হচ্ছে...</p>
-                <p class="text-[10px] text-gray-400 uppercase font-black">প্রকাশক</p>
-            </div>
-        </div>
-
-        <div class="space-y-4">
-            <div>
-                <label class="block text-[10px] font-black uppercase text-gray-400 mb-1">বিভাগ নির্বাচন করুন</label>
-                <select id="post-category" class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-xl px-4 py-3 text-sm focus:ring-2 ring-accent outline-none">
-                    <option value="সাধারণ">সাধারণ</option>
-                    <option value="গল্প">গল্প</option>
-                    <option value="কবিতা">কবিতা</option>
-                    <option value="তথ্য">তথ্য</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-[10px] font-black uppercase text-gray-400 mb-1">আপনার লেখা</label>
-                <textarea id="post-msg" rows="6" placeholder="এখানে লিখতে শুরু করুন..." class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-xl px-4 py-3 text-sm focus:ring-2 ring-accent outline-none resize-none"></textarea>
-            </div>
-
-            <button onclick="submitPost()" id="submit-btn" class="w-full bg-accent text-white font-bold py-3 rounded-xl shadow-lg shadow-accent/20 hover:scale-[1.02] active:scale-95 transition-all">
-                পোস্ট করুন
+<main class="max-w-2xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4">
+            <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
+            <h1 class="text-xl font-bold">নতুন পোস্ট</h1>
         </div>
+        <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg shadow-accent/20 hover:bg-opacity-90 transition-all">
+            পাবলিশ
+        </button>
+    </div>
+
+    <div id="auth-check" class="mb-6 flex items-center gap-3 p-3 bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder">
+        <img id="current-user-img" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full">
+        <div>
+            <p id="current-user-name" class="text-sm font-bold">লগইন করা নেই</p>
+            <p class="text-[10px] text-gray-400">আপনার প্রোফাইল থেকে পোস্ট করা হচ্ছে</p>
+        </div>
+    </div>
+
+    <div class="relative">
+        <textarea id="post-content" placeholder="আজ আপনি কী ভাবছেন? আপনার মনের কথা এখানে লিখুন..." 
+            class="w-full h-64 p-4 bg-transparent border-none focus:ring-0 text-lg leading-relaxed placeholder-gray-400"
+            maxlength="2000"></textarea>
+    </div>
+
+    <div class="text-right mt-2">
+        <span id="char-count" class="text-xs text-gray-400">০ / ২০০০</span>
     </div>
 </main>
 
-<div id="toast"></div>
+<div id="loading-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-[100]">
+    <div class="bg-white dark:bg-darkCard p-6 rounded-2xl text-center">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto mb-4"></div>
+        <p class="text-sm">পোস্ট সেভ হচ্ছে...</p>
+    </div>
+</div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
-    // তোমার Firebase Config (আগের ফাইল থেকে)
     const firebaseConfig = {
         apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
         authDomain: "myblogcomments-22808.firebaseapp.com",
@@ -78,56 +85,70 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+    const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
+
     let currentUser = null;
 
-    // ইউজার চেক
     onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUser = user;
-            document.getElementById('post-avatar').src = user.photoURL;
-            document.getElementById('post-username').innerText = user.displayName;
+            document.getElementById('current-user-img').src = user.photoURL;
+            document.getElementById('current-user-name').innerText = user.displayName;
         } else {
-            window.location.href = 'index.html'; // লগইন না থাকলে হোমে পাঠিয়ে দেবে
+            alert('পোস্ট করতে আগে লগইন করুন!');
+            location.href = 'index.html';
         }
     });
 
-    window.submitPost = async () => {
-        const msg = document.getElementById('post-msg').value.trim();
-        const category = document.getElementById('post-category').value;
-        const btn = document.getElementById('submit-btn');
+    const textarea = document.getElementById('post-content');
+    const charCount = document.getElementById('char-count');
+    const submitBtn = document.getElementById('submit-post');
+    const loader = document.getElementById('loading-overlay');
 
-        if (!msg) return showToast('কিছু তো লিখুন!');
+    // Live character counter
+    textarea.addEventListener('input', () => {
+        const length = textarea.value.length;
+        charCount.innerText = `${length} / ২০০০`;
+    });
 
-        btn.disabled = true;
-        btn.innerText = 'পোস্ট হচ্ছে...';
+    submitBtn.onclick = async () => {
+        const msg = textarea.value.trim();
+
+        if (!msg) {
+            alert('কিছু তো লিখুন!');
+            return;
+        }
+
+        if (!currentUser) return;
+
+        loader.classList.remove('hidden');
 
         try {
-            await addDoc(collection(db, 'blog_comments/pages/forum_v2_voted'), {
-                name: currentUser.displayName,
-                photoURL: currentUser.photoURL,
-                uid: currentUser.uid,
+            await addDoc(collection(db, BASE_PATH), {
                 msg: msg,
-                category: category,
+                name: currentUser.displayName,
+                email: currentUser.email,
+                uid: currentUser.uid,
+                photoURL: currentUser.photoURL,
+                at: serverTimestamp(),
                 votes: 0,
-                status: 'approved', // সরাসরি অ্যাপ্রুভড হিসেবে দিচ্ছি
-                at: serverTimestamp()
+                status: 'pending' // Admin checking এর জন্য pending রাখা হলো
             });
-            showToast('পোস্ট সফল হয়েছে!');
-            setTimeout(() => window.location.href = 'index.html', 1500);
-        } catch (e) {
-            showToast('কিছু একটা সমস্যা হয়েছে');
-            btn.disabled = false;
-            btn.innerText = 'পোস্ট করুন';
+
+            alert('পোস্টটি জমা দেওয়া হয়েছে! এডমিনের অনুমোদনের পর এটি দেখা যাবে।');
+            location.href = 'index.html';
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            alert('দুঃখিত, পোস্টটি সেভ করা যায়নি।');
+        } finally {
+            loader.classList.add('hidden');
         }
     };
 
-    window.showToast = (msg) => {
-        const t = document.getElementById('toast');
-        t.innerText = msg;
-        t.style.opacity = '1';
-        setTimeout(() => t.style.opacity = '0', 3000);
-    };
+    // Auto Dark Mode
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
 </script>
-
 </body>
 </html>
