@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>নোটিফিকেশন - লেখক ফোরাম</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
+        .notif-card { 
+            transition: all 0.2s; 
+            border-left: 3px solid transparent; 
+        }
+        .notif-card.unread { 
+            background-color: #f0f7ff; 
+            border-left-color: #3498db; 
+        }
+        .dark .notif-card.unread { 
+            background-color: #1a2229; 
+            border-left-color: #3498db; 
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+
+<main class="max-w-2xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4">
+            <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <h1 class="text-xl font-bold">নোটিফিকেশন</h1>
+        </div>
+        <button id="clear-all" class="text-xs text-accent font-semibold hover:underline">সব মুছে ফেলুন</button>
+    </div>
+
+    <div id="notif-container" class="space-y-3">
+        <div class="flex justify-center py-20">
+            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div>
+        </div>
+    </div>
+</main>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyB_xkcJ87-E4jkYIDT2dBxOFJHUQvZxbU8",
+        authDomain: "myblogcomments-22808.firebaseapp.com",
+        projectId: "myblogcomments-22808",
+        storageBucket: "myblogcomments-22808.firebasestorage.app",
+        messagingSenderId: "1067155293144",
+        appId: "1:1067155293144:web:8f10b016462b52d36628ad"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const container = document.getElementById('notif-container');
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // নোটিফিকেশন পাথ (তোমার ডেটাবেস স্ট্রাকচার অনুযায়ী পাথটি পরিবর্তন করে নিতে পারো)
+            const NOTIF_PATH = `users/${user.uid}/notifications`;
+            const q = query(collection(db, NOTIF_PATH), orderBy('at', 'desc'), limit(20));
+
+            onSnapshot(q, (snapshot) => {
+                const notifications = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderNotifications(notifications);
+            }, (error) => {
+                container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">কোনো নোটিফিকেশন পাওয়া যায়নি</div>`;
+            });
+        } else {
+            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">নোটিফিকেশন দেখতে লগইন করুন</div>`;
+        }
+    });
+
+    function renderNotifications(notifs) {
+        if (notifs.length === 0) {
+            container.innerHTML = `<div class="text-center py-10 text-gray-400 text-sm">এখনো কোনো নোটিফিকেশন নেই</div>`;
+            return;
+        }
+
+        container.innerHTML = notifs.map(n => `
+            <div class="notif-card ${n.read ? '' : 'unread'} bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm cursor-pointer flex gap-3" onclick="location.href='post.html?id=${n.postId}'">
+                <div class="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium leading-snug">${n.message || 'আপনার পোস্টে একজন মন্তব্য করেছেন'}</p>
+                    <span class="text-[10px] text-gray-400 mt-1 block">${n.at ? new Date(n.at.seconds * 1000).toLocaleString('bn-BD') : 'এখন'}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Auto Dark Mode
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+</body>
+</html>
