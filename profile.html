@@ -34,7 +34,7 @@
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
 
 <main class="max-w-2xl mx-auto px-4 py-6">
-    <!-- Top Header with Logout -->
+    <!-- Top Header -->
     <div class="flex items-center justify-between mb-8">
         <div class="flex items-center gap-4">
             <button onclick="window.history.back()" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
@@ -45,37 +45,39 @@
         <button id="logout-btn" class="px-4 py-1.5 bg-red-50 text-red-500 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-xs font-bold hover:bg-red-100 transition-all">লগ আউট</button>
     </div>
 
-    <!-- User Info Section -->
+    <!-- User Section -->
     <div id="user-info" class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm mb-8">
         <div class="flex items-center gap-6">
             <img id="user-photo" src="https://via.placeholder.com/80" class="w-20 h-20 rounded-full border-2 border-accent/20 object-cover shadow-lg">
             <div class="flex-1">
                 <div class="flex items-center gap-2 mb-1">
                     <h2 id="user-name" class="text-xl font-bold">লোড হচ্ছে...</h2>
-                    <span id="user-badge" class="px-2 py-0.5 bg-accent/10 text-accent text-[10px] font-bold rounded-full border border-accent/20">সদস্য</span>
+                    <span id="user-badge" class="px-2 py-0.5 text-[10px] font-bold rounded-full border">সদস্য</span>
                 </div>
                 
                 <div class="space-y-1">
                     <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                        <svg class="w-3.5 h-3.5 text-orange-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"></path></svg>
-                        <span>মোট আপভোট: <span id="total-upvotes" class="font-bold text-gray-800 dark:text-gray-200">০</span></span>
+                        <!-- Up Arrow Icon -->
+                        <svg class="w-3.5 h-3.5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 15l7-7 7 7"></path>
+                        </svg>
+                        <span>আপভোট: <span id="total-upvotes" class="font-bold text-gray-800 dark:text-gray-200">০</span></span>
                     </div>
                     <div class="flex items-center gap-1 text-[11px] text-gray-400">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <span>যোগদান: <span id="join-date">লোড হচ্ছে...</span></span>
+                        <span>যোগদান: <span id="join-date">...</span></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tabs Navigation -->
+    <!-- Tabs -->
     <div class="flex border-b dark:border-darkBorder mb-6">
         <button id="tab-posts" class="flex-1 py-3 text-sm font-bold tab-active transition-all">পোস্টসমূহ</button>
         <button id="tab-comments" class="flex-1 py-3 text-sm font-bold text-gray-400 hover:text-accent transition-all">মন্তব্যসমূহ</button>
     </div>
     
-    <!-- Content Area -->
     <div id="content-container" class="space-y-4">
         <div class="flex justify-center py-10"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
     </div>
@@ -109,7 +111,6 @@
             document.getElementById('user-photo').src = user.photoURL || 'https://via.placeholder.com/80';
             document.getElementById('user-name').innerText = user.displayName;
             
-            // Show joined date from metadata
             if(user.metadata.creationTime) {
                 const date = new Date(user.metadata.creationTime);
                 document.getElementById('join-date').innerText = date.toLocaleDateString('bn-BD', {month: 'long', year: 'numeric'});
@@ -122,9 +123,6 @@
     });
 
     function fetchData() {
-        const container = document.getElementById('content-container');
-        container.innerHTML = '<div class="flex justify-center py-10"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>';
-
         const q = query(collection(db, BASE_PATH), where("uid", "==", currentUser.uid));
         
         onSnapshot(q, (snapshot) => {
@@ -132,31 +130,34 @@
                 .map(d => ({ id: d.id, ...d.data() }))
                 .sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
             
-            // Calculate total upvotes
             const totalUpvotes = allData.reduce((acc, curr) => acc + (curr.votes || 0), 0);
             document.getElementById('total-upvotes').innerText = totalUpvotes;
 
-            // Dynamic badge logic
             const badgeEl = document.getElementById('user-badge');
-            if (totalUpvotes >= 100) { 
-                badgeEl.innerText = "মাস্টার লেখক"; 
-                badgeEl.className = "px-2 py-0.5 bg-orange-100 text-orange-600 text-[10px] font-bold rounded-full border border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800"; 
-            }
-            else if (totalUpvotes >= 50) { 
-                badgeEl.innerText = "সিনিয়র লেখক"; 
-                badgeEl.className = "px-2 py-0.5 bg-purple-100 text-purple-600 text-[10px] font-bold rounded-full border border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800"; 
-            }
-            else if (totalUpvotes >= 10) { 
-                badgeEl.innerText = "উদীয়মান লেখক"; 
-                badgeEl.className = "px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded-full border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"; 
+            
+            if (currentUser.email === 'phys.arif@gmail.com') {
+                badgeEl.innerText = "এডমিন";
+                badgeEl.className = "px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800";
+            } else {
+                if (totalUpvotes >= 100) { 
+                    badgeEl.innerText = "মাস্টার লেখক"; 
+                    badgeEl.className = "px-2 py-0.5 bg-orange-100 text-orange-600 text-[10px] font-bold rounded-full border border-orange-200 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800"; 
+                } else if (totalUpvotes >= 50) { 
+                    badgeEl.innerText = "সিনিয়র লেখক"; 
+                    badgeEl.className = "px-2 py-0.5 bg-purple-100 text-purple-600 text-[10px] font-bold rounded-full border border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800"; 
+                } else if (totalUpvotes >= 10) { 
+                    badgeEl.innerText = "উদীয়মান লেখক"; 
+                    badgeEl.className = "px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded-full border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800"; 
+                } else {
+                    badgeEl.innerText = "সদস্য";
+                    badgeEl.className = "px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-full border border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700";
+                }
             }
             
             if (currentTab === 'posts') {
-                const posts = allData.filter(p => !p.parentId);
-                renderItems(posts, 'তুমি এখনো কোনো পোস্ট করোনি');
+                renderItems(allData.filter(p => !p.parentId), 'তুমি এখনো কোনো পোস্ট করোনি');
             } else {
-                const comments = allData.filter(p => p.parentId);
-                renderItems(comments, 'তুমি এখনো কোনো মন্তব্য করোনি');
+                renderItems(allData.filter(p => p.parentId), 'তুমি এখনো কোনো মন্তব্য করোনি');
             }
         });
     }
@@ -181,37 +182,17 @@
         `).join('');
     }
 
-    document.getElementById('tab-posts').onclick = () => {
-        currentTab = 'posts';
-        updateTabUI();
-        fetchData();
-    };
-
-    document.getElementById('tab-comments').onclick = () => {
-        currentTab = 'comments';
-        updateTabUI();
-        fetchData();
-    };
+    document.getElementById('tab-posts').onclick = () => { currentTab = 'posts'; updateTabUI(); fetchData(); };
+    document.getElementById('tab-comments').onclick = () => { currentTab = 'comments'; updateTabUI(); fetchData(); };
 
     function updateTabUI() {
-        const postBtn = document.getElementById('tab-posts');
-        const commBtn = document.getElementById('tab-comments');
-        if (currentTab === 'posts') {
-            postBtn.classList.add('tab-active'); postBtn.classList.remove('text-gray-400');
-            commBtn.classList.remove('tab-active'); commBtn.classList.add('text-gray-400');
-        } else {
-            commBtn.classList.add('tab-active'); commBtn.classList.remove('text-gray-400');
-            postBtn.classList.remove('tab-active'); postBtn.classList.add('text-gray-400');
-        }
+        const p = document.getElementById('tab-posts'), c = document.getElementById('tab-comments');
+        if (currentTab === 'posts') { p.classList.add('tab-active'); p.classList.remove('text-gray-400'); c.classList.remove('tab-active'); c.classList.add('text-gray-400'); }
+        else { c.classList.add('tab-active'); c.classList.remove('text-gray-400'); p.classList.remove('tab-active'); p.classList.add('text-gray-400'); }
     }
 
-    document.getElementById('logout-btn').onclick = () => {
-        signOut(auth).then(() => location.href = 'index.html');
-    };
-
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-    }
+    document.getElementById('logout-btn').onclick = () => { signOut(auth).then(() => location.href = 'index.html'); };
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
 </script>
 </body>
 </html>
