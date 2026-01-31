@@ -626,28 +626,54 @@ if(approveBtn) {
 
     const postRef = doc(db, BASE_PATH, id);
     const postSnap = await getDoc(postRef);
-    
     if (!postSnap.exists()) return;
 
     const data = postSnap.data();
-    // যারা অলরেডি ভোট দিয়েছে তাদের তালিকা (Array)
-    const voters = data.voters || [];
+    const uid = currentUser.uid;
+    
+    let upvoters = data.upvoters || [];
+    let downvoters = data.downvoters || [];
+    let currentVotes = data.votes || 0;
 
-    if (voters.includes(currentUser.uid)) {
-        showToast('আপনি ইতিমধ্যে ভোট দিয়েছেন!');
-        return;
+    if (val === 1) { 
+        if (upvoters.includes(uid)) {
+            upvoters = upvoters.filter(item => item !== uid);
+            currentVotes -= 1;
+        } else {
+            if (downvoters.includes(uid)) {
+                downvoters = downvoters.filter(item => item !== uid);
+                currentVotes += 2; 
+            } else {
+                currentVotes += 1;
+            }
+            upvoters.push(uid);
+        }
+    } else if (val === -1) { 
+        if (downvoters.includes(uid)) {
+            downvoters = downvoters.filter(item => item !== uid);
+            currentVotes += 1;
+        } else {
+            if (upvoters.includes(uid)) {
+                upvoters = upvoters.filter(item => item !== uid);
+                currentVotes -= 2; 
+            } else {
+                currentVotes -= 1;
+            }
+            downvoters.push(uid);
+        }
     }
 
     try {
         await updateDoc(postRef, {
-            votes: increment(val),
-            voters: [...voters, currentUser.uid] // নতুন ইউজারের আইডি লিস্টে যোগ করা
+            votes: currentVotes,
+            upvoters: upvoters,
+            downvoters: downvoters
         });
-        showToast('ভোট সফল হয়েছে');
     } catch (e) {
-        showToast('ভোট দিতে সমস্যা হয়েছে');
+        console.error("Error voting:", e);
     }
 };
+
 
     
     window.openDetails = (id) => { activeThreadId = id; cancelReplyTag(); document.getElementById('details-view').style.display = 'block'; updateDetails(); updateBookmarkIcon(); };
