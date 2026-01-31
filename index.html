@@ -110,6 +110,7 @@
                     ফিচারড
                 </button>
 
+            <!-- নতুন: ক্যাটাগরি ড্রপডাউন -->
             <div class="relative w-full">
                 <button id="filter-categories" onclick="toggleCategoryFilter(event)" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left w-full whitespace-nowrap">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
@@ -213,6 +214,7 @@
     <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-2xl p-5 shadow-2xl">
         <h2 id="modal-title" class="text-lg font-black mb-4 text-center">নতুন আলোচনা</h2>
         <textarea id="user-comment" placeholder="আপনার মনের কথা লিখুন..." class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-xl px-4 py-3 h-48 outline-none focus:ring-2 ring-accent resize-none text-base"></textarea>
+        <!-- নতুন: ক্যাটাগরি সিলেক্ট -->
         <select id="post-category" class="w-full mt-2 bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-xl px-4 py-3 outline-none focus:ring-2 ring-accent text-base">
             <option value="General">জেনারেল</option>
             <option value="Tech">টেক</option>
@@ -319,13 +321,23 @@
         }
     };
 
-    window.setFilter = (filter) => {
+    window.setFilter = (filter, category = null) => {
         currentFilter = filter;
+        currentCategory = category;
         visibleCount = postsPerPage; 
         document.querySelectorAll('aside button').forEach(btn => btn.classList.remove('filter-active'));
         const activeBtn = document.getElementById(`filter-${filter}`);
         if(activeBtn) activeBtn.classList.add('filter-active');
+        if (filter === 'category' && category) {
+            document.getElementById('filter-categories').classList.add('filter-active');
+            document.getElementById('category-dropdown').classList.add('hidden');
+        }
         render();
+    };
+
+    window.toggleCategoryFilter = (e) => { 
+        e.stopPropagation(); 
+        document.getElementById('category-dropdown').classList.toggle('hidden'); 
     };
 
     window.loadMorePosts = () => {
@@ -376,13 +388,42 @@
 
     window.submitPost = async () => {
         const msg = document.getElementById('user-comment').value.trim();
+        const category = document.getElementById('post-category').value;
         if(!msg || !currentUser) return;
-        if (editPostId) { await updateDoc(doc(db, BASE_PATH, editPostId), { msg, edited: true }); showToast('সংশোধন করা হয়েছে'); } 
-        else { await addDoc(collection(db, BASE_PATH), { name: currentUser.displayName, msg, parentId: null, votes: 0, photoURL: currentUser.photoURL, userId: currentUser.uid, at: serverTimestamp(), status: isAdmin ? 'approved' : 'pending', isFeatured: false, upvoters: [], downvoters: [] }); showToast(isAdmin ? 'পাবলিশ হয়েছে' : 'অনুমোদনের অপেক্ষায়...'); }
+        if (editPostId) { 
+            await updateDoc(doc(db, BASE_PATH, editPostId), { msg, edited: true, category }); 
+            showToast('সংশোধন করা হয়েছে'); 
+        } 
+        else { 
+            await addDoc(collection(db, BASE_PATH), { 
+                name: currentUser.displayName, 
+                msg, 
+                parentId: null, 
+                votes: 0, 
+                photoURL: currentUser.photoURL, 
+                userId: currentUser.uid, 
+                at: serverTimestamp(), 
+                status: isAdmin ? 'approved' : 'pending', 
+                isFeatured: false, 
+                upvoters: [], 
+                downvoters: [], 
+                category 
+            }); 
+            showToast(isAdmin ? 'পাবলিশ হয়েছে' : 'অনুমোদনের অপেক্ষায়...'); 
+        }
         togglePostModal(false);
     };
 
-    window.openEditPost = () => { const post = allData.find(p => p.id === activeThreadId); if(!post) return; editPostId = post.id; document.getElementById('modal-title').innerText = "আলোচনা সংশোধন"; document.getElementById('user-comment').value = post.msg; document.getElementById('post-submit-btn').innerText = "আপডেট করুন"; togglePostModal(true); };
+    window.openEditPost = () => { 
+        const post = allData.find(p => p.id === activeThreadId); 
+        if(!post) return; 
+        editPostId = post.id; 
+        document.getElementById('modal-title').innerText = "আলোচনা সংশোধন"; 
+        document.getElementById('user-comment').value = post.msg; 
+        document.getElementById('post-category').value = post.category || 'General';
+        document.getElementById('post-submit-btn').innerText = "আপডেট করুন"; 
+        togglePostModal(true); 
+    };
 
     window.postReply = async () => {
         const rawMsg = document.getElementById('reply-input').value.trim();
@@ -451,6 +492,7 @@
         if(currentFilter === 'pending') posts = posts.filter(p => p.status === 'pending');
         else if(currentFilter === 'featured') posts = posts.filter(p => p.status === 'approved' && p.isFeatured === true);
         else if(currentFilter === 'bookmarks') posts = posts.filter(p => userBookmarks.includes(p.id));
+        else if(currentFilter === 'category' && currentCategory) posts = posts.filter(p => p.status === 'approved' && p.category === currentCategory);
         else posts = posts.filter(p => p.status === 'approved');
         
         posts.sort((a, b) => currentFilter === 'popular' ? (b.votes || 0) - (a.votes || 0) : (b.at?.seconds || 0) - (a.at?.seconds || 0));
@@ -482,6 +524,7 @@
                     <div class="flex-1 overflow-hidden">
                         <div class="flex items-center justify-between mb-1 text-[10px] font-bold text-gray-400 uppercase">
                             <div class="flex items-center gap-2"><img src="${c.photoURL}" class="w-4 h-4 rounded-full cursor-pointer" onclick="openProfile('${c.userId}')"><span class="user-link" onclick="openProfile('${c.userId}')">${c.name}</span><span> • ${formatTime(c.at)}</span>${c.edited ? `<span class="ml-2 text-[9px] text-accent italic">(সম্পাদিত)</span>` : ''}</div>
+                            <span class="text-[10px] px-2 py-0.5 bg-gray-100 dark:bg-darkCard rounded-full">${c.category || 'Uncategorized'}</span>
                         </div>
                         <div class="cursor-pointer" onclick="openDetails('${c.id}')"><h2 class="text-sm font-semibold mb-2 line-clamp-3 text-gray-800 dark:text-gray-200 leading-relaxed">${c.msg}</h2></div>
                     </div>
@@ -599,8 +642,6 @@
         }
     }
     checkDirectLink();
-
-    window.toggleCategoryFilter = (e) => { e.stopPropagation(); const drop = document.getElementById('category-dropdown'); drop.classList.toggle('hidden'); if(!drop.classList.contains('hidden')) markNotisAsRead(); };
 </script>
 </body>
 </html>
