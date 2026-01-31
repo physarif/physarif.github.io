@@ -70,7 +70,6 @@
             cursor: pointer; z-index: 90; transition: all 0.3s; 
         }
 
-        /* Dropdown Animation */
         #filter-dropdown {
             display: none;
         }
@@ -82,14 +81,20 @@
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-20" onclick="closeDropdowns(event)">
 
 <main class="max-w-2xl mx-auto px-4 py-6">
-    <div class="flex items-center justify-between mb-8">
-        <div class="cursor-pointer" onclick="location.href='index.html'">
-            <h1 class="text-3xl font-black text-accent tracking-tighter">লেখক.</h1>
+    <div class="grid grid-cols-3 items-center mb-8">
+        <div class="flex justify-start">
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
+                <svg id="theme-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+            </button>
+        </div>
+
+        <div class="flex justify-center cursor-pointer" onclick="location.href='index.html'">
+            <h1 class="text-2xl font-black text-accent tracking-tighter">লেখক.</h1>
         </div>
         
-        <div class="flex items-center gap-2 relative">
+        <div class="flex justify-end relative">
             <div class="relative inline-block text-left">
-                <button onclick="toggleDropdown(event)" class="flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+                <button onclick="toggleDropdown(event)" class="flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-darkCard border dark:border-darkBorder rounded-lg text-sm font-semibold hover:bg-gray-100 dark:hover:bg-dark800 transition-all">
                     <span id="current-filter">সর্বশেষ</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
@@ -101,10 +106,6 @@
                     </div>
                 </div>
             </div>
-
-            <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
-                <svg id="theme-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
-            </button>
         </div>
     </div>
 
@@ -202,7 +203,6 @@
         const container = document.getElementById('posts-container');
         let posts = allData.filter(p => !p.parentId && (p.status === 'approved' || !p.status));
 
-        // Filtering Logic
         if (currentFilter === 'latest') {
             posts.sort((a, b) => (b.at?.seconds || 0) - (a.at?.seconds || 0));
         } else if (currentFilter === 'popular') {
