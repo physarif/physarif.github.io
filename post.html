@@ -42,7 +42,6 @@
         .ql-editor blockquote { border-left: 4px solid #3498db; padding-left: 16px; font-style: italic; margin-bottom: 1em; color: #6b7280; }
         .dark .ql-editor { color: #d1d5db; }
         .ql-editor img { border-radius: 12px; max-width: 100%; height: auto; display: block; margin: 1.5rem auto; }
-        #editor-container { font-family: 'Hind Siliguri', sans-serif; height: 350px; }
         .nav-icon { @apply p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors text-gray-500 flex items-center justify-center; }
     </style>
 </head>
@@ -74,24 +73,6 @@
     </div>
     <div id="post-tags" class="mb-16 flex flex-wrap gap-2"></div>
 
-    <div id="edit-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div class="bg-white dark:bg-darkCard w-full max-w-3xl rounded-2xl shadow-2xl">
-            <div class="p-4 border-b dark:border-darkBorder flex justify-between items-center">
-                <h3 class="font-bold text-lg">পোস্ট এডিট করুন</h3>
-                <button onclick="toggleEditModal(false)" class="p-2 hover:bg-gray-100 dark:hover:bg-darkBg rounded-full">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-            <div class="p-4">
-                <div id="editor-container" class="bg-gray-50 text-gray-900"></div>
-                <div class="flex justify-end gap-3 mt-4">
-                    <button onclick="toggleEditModal(false)" class="px-6 py-2 rounded-full font-bold bg-gray-200 dark:bg-darkBg">বাতিল</button>
-                    <button id="save-edit-btn" class="px-8 py-2 rounded-full font-bold bg-accent text-white hover:bg-blue-600 transition-shadow">সেভ করুন</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <section class="border-t dark:border-darkBorder pt-10">
         <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
@@ -116,8 +97,6 @@
         </div>
     </section>
 </main>
-
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
@@ -144,7 +123,6 @@
     
     let currentUser = null;
     let postData = null;
-    let quill;
 
     function timeAgo(timestamp) {
         if (!timestamp) return "";
@@ -170,33 +148,6 @@
         return "এইমাত্র";
     }
 
-    function initQuill() {
-        if (!quill) {
-            quill = new Quill('#editor-container', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        ['bold', 'italic', 'underline', 'blockquote'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        ['link', 'image'],
-                        ['clean']
-                    ]
-                }
-            });
-        }
-    }
-
-    window.toggleEditModal = (show) => {
-        const modal = document.getElementById('edit-modal');
-        if (show) {
-            initQuill();
-            quill.root.innerHTML = postData.msg;
-            modal.classList.remove('hidden');
-        } else {
-            modal.classList.add('hidden');
-        }
-    };
-
     window.handleAction = async (type) => {
         if (!postId || !currentUser) return;
         const isAdmin = currentUser.email === ADMIN_EMAIL;
@@ -212,31 +163,13 @@
                 } catch (e) { console.error(e); }
             }
         } else if (type === 'edit') {
-            window.toggleEditModal(true);
+            // compose.html পেজে এডিট মোডে পাঠিয়ে দেওয়া হচ্ছে
+            window.location.href = `compose.html?edit=${postId}`;
         } else if (type === 'featured' && isAdmin) {
             try {
                 await updateDoc(doc(db, 'blog_comments/pages/forum_v2_voted', postId), { featured: true });
                 alert("পোস্টটি ফিচারড করা হয়েছে।");
             } catch (e) { console.error(e); }
-        }
-    };
-
-    document.getElementById('save-edit-btn').onclick = async () => {
-        const btn = document.getElementById('save-edit-btn');
-        const newMsg = quill.root.innerHTML;
-        if (!quill.getText().trim()) return;
-        try {
-            btn.disabled = true;
-            btn.innerText = "সেভ হচ্ছে...";
-            await updateDoc(doc(db, 'blog_comments/pages/forum_v2_voted', postId), {
-                msg: newMsg,
-                updatedAt: serverTimestamp()
-            });
-            window.toggleEditModal(false);
-            location.reload(); 
-        } catch (e) { console.error(e); } finally {
-            btn.disabled = false;
-            btn.innerText = "সেভ করুন";
         }
     };
 
