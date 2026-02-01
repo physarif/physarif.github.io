@@ -35,10 +35,14 @@
     </script>
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; scroll-behavior: smooth; }
-        .ql-editor { padding: 0 !important; height: auto !important; overflow-y: visible !important; line-height: 1.6; font-size: 1.15rem; }
-        .ql-editor p { margin-bottom: 10px !important; padding: 0 !important; }
+        .ql-editor { padding: 0 !important; height: auto !important; overflow-y: visible !important; line-height: 1.8; font-size: 1.15rem; }
+        .ql-editor p { margin-bottom: 12px !important; }
+        .ql-editor ul { list-style-type: disc; padding-left: 1.5em; margin-bottom: 1em; }
+        .ql-editor ol { list-style-type: decimal; padding-left: 1.5em; margin-bottom: 1em; }
+        .ql-editor blockquote { border-left: 4px solid #3498db; padding-left: 16px; font-style: italic; margin-bottom: 1em; color: #6b7280; }
         .dark .ql-editor { color: #d1d5db; }
-        .ql-editor img { border-radius: 12px; max-width: 100%; height: auto; display: block; margin: 1rem auto; }
+        .ql-editor img { border-radius: 12px; max-width: 100%; height: auto; display: block; margin: 1.5rem auto; }
+        #editor-container { font-family: 'Hind Siliguri', sans-serif; height: 350px; }
         .nav-icon { @apply p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors text-gray-500 flex items-center justify-center; }
     </style>
 </head>
@@ -50,27 +54,28 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             ফিরে যান
         </button>
-        <div id="action-icons" class="flex items-center gap-3"></div>
+        <div id="action-icons" class="flex items-center gap-3 text-xs text-gray-400">অ্যাকশন লোড হচ্ছে...</div>
     </div>
 </nav>
 
 <main class="max-w-3xl mx-auto px-4 py-10">
     <div class="flex items-center justify-between pb-8 border-b dark:border-darkBorder mb-10">
         <div class="flex items-center gap-4">
-            <img id="author-img" src="https://ui-avatars.com/api/?name=L" alt="Author" class="w-12 h-12 rounded-full ring-2 ring-gray-100 dark:ring-darkBorder">
+            <img id="author-img" src="" alt="" class="w-12 h-12 rounded-full hidden ring-2 ring-gray-100 dark:ring-darkBorder">
             <div>
-                <p class="text-sm font-bold" id="author-name">লোডিং...</p>
+                <p class="text-sm font-bold" id="author-name"></p>
                 <p id="post-date" class="text-xs text-gray-500 mt-0.5"></p>
             </div>
         </div>
     </div>
 
-    <div id="post-content" class="ql-editor mb-12"></div>
+    <div class="ql-snow">
+        <div id="post-content" class="ql-editor mb-12"></div>
+    </div>
     <div id="post-tags" class="mb-16 flex flex-wrap gap-2"></div>
 
-    <!-- এডিট মডাল -->
     <div id="edit-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-        <div class="bg-white dark:bg-darkCard w-full max-w-2xl rounded-2xl shadow-2xl">
+        <div class="bg-white dark:bg-darkCard w-full max-w-3xl rounded-2xl shadow-2xl">
             <div class="p-4 border-b dark:border-darkBorder flex justify-between items-center">
                 <h3 class="font-bold text-lg">পোস্ট এডিট করুন</h3>
                 <button onclick="toggleEditModal(false)" class="p-2 hover:bg-gray-100 dark:hover:bg-darkBg rounded-full">
@@ -78,7 +83,7 @@
                 </button>
             </div>
             <div class="p-4">
-                <textarea id="edit-area" rows="12" class="w-full p-4 bg-gray-50 dark:bg-darkBg border dark:border-darkBorder rounded-xl focus:ring-2 focus:ring-accent focus:outline-none text-base"></textarea>
+                <div id="editor-container" class="bg-gray-50 text-gray-900"></div>
                 <div class="flex justify-end gap-3 mt-4">
                     <button onclick="toggleEditModal(false)" class="px-6 py-2 rounded-full font-bold bg-gray-200 dark:bg-darkBg">বাতিল</button>
                     <button id="save-edit-btn" class="px-8 py-2 rounded-full font-bold bg-accent text-white hover:bg-blue-600 transition-shadow">সেভ করুন</button>
@@ -92,7 +97,6 @@
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
             মন্তব্যসমূহ
         </h3>
-        
         <div id="comment-form-container" class="hidden bg-gray-50 dark:bg-darkCard p-4 rounded-2xl mb-10 border dark:border-darkBorder">
             <div class="flex items-center gap-3 mb-3">
                 <img id="current-user-img" src="" class="w-8 h-8 rounded-full border dark:border-darkBorder">
@@ -103,17 +107,17 @@
                 <button id="submit-comment" class="bg-accent text-white px-6 py-2 rounded-full font-bold hover:bg-blue-600 transition-colors">মন্তব্য করুন</button>
             </div>
         </div>
-
         <div id="login-prompt" class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl mb-10 text-center">
             <p class="text-sm text-blue-600 dark:text-blue-400 mb-4 font-medium">মন্তব্য করতে দয়া করে লগইন করুন</p>
             <button id="login-btn" class="bg-accent text-white px-8 py-2 rounded-full font-bold shadow-lg shadow-blue-500/20">Google দিয়ে লগইন</button>
         </div>
-
         <div id="comments-list" class="space-y-6 pb-20">
             <p class="text-gray-500 text-sm text-center">মন্তব্য লোড হচ্ছে...</p>
         </div>
     </section>
 </main>
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
@@ -140,31 +144,39 @@
     
     let currentUser = null;
     let postData = null;
+    let quill;
+
+    function initQuill() {
+        if (!quill) {
+            quill = new Quill('#editor-container', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'blockquote'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'image'],
+                        ['clean']
+                    ]
+                }
+            });
+        }
+    }
 
     window.toggleEditModal = (show) => {
         const modal = document.getElementById('edit-modal');
         if (show) {
-            document.getElementById('edit-area').value = postData.msg;
+            initQuill();
+            quill.root.innerHTML = postData.msg;
             modal.classList.remove('hidden');
         } else {
             modal.classList.add('hidden');
         }
     };
 
-    window.toggleReplyForm = (commentId) => {
-        if (!currentUser) {
-            alert("রিপ্লাই দিতে লগইন করুন।");
-            return;
-        }
-        const form = document.getElementById(`reply-form-${commentId}`);
-        form.classList.toggle('hidden');
-    };
-
     window.handleAction = async (type) => {
         if (!postId || !currentUser) return;
         const isAdmin = currentUser.email === ADMIN_EMAIL;
         const isAuthor = postData && postData.uid === currentUser.uid;
-
         if (!isAdmin && !isAuthor) return;
 
         if (type === 'delete') {
@@ -187,9 +199,8 @@
 
     document.getElementById('save-edit-btn').onclick = async () => {
         const btn = document.getElementById('save-edit-btn');
-        const newMsg = document.getElementById('edit-area').value;
-        if (!newMsg.trim()) return;
-
+        const newMsg = quill.root.innerHTML;
+        if (!quill.getText().trim()) return;
         try {
             btn.disabled = true;
             btn.innerText = "সেভ হচ্ছে...";
@@ -199,32 +210,9 @@
             });
             window.toggleEditModal(false);
             location.reload(); 
-        } catch (e) {
-            console.error(e);
-            alert("সেভ করতে সমস্যা হয়েছে।");
-        } finally {
+        } catch (e) { console.error(e); } finally {
             btn.disabled = false;
             btn.innerText = "সেভ করুন";
-        }
-    };
-
-    window.submitReply = async (commentId) => {
-        const input = document.getElementById(`reply-input-${commentId}`);
-        const text = input.value.trim();
-        if (!text || !currentUser || !postId) return;
-
-        try {
-            await addDoc(collection(db, 'blog_comments', postId, 'messages', commentId, 'replies'), {
-                name: currentUser.displayName,
-                photoURL: currentUser.photoURL,
-                uid: currentUser.uid,
-                text: text,
-                at: serverTimestamp()
-            });
-            input.value = '';
-            document.getElementById(`reply-form-${commentId}`).classList.add('hidden');
-        } catch (e) {
-            console.error(e);
         }
     };
 
@@ -232,32 +220,31 @@
         currentUser = user;
         const form = document.getElementById('comment-form-container');
         const prompt = document.getElementById('login-prompt');
-        
         if (user) {
             form.classList.remove('hidden');
             prompt.classList.add('hidden');
             document.getElementById('current-user-name').innerText = user.displayName;
             document.getElementById('current-user-img').src = user.photoURL;
-            if (postData) renderActionIcons();
         } else {
             form.classList.add('hidden');
             prompt.classList.remove('hidden');
-            document.getElementById('action-icons').innerHTML = "";
         }
+        if (postData) renderActionIcons();
         loadComments();
     });
 
     function renderActionIcons() {
-        if (!currentUser || !postData) return;
         const container = document.getElementById('action-icons');
+        if (!currentUser) {
+            container.innerHTML = `<button onclick="alert('বুকমার্ক করতে লগইন করুন')" class="nav-icon" title="বুকমার্ক"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg></button>`;
+            return;
+        }
         const isAdmin = currentUser.email === ADMIN_EMAIL;
         const isAuthor = postData.uid === currentUser.uid;
-
         let html = "";
         if (isAdmin) {
             html += `<button onclick="handleAction('featured')" class="nav-icon text-amber-500" title="ফিচারড"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"></path></svg></button>`;
         }
-        
         if (isAdmin || isAuthor) {
             html += `
                 <button onclick="handleAction('delete')" class="nav-icon text-red-500" title="ডিলিট"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
@@ -278,14 +265,16 @@
                 postData = docSnap.data();
                 document.getElementById('post-content').innerHTML = postData.msg;
                 document.getElementById('author-name').innerText = postData.name;
-                document.getElementById('author-img').src = postData.photoURL || `https://ui-avatars.com/api/?name=${postData.name}&background=random`;
+                const authorImg = document.getElementById('author-img');
+                authorImg.src = postData.photoURL || `https://ui-avatars.com/api/?name=${postData.name}&background=random`;
+                authorImg.classList.remove('hidden');
                 if (postData.at) {
                     document.getElementById('post-date').innerText = postData.at.toDate().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
                 }
                 if (postData.hashtags) {
                     document.getElementById('post-tags').innerHTML = postData.hashtags.map(tag => `<span class="bg-gray-100 dark:bg-darkCard px-3 py-1 rounded-lg text-xs font-medium">${tag}</span>`).join('');
                 }
-                if (currentUser) renderActionIcons();
+                renderActionIcons();
             }
         } catch (e) { console.error(e); }
     }
@@ -304,7 +293,6 @@
                 const d = doc.data();
                 const commentId = doc.id;
                 const time = d.at ? d.at.toDate().toLocaleTimeString('bn-BD', {hour: '2-digit', minute:'2-digit'}) : 'এখনই';
-                
                 const commentEl = document.createElement('div');
                 commentEl.className = 'space-y-4';
                 commentEl.innerHTML = `
@@ -316,20 +304,18 @@
                                 <span class="text-[10px] text-gray-500">${time}</span>
                             </div>
                             <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">${d.text}</p>
-                            <button onclick="toggleReplyForm('${commentId}')" class="mt-2 text-xs font-bold text-accent hover:underline flex items-center gap-1">
+                            <button onclick="window.toggleReplyForm('${commentId}')" class="mt-2 text-xs font-bold text-accent hover:underline flex items-center gap-1">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>
                                 উত্তর দিন
                             </button>
                         </div>
                     </div>
-                    <!-- রিপ্লাই ফর্ম -->
                     <div id="reply-form-${commentId}" class="hidden ml-12 bg-gray-50 dark:bg-darkCard p-3 rounded-xl border dark:border-darkBorder">
                         <textarea id="reply-input-${commentId}" rows="2" placeholder="আপনার উত্তর লিখুন..." class="w-full bg-white dark:bg-darkBg border dark:border-darkBorder rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-accent"></textarea>
                         <div class="flex justify-end mt-2">
-                            <button onclick="submitReply('${commentId}')" class="bg-accent text-white px-4 py-1 rounded-full text-xs font-bold">পাঠান</button>
+                            <button onclick="window.submitReply('${commentId}')" class="bg-accent text-white px-4 py-1 rounded-full text-xs font-bold">পাঠান</button>
                         </div>
                     </div>
-                    <!-- রিপ্লাই লিস্ট -->
                     <div id="replies-list-${commentId}" class="ml-12 space-y-3"></div>
                 `;
                 list.appendChild(commentEl);
@@ -361,6 +347,28 @@
             }).join('');
         });
     }
+
+    window.toggleReplyForm = (commentId) => {
+        if (!currentUser) return alert("রিপ্লাই দিতে লগইন করুন।");
+        document.getElementById(`reply-form-${commentId}`).classList.toggle('hidden');
+    };
+
+    window.submitReply = async (commentId) => {
+        const input = document.getElementById(`reply-input-${commentId}`);
+        const text = input.value.trim();
+        if (!text || !currentUser || !postId) return;
+        try {
+            await addDoc(collection(db, 'blog_comments', postId, 'messages', commentId, 'replies'), {
+                name: currentUser.displayName,
+                photoURL: currentUser.photoURL,
+                uid: currentUser.uid,
+                text: text,
+                at: serverTimestamp()
+            });
+            input.value = '';
+            document.getElementById(`reply-form-${commentId}`).classList.add('hidden');
+        } catch (e) { console.error(e); }
+    };
 
     document.getElementById('submit-comment').onclick = async () => {
         const input = document.getElementById('comment-text');
