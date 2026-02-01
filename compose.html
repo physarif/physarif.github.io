@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>নতুন লেখা - লেখক ফোরাম</title>
+    <title>লেখা সম্পাদনা - লেখক ফোরাম</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
@@ -44,7 +44,7 @@
             <button onclick="history.back()" class="p-2 hover:bg-gray-200 dark:hover:bg-darkCard rounded-full transition-all">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </button>
-            <h1 class="text-xl font-bold">নতুন পোস্ট</h1>
+            <h1 id="page-title" class="text-xl font-bold">নতুন পোস্ট</h1>
         </div>
         <div class="flex gap-2">
             <button id="preview-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkCard rounded-xl text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-800 transition-all">প্রিভিউ</button>
@@ -90,7 +90,7 @@
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
     const firebaseConfig = {
@@ -120,7 +120,12 @@
         }
     });
 
-    // Custom Image Handler: Only Link option
+    // URL parameters check for edit mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const editPostId = urlParams.get('edit');
+    let currentUser = null;
+
+    // Custom Handlers
     quill.getModule('toolbar').addHandler('image', () => {
         const url = prompt('ছবির সরাসরি লিঙ্ক (Image URL) দিন:');
         if (url) {
@@ -129,7 +134,6 @@
         }
     });
 
-    // Custom Video Handler
     quill.getModule('toolbar').addHandler('video', () => {
         const url = prompt('ভিডিও লিঙ্ক (YouTube/Vimeo) দিন:');
         if (url) {
@@ -138,8 +142,40 @@
         }
     });
 
-    let currentUser = null;
-    onAuthStateChanged(auth, (user) => { currentUser = user; });
+    // Check Auth and Load Post if Edit mode
+    onAuthStateChanged(auth, async (user) => { 
+        currentUser = user; 
+        if (editPostId && user) {
+            await loadPostForEdit(editPostId);
+        }
+    });
+
+    async function loadPostForEdit(id) {
+        try {
+            const docRef = doc(db, 'blog_comments/pages/forum_v2_voted', id);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                // Security check: Only author or admin (optional) can edit
+                if (data.uid !== currentUser.uid && currentUser.email !== 'phys.arif@gmail.com') {
+                    alert('আপনার এই পোস্টটি এডিট করার অনুমতি নেই।');
+                    history.back();
+                    return;
+                }
+                
+                document.getElementById('page-title').innerText = "লেখা সম্পাদনা";
+                document.getElementById('submit-post').innerText = "আপডেট করুন";
+                quill.root.innerHTML = data.msg;
+                if(data.hashtags) {
+                    document.getElementById('post-hashtags').value = data.hashtags.join(' ');
+                }
+            }
+        } catch (e) {
+            console.error(e);
+            alert('পোস্ট লোড করতে সমস্যা হয়েছে।');
+        }
+    }
 
     quill.on('text-change', () => {
         const text = quill.getText().trim();
@@ -161,17 +197,42 @@
 
     document.getElementById('submit-post').onclick = async () => {
         if (!currentUser) return alert('লগইন করুন');
+        
+        const content = quill.root.innerHTML;
+        const hashtags = document.getElementById('post-hashtags').value.split(/\s+/).filter(t => t.startsWith('#'));
+        const btn = document.getElementById('submit-post');
+        
         try {
-            await addDoc(collection(db, 'blog_comments/pages/forum_v2_voted'), {
-                msg: quill.root.innerHTML,
-                authorName: currentUser.displayName,
-                authorUid: currentUser.uid,
-                createdAt: serverTimestamp(),
-                status: 'pending'
-            });
-            location.href = 'index.html';
+            btn.disabled = true;
+            btn.innerText = "প্রসেসিং...";
+            
+            if (editPostId) {
+                // Update existing post
+                const docRef = doc(db, 'blog_comments/pages/forum_v2_voted', editPostId);
+                await updateDoc(docRef, {
+                    msg: content,
+                    hashtags: hashtags,
+                    updatedAt: serverTimestamp()
+                });
+                alert('পোস্ট আপডেট হয়েছে');
+                location.href = `article.html?id=${editPostId}`;
+            } else {
+                // Create new post
+                await addDoc(collection(db, 'blog_comments/pages/forum_v2_voted'), {
+                    msg: content,
+                    name: currentUser.displayName,
+                    uid: currentUser.uid,
+                    photoURL: currentUser.photoURL,
+                    at: serverTimestamp(),
+                    hashtags: hashtags
+                });
+                location.href = 'index.html';
+            }
         } catch (e) {
+            console.error(e);
             alert('ত্রুটি হয়েছে');
+        } finally {
+            btn.disabled = false;
         }
     };
 </script>
