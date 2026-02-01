@@ -24,65 +24,74 @@
     </script>
     <style>
         body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
-        .ql-container { font-family: 'Hind Siliguri', sans-serif; font-size: 1.125rem; border: none !important; }
-        .ql-toolbar { border: none !important; border-bottom: 1px solid #2d333b !important; border-radius: 12px 12px 0 0; }
-        .dark .ql-editor.ql-blank::before { color: #9ca3af; }
-        .dark .ql-snow .ql-stroke { stroke: #fff; }
-        .dark .ql-snow .ql-fill { fill: #fff; }
-        .dark .ql-snow .ql-picker { color: #fff; }
-        .ql-editor { min-height: 300px; }
-        .ql-video, .ql-editor img { width: 100%; max-width: 100%; height: auto; border-radius: 8px; margin-top: 10px; }
+        .ql-container { font-family: 'Hind Siliguri', sans-serif; font-size: 1.1rem; border: none !important; }
+        .ql-toolbar { border: none !important; border-bottom: 1px solid rgba(0,0,0,0.1) !important; border-radius: 12px 12px 0 0; }
+        .dark .ql-toolbar { border-bottom: 1px solid #2d333b !important; background: #1a1f24; }
+        .dark .ql-snow .ql-stroke { stroke: #e5e7eb; }
+        .dark .ql-snow .ql-fill { fill: #e5e7eb; }
+        .dark .ql-snow .ql-picker { color: #e5e7eb; }
+        .ql-editor { min-height: 400px; line-height: 1.8; }
+        .ql-editor iframe.ql-video { width: 100%; aspect-ratio: 16/9; border-radius: 12px; margin: 10px 0; }
+        .ql-editor img { border-radius: 12px; margin: 10px 0; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 antialiased">
 
-<main class="max-w-2xl mx-auto px-4 py-6">
-    <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center gap-4">
-            <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+<main class="max-w-3xl mx-auto px-4 py-4 md:py-8">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+            <button onclick="history.back()" class="p-2 hover:bg-gray-200 dark:hover:bg-darkCard rounded-full transition-all">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </button>
             <h1 class="text-xl font-bold">নতুন পোস্ট</h1>
         </div>
         <div class="flex gap-2">
-            <button id="preview-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkCard rounded-full text-sm font-bold hover:bg-opacity-80 transition-all">প্রিভিউ</button>
-            <button id="submit-post" class="publish-btn px-6 py-2 bg-accent text-white rounded-full text-sm font-bold shadow-lg shadow-accent/20 hover:bg-opacity-90 transition-all">পাবলিশ</button>
+            <button id="preview-btn" class="px-4 py-2 bg-gray-200 dark:bg-darkCard rounded-xl text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-800 transition-all">প্রিভিউ</button>
+            <button id="submit-post" class="px-6 py-2 bg-accent text-white rounded-xl text-sm font-bold shadow-lg shadow-accent/30 hover:scale-105 active:scale-95 transition-all">পাবলিশ</button>
         </div>
     </div>
 
+    <!-- Hashtags -->
     <div class="mb-4">
-        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (যেমন: #কবিতা #গল্প)" class="w-full bg-white dark:bg-darkCard border dark:border-darkBorder rounded-xl px-4 py-3 text-sm outline-none focus:border-accent transition-all shadow-sm">
+        <input type="text" id="post-hashtags" placeholder="হ্যাশট্যাগ দিন (উদা: #ভিডিও #টিপস)" class="w-full bg-white dark:bg-darkCard border border-gray-200 dark:border-darkBorder rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-accent/50 outline-none transition-all shadow-sm">
     </div>
 
-    <div class="bg-white dark:bg-darkCard rounded-xl border dark:border-darkBorder overflow-hidden shadow-sm">
+    <!-- Editor Container -->
+    <div class="bg-white dark:bg-darkCard rounded-2xl border border-gray-200 dark:border-darkBorder overflow-hidden shadow-sm transition-all">
         <div id="editor"></div>
     </div>
 
-    <div class="flex justify-between items-center mt-3 px-1">
-        <span id="draft-status" class="text-[11px] font-medium text-green-500"></span>
-        <span id="char-count" class="text-xs text-gray-400">০ / ২০০০ শব্দ</span>
+    <!-- Footer Info -->
+    <div class="flex justify-between items-center mt-4 px-1">
+        <div class="flex items-center gap-2">
+            <div id="sync-icon" class="w-2 h-2 rounded-full bg-green-500"></div>
+            <span id="draft-status" class="text-xs font-medium text-gray-500">অটো-সেভ সক্রিয়</span>
+        </div>
+        <div class="flex gap-4 text-xs font-medium text-gray-500">
+            <span id="word-count">০ শব্দ</span>
+            <span id="char-count">০ অক্ষর</span>
+        </div>
     </div>
 </main>
 
-<div id="preview-modal" class="fixed inset-0 bg-black/80 hidden z-[110] p-4 flex items-center justify-center backdrop-blur-sm">
-    <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-2xl p-6 max-h-[85vh] overflow-y-auto shadow-2xl">
-        <div class="flex justify-between items-center mb-4 border-b dark:border-darkBorder pb-3">
-            <h2 class="text-lg font-bold">প্রিভিউ</h2>
-            <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="text-gray-500 hover:text-red-500">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-        </div>
-        <div id="preview-content" class="prose dark:prose-invert max-w-none">
-        </div>
-        <div id="preview-tags" class="mt-4 flex flex-wrap gap-2 font-medium text-accent"></div>
-        <button onclick="document.getElementById('preview-modal').classList.add('hidden')" class="mt-8 w-full py-3 bg-accent text-white rounded-xl font-bold">ফিরে যান</button>
+<!-- Preview Modal -->
+<div id="preview-modal" class="fixed inset-0 bg-black/60 backdrop-blur-md hidden z-[110] p-4 flex items-center justify-center">
+    <div class="bg-white dark:bg-darkCard w-full max-w-2xl rounded-3xl p-6 md:p-8 max-h-[90vh] overflow-y-auto shadow-2xl relative">
+        <button onclick="togglePreview(false)" class="absolute top-4 right-4 p-2 bg-gray-100 dark:bg-darkBg rounded-full hover:text-red-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <div id="preview-content" class="prose prose-blue dark:prose-invert max-w-none mb-6"></div>
+        <div id="preview-tags" class="flex flex-wrap gap-2 text-accent font-bold"></div>
+        <button onclick="togglePreview(false)" class="mt-8 w-full py-4 bg-accent text-white rounded-2xl font-bold">সম্পাদনা চালিয়ে যান</button>
     </div>
 </div>
 
-<div id="loading-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center z-[100]">
-    <div class="bg-white dark:bg-darkCard p-8 rounded-2xl text-center shadow-2xl">
-        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-accent mx-auto mb-4"></div>
-        <p class="text-sm font-medium">পোস্ট হচ্ছে...</p>
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden flex flex-col items-center justify-center z-[120]">
+    <div class="bg-white dark:bg-darkCard p-10 rounded-3xl text-center shadow-2xl">
+        <div class="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <h3 class="font-bold text-lg">পাবলিশ হচ্ছে...</h3>
     </div>
 </div>
 
@@ -104,101 +113,73 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
-    const BASE_PATH = 'blog_comments/pages/forum_v2_voted';
 
-    // Quill Initialization
     const quill = new Quill('#editor', {
         theme: 'snow',
-        placeholder: 'আপনার মনের কথা এখানে লিখুন...',
+        placeholder: 'আপনার লেখা বা ভিডিও লিঙ্ক এখানে দিন...',
         modules: {
             toolbar: [
-                ['bold', 'italic', 'underline', 'blockquote'],
+                [{ 'header': [2, 3, false] }],
+                ['bold', 'italic', 'underline'],
+                ['blockquote', 'link', 'image', 'video'],
                 [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['link', 'image', 'video', 'clean']
+                ['clean']
             ]
         }
     });
 
-    // Overriding the image handler to use a URL prompt
-    const toolbar = quill.getModule('toolbar');
-    toolbar.addHandler('image', () => {
-        const url = prompt('ছবির সরাসরি লিঙ্ক (Image URL) দিন:');
+    // Custom Video Handler
+    quill.getModule('toolbar').addHandler('video', () => {
+        const url = prompt('ইউটিউব বা অন্য ভিডিওর লিঙ্ক দিন:');
         if (url) {
             const range = quill.getSelection();
-            quill.insertEmbed(range ? range.index : 0, 'image', url);
+            quill.insertEmbed(range ? range.index : 0, 'video', url);
         }
     });
 
     let currentUser = null;
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-            const savedDraft = localStorage.getItem('post_draft');
-            if (savedDraft) quill.root.innerHTML = savedDraft;
-        } else {
-            location.href = 'index.html';
-        }
-    });
+    onAuthStateChanged(auth, (user) => { currentUser = user; });
 
     quill.on('text-change', () => {
-        localStorage.setItem('post_draft', quill.root.innerHTML);
-        document.getElementById('char-count').innerText = `${quill.getText().trim().length} / ২০০০ শব্দ`;
-        document.getElementById('draft-status').innerText = "অটো-সেভ হচ্ছে...";
-        setTimeout(() => {
-            const status = document.getElementById('draft-status');
-            if(status) status.innerText = "সেভ হয়েছে";
-        }, 1000);
+        const text = quill.getText().trim();
+        document.getElementById('char-count').innerText = `${text.length} অক্ষর`;
+        document.getElementById('word-count').innerText = `${text.length > 0 ? text.split(/\s+/).length : 0} শব্দ`;
+        localStorage.setItem('post_draft_v2', quill.root.innerHTML);
     });
 
-    document.getElementById('preview-btn').onclick = () => {
-        const content = quill.root.innerHTML;
-        const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
-        
-        document.getElementById('preview-content').innerHTML = `<div>${content}</div>`;
-        document.getElementById('preview-tags').innerText = tags.join(' ');
-        document.getElementById('preview-modal').classList.remove('hidden');
+    window.togglePreview = (show) => {
+        const modal = document.getElementById('preview-modal');
+        if(show) {
+            document.getElementById('preview-content').innerHTML = quill.root.innerHTML;
+            modal.classList.remove('hidden');
+        } else {
+            modal.classList.add('hidden');
+        }
     };
 
-    const submitBtn = document.getElementById('submit-post');
-    const loader = document.getElementById('loading-overlay');
+    document.getElementById('preview-btn').onclick = () => togglePreview(true);
 
-    submitBtn.onclick = async () => {
-        const msgHtml = quill.root.innerHTML;
-        const msgText = quill.getText().trim();
-        const tags = document.getElementById('post-hashtags').value.match(/#[^\s#]+/g) || [];
+    document.getElementById('submit-post').onclick = async () => {
+        const contentHtml = quill.root.innerHTML;
+        if (quill.getText().trim().length < 5) return alert('লেখা খুব ছোট!');
+        if (!currentUser) return alert('লগইন করুন');
 
-        if (!msgText || msgText === "") { 
-            return; 
-        }
-        if (!currentUser) return;
-
-        loader.classList.remove('hidden');
-
+        document.getElementById('loading-overlay').classList.remove('hidden');
         try {
-            await addDoc(collection(db, BASE_PATH), {
-                msg: msgHtml,
-                hashtags: tags,
-                name: currentUser.displayName,
-                email: currentUser.email,
-                uid: currentUser.uid,
-                photoURL: currentUser.photoURL,
-                at: serverTimestamp(),
-                votes: 0,
+            await addDoc(collection(db, 'blog_comments/pages/forum_v2_voted'), {
+                msg: contentHtml,
+                authorName: currentUser.displayName,
+                authorUid: currentUser.uid,
+                createdAt: serverTimestamp(),
                 status: 'pending'
             });
-            
-            localStorage.removeItem('post_draft');
+            localStorage.removeItem('post_draft_v2');
             location.href = 'index.html';
-        } catch (error) {
-            console.error("Error adding document: ", error);
-            loader.classList.add('hidden');
+        } catch (e) {
+            alert('ত্রুটি হয়েছে');
+            document.getElementById('loading-overlay').classList.add('hidden');
         }
     };
-
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-    }
 </script>
 </body>
 </html>
