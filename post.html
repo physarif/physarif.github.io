@@ -146,6 +146,30 @@
     let postData = null;
     let quill;
 
+    function timeAgo(timestamp) {
+        if (!timestamp) return "";
+        const now = new Date();
+        const past = timestamp.toDate();
+        const diffInSeconds = Math.floor((now - past) / 1000);
+
+        const units = [
+            { label: "বছর", seconds: 31536000 },
+            { label: "মাস", seconds: 2592000 },
+            { label: "দিন", seconds: 86400 },
+            { label: "ঘণ্টা", seconds: 3600 },
+            { label: "মিনিট", seconds: 60 },
+            { label: "সেকেন্ড", seconds: 1 }
+        ];
+
+        for (const unit of units) {
+            const interval = Math.floor(diffInSeconds / unit.seconds);
+            if (interval >= 1) {
+                return `${interval} ${unit.label} আগে`;
+            }
+        }
+        return "এইমাত্র";
+    }
+
     function initQuill() {
         if (!quill) {
             quill = new Quill('#editor-container', {
@@ -268,9 +292,11 @@
                 const authorImg = document.getElementById('author-img');
                 authorImg.src = postData.photoURL || `https://ui-avatars.com/api/?name=${postData.name}&background=random`;
                 authorImg.classList.remove('hidden');
+                
                 if (postData.at) {
-                    document.getElementById('post-date').innerText = postData.at.toDate().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
+                    document.getElementById('post-date').innerText = timeAgo(postData.at);
                 }
+                
                 if (postData.hashtags) {
                     document.getElementById('post-tags').innerHTML = postData.hashtags.map(tag => `<span class="bg-gray-100 dark:bg-darkCard px-3 py-1 rounded-lg text-xs font-medium">${tag}</span>`).join('');
                 }
@@ -292,7 +318,7 @@
             snapshot.docs.forEach(doc => {
                 const d = doc.data();
                 const commentId = doc.id;
-                const time = d.at ? d.at.toDate().toLocaleTimeString('bn-BD', {hour: '2-digit', minute:'2-digit'}) : 'এখনই';
+                const timeStr = timeAgo(d.at);
                 const commentEl = document.createElement('div');
                 commentEl.className = 'space-y-4';
                 commentEl.innerHTML = `
@@ -301,7 +327,7 @@
                         <div class="bg-gray-50 dark:bg-darkCard p-3 rounded-2xl flex-1 border dark:border-darkBorder">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-sm font-bold">${d.name}</span>
-                                <span class="text-[10px] text-gray-500">${time}</span>
+                                <span class="text-[10px] text-gray-500">${timeStr}</span>
                             </div>
                             <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">${d.text}</p>
                             <button onclick="window.toggleReplyForm('${commentId}')" class="mt-2 text-xs font-bold text-accent hover:underline flex items-center gap-1">
@@ -331,14 +357,14 @@
             if (snapshot.empty) return;
             repliesList.innerHTML = snapshot.docs.map(doc => {
                 const r = doc.data();
-                const time = r.at ? r.at.toDate().toLocaleTimeString('bn-BD', {hour: '2-digit', minute:'2-digit'}) : 'এখনই';
+                const timeStr = timeAgo(r.at);
                 return `
                     <div class="flex gap-2">
                         <img src="${r.photoURL}" class="w-7 h-7 rounded-full">
                         <div class="bg-gray-100 dark:bg-darkBg/50 p-2 rounded-xl flex-1 border dark:border-darkBorder">
                             <div class="flex justify-between items-center mb-0.5">
                                 <span class="text-xs font-bold">${r.name}</span>
-                                <span class="text-[9px] text-gray-500">${time}</span>
+                                <span class="text-[9px] text-gray-500">${timeStr}</span>
                             </div>
                             <p class="text-xs text-gray-600 dark:text-gray-400">${r.text}</p>
                         </div>
