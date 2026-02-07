@@ -5,7 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>physarif 's Github Repositories</title>
     <style>
-        * {
+        *
+      /* লিঙ্কগুলোর সাধারণ স্টাইল */
+.social-links a {
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 10px;
+    transition: color 0.3s ease;
+}
+
+/* প্রতিটি লিঙ্কের আলাদা আলাদা ব্র্যান্ড কালার */
+.fb-link { color: #1877F2; }      /* ফেসবুক নীল */
+.x-link { color: #ffffff; }       /* টুইটার/এক্স সাদা */
+.yt-link { color: #FF0000; }      /* ইউটিউব লাল */
+.blog-link { color: #ff8c00; }    /* ব্লগার কমলা */
+.mail-link { color: #4285F4; }    /* ইমেইল গুগল ব্লু */
+
+/* মাউস নিলে সব লিঙ্ক একটু উজ্জ্বল হবে */
+.social-links a:hover {
+    filter: brightness(1.2);
+    text-decoration: underline;
+}
+
+        {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
