@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radio Player - @physarif</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #08090a;
+      --surface: #111214;
+      --surface2: #18191d;
+      --border: #1f2025;
+      --border2: #2a2b32;
+      --text: #f0f0f0;
+      --muted: #6b6d78;
+      --muted2: #9a9daa;
+      --accent: #6c63ff;
+      --accent2: #a78bfa;
+    }
+
+    body {
+      font-family: 'Noto Sans Bengali', 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 110px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      margin-bottom: 30px;
+    }
+    .header-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header p { font-family: 'Sora', sans-serif; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em; }
+    header a { color: var(--accent2); text-decoration: none; }
+    .socials { display: flex; align-items: center; gap: 4px; }
+    .s-icon { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; color: var(--muted2); transition: all 0.2s; }
+    .s-icon svg { width: 16px; height: 16px; }
+    .s-icon:hover { color: var(--text); transform: translateY(-1px); }
+
+    .wrap { flex: 1; max-width: 680px; margin: 0 auto; padding: 0 20px; width: 100%; }
+
+    /* ── SEARCH ── */
+    .search-container { margin-bottom: 16px; }
+    .search-input {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      padding: 14px 20px; border-radius: 16px; color: var(--text); outline: none;
+      font-family: inherit; font-size: 0.95rem; transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--muted); }
+
+    /* ── GENRE TABS ── */
+    .genre-tabs {
+      display: flex; gap: 8px; margin-bottom: 24px;
+      overflow-x: auto; scrollbar-width: none; padding-bottom: 4px;
+    }
+    .genre-tabs::-webkit-scrollbar { display: none; }
+    .genre-tab {
+      padding: 7px 16px; border-radius: 20px; border: 1px solid var(--border2);
+      background: transparent; color: var(--muted2); font-family: 'Sora', sans-serif;
+      font-size: 0.75rem; cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    }
+    .genre-tab:hover { border-color: var(--accent2); color: var(--accent2); }
+    .genre-tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      margin-top: 4px;
+    }
+
+    /* ── RECENTLY PLAYED ── */
+    .recent-section { margin-bottom: 28px; }
+    .recent-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .recent-scroll::-webkit-scrollbar { display: none; }
+    .recent-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 6px 14px 6px 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .recent-chip:hover { border-color: var(--accent); background: var(--surface2); }
+    .recent-chip.active-chip { border-color: var(--accent); }
+    .recent-chip img {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .recent-chip-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.75rem;
+      color: var(--text);
+    }
+
+    /* ── RADIO LIST ── */
+    .radio-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .station-group { display: contents; }
+
+    /* ── SKELETON ── */
+    .skeleton-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .skel-circle {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--border2);
+      flex-shrink: 0;
+      animation: shimmer 1.4s ease-in-out infinite;
+    }
+    .skel-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .skel-line {
+      height: 10px; border-radius: 6px;
+      background: var(--border2);
+      animation: shimmer 1.4s ease-in-out infinite;
+    }
+    .skel-line.short { width: 40%; }
+    .skel-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--border2); flex-shrink: 0;
+      animation: shimmer 1.4s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%   { opacity: 1; }
+      50%  { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    /* ── RADIO CARD ── */
+    .radio-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.25s ease; gap: 10px;
+    }
+    .radio-card:hover { border-color: var(--accent); background: var(--surface2); }
+    .radio-card.active { border-color: var(--accent); box-shadow: 0 0 15px rgba(108,99,255,0.1); }
+
+    .station-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+    .station-img-wrap { position: relative; flex-shrink: 0; }
+    .station-img {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--border2); object-fit: cover;
+      border: 1px solid var(--border); display: block;
+    }
+    .active .station-img { animation: spin-slow 8s linear infinite; }
+    @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+    .station-info { min-width: 0; }
+    .station-name {
+      font-size: 0.97rem; font-weight: 500; font-family: 'Sora', sans-serif;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .station-meta {
+      display: flex; align-items: center; gap: 6px; margin-top: 3px;
+    }
+    .station-genre { font-size: 0.7rem; color: var(--muted); font-family: 'Sora', sans-serif; }
+
+    /* Coming soon badge */
+    .badge-soon {
+      font-size: 0.6rem;
+      font-family: 'Sora', sans-serif;
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 6px;
+      padding: 1px 6px;
+      white-space: nowrap;
+    }
+
+    .station-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    /* unavailable card dim */
+    .radio-card.unavailable { opacity: 0.6; }
+    .radio-card.unavailable .play-btn { cursor: not-allowed; }
+
+    /* fav btn */
+    .fav-btn {
+      background: none; border: none; color: var(--muted); cursor: pointer;
+      padding: 6px; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; border-radius: 50%;
+    }
+    .fav-btn svg { width: 16px; height: 16px; }
+    .fav-btn:hover { color: #ff6b6b; }
+    .fav-btn.faved { color: #ff6b6b; }
+    .fav-btn.faved svg { fill: #ff6b6b; }
+
+    /* play btn */
+    .play-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--surface2); border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text);
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .play-btn svg { width: 20px; height: 20px; }
+    .radio-card.active .play-btn {
+      background: var(--accent); border-color: var(--accent);
+      color: white; animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(108,99,255,0.4); }
+      70%  { box-shadow: 0 0 0 10px rgba(108,99,255,0); }
+      100% { box-shadow: 0 0 0 0 rgba(108,99,255,0); }
+    }
+    .pause-icon { display: none; }
+    .active .play-icon { display: none; }
+    .active .pause-icon { display: block; }
+
+    /* loading spinner */
+    .loading-spinner {
+      width: 20px; height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: none;
+    }
+    .loading .play-btn .loading-spinner { display: block; }
+    .loading .play-btn .play-icon,
+    .loading .play-btn .pause-icon { display: none !important; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── MINI PLAYER ── */
+    #miniPlayer {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(14,15,18,0.94);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border2);
+      padding: 12px 20px 18px;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    #miniPlayer.visible { transform: translateY(0); }
+
+    .mini-inner { max-width: 680px; margin: 0 auto; display: flex; align-items: center; gap: 12px; }
+
+    /* visualizer */
+    .visualizer { display: flex; align-items: flex-end; gap: 3px; height: 28px; flex-shrink: 0; }
+    .v-bar { width: 3px; background: var(--accent2); border-radius: 2px; height: 4px; }
+    .playing .v-bar:nth-child(1) { animation: bar 0.8s ease-in-out infinite alternate; }
+    .playing .v-bar:nth-child(2) { animation: bar 0.6s ease-in-out 0.1s infinite alternate; }
+    .playing .v-bar:nth-child(3) { animation: bar 0.9s ease-in-out 0.2s infinite alternate; }
+    .playing .v-bar:nth-child(4) { animation: bar 0.5s ease-in-out 0.15s infinite alternate; }
+    .playing .v-bar:nth-child(5) { animation: bar 0.7s ease-in-out 0.05s infinite alternate; }
+    @keyframes bar { from { height: 4px; } to { height: 24px; } }
+
+    .mini-info { flex: 1; min-width: 0; }
+    .mini-name {
+      font-family: 'Sora', sans-serif; font-size: 0.9rem; font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mini-status { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+    .mini-status .live-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: #4ade80; margin-right: 5px;
+      animation: blink 1.5s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+    /* mini controls */
+    .mini-controls { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+    .mini-skip-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: none; border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--muted2); transition: all 0.2s;
+    }
+    .mini-skip-btn svg { width: 16px; height: 16px; }
+    .mini-skip-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+    .mini-play-btn {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--accent); border: none;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: white; flex-shrink: 0; transition: all 0.2s;
+    }
+    .mini-play-btn:hover { opacity: 0.85; transform: scale(1.05); }
+    .mini-play-btn svg { width: 20px; height: 20px; }
+    .mini-pause-icon { display: none; }
+    #miniPlayer.playing-state .mini-play-icon { display: none; }
+    #miniPlayer.playing-state .mini-pause-icon { display: block; }
+
+    /* empty state */
+    .empty-state {
+      text-align: center; padding: 60px 20px;
+      color: var(--muted); font-family: 'Sora', sans-serif; font-size: 0.85rem;
+    }
+    .empty-state svg { width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.3; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <p>তৈরি করেছেন<a href="https://physarif.github.io" target="_blank">@physarif</a></p>
+      <div class="socials">
+        <a href="https://www.facebook.com/share/physarif" target="_blank" class="s-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+        <a href="https://www.x.com/physarif" target="_blank" class="s-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+        <a href="https://www.youtube.com/@physarif" target="_blank" class="s-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+        <a href="https://physarif.blogspot.com" target="_blank" class="s-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19.01 7.38 20 6.18 20C4.98 20 4 19.01 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/></svg></a>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-input" placeholder="স্টেশন খুঁজুন...">
+    </div>
+
+    <div class="genre-tabs" id="genreTabs">
+      <button class="genre-tab active" data-genre="all">সব</button>
+      <button class="genre-tab" data-genre="Favourites">❤ পছন্দের</button>
+      <button class="genre-tab" data-genre="বিনোদন">বিনোদন</button>
+      <button class="genre-tab" data-genre="বার্তা">বার্তা</button>
+      <button class="genre-tab" data-genre="সরকারি">সরকারি</button>
+    </div>
+
+    <!-- Recently Played (hidden until data exists) -->
+    <div class="recent-section" id="recentSection" style="display:none">
+      <div class="section-label">সম্প্রতি শোনা</div>
+      <div class="recent-scroll" id="recentScroll"></div>
+    </div>
+
+    <div id="stationsLabel" class="section-label" style="display:none">সব স্টেশন</div>
+    <div class="radio-list" id="radioList"></div>
+  </div>
+
+  <!-- Mini Player -->
+  <div id="miniPlayer">
+    <div class="mini-inner">
+      <div class="visualizer" id="visualizer">
+        <div class="v-bar"></div>
+        <div class="v-bar"></div>
+        <div class="v-bar"></div>
+        <div class="v-bar"></div>
+        <div class="v-bar"></div>
+      </div>
+      <div class="mini-info">
+        <div class="mini-name" id="miniName">—</div>
+        <div class="mini-status"><span class="live-dot"></span>LIVE</div>
+      </div>
+      <div class="mini-controls">
+        <button class="mini-skip-btn" onclick="skipStation(-1)" title="আগের স্টেশন">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button class="mini-play-btn" onclick="toggleMiniPlay()">
+          <svg class="mini-play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="mini-pause-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+        <button class="mini-skip-btn" onclick="skipStation(1)" title="পরের স্টেশন">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2.5-6 6-4.25v8.5L8.5 12zM16 6h2v12h-2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <audio id="mainAudio"></audio>
+
+  <script>
+    const audio        = document.getElementById('mainAudio');
+    const radioList    = document.getElementById('radioList');
+    const searchInput  = document.getElementById('searchInput');
+    const miniPlayer   = document.getElementById('miniPlayer');
+    const miniName     = document.getElementById('miniName');
+    const visualizer   = document.getElementById('visualizer');
+    const recentSection= document.getElementById('recentSection');
+    const recentScroll = document.getElementById('recentScroll');
+    const stationsLabel= document.getElementById('stationsLabel');
+
+    let currentActiveId = null;
+    let currentGenre    = 'all';
+    let favorites  = JSON.parse(localStorage.getItem('radio_favs')    || '[]');
+    let recentPlayed = JSON.parse(localStorage.getItem('radio_recent') || '[]'); // array of ids, newest first
+
+    const stations = [
+      { id:'c1',  name:'Bangladesh Betar', genre:'সরকারি',   url:'http://stream.zeno.fm/8sn7cac604zuv',          img:'https://picsum.photos/seed/betar/200' },
+      { id:'c2',  name:'Dhaka FM',         genre:'বিনোদন',   url:'http://stream.zeno.fm/ay4pqkk604zuv',          img:'https://picsum.photos/seed/dhakafm/200' },
+      { id:'c3',  name:'Shadhin FM',       genre:'বিনোদন',   url:'http://stream.zenolive.com/avxwtgyxubwtv',     img:'https://picsum.photos/seed/shadhin/200' },
+      { id:'c4',  name:'Radio Bhumi',      genre:'বিনোদন',   url:'http://stream.zeno.fm/7yu7rczw34zuv',          img:'https://picsum.photos/seed/bhumi/200' },
+      { id:'c5',  name:'Radio Foorti',     genre:'বিনোদন',   url:'http://stream.zeno.fm/f0bfdk2w34zuv',          img:'https://picsum.photos/seed/foorti/200' },
+      { id:'c6',  name:'Radio Today',      genre:'বার্তা',   url:'https://stream.zeno.fm/8wv4d8g4344tv',         img:'https://picsum.photos/seed/today/200' },
+      { id:'c7',  name:'Radio Padma',      genre:'বিনোদন',   url:'http://cassini.shoutca.st/radiopadma.mp3',     img:'https://picsum.photos/seed/padma/200' },
+    ];
+
+    /* ── SKELETON ── */
+    function showSkeleton() {
+      radioList.innerHTML = Array(6).fill(0).map(() => `
+        <div class="skeleton-card">
+          <div class="skel-circle"></div>
+          <div class="skel-lines">
+            <div class="skel-line"></div>
+            <div class="skel-line short"></div>
+          </div>
+          <div class="skel-btn"></div>
+        </div>`).join('');
+    }
+
+    /* ── RECENTLY PLAYED ── */
+    function addToRecent(id) {
+      recentPlayed = recentPlayed.filter(x => x !== id);
+      recentPlayed.unshift(id);
+      if (recentPlayed.length > 6) recentPlayed = recentPlayed.slice(0, 6);
+      localStorage.setItem('radio_recent', JSON.stringify(recentPlayed));
+      renderRecent();
+    }
+
+    function renderRecent() {
+      const validRecent = recentPlayed.map(id => stations.find(s => s.id === id)).filter(Boolean);
+      if (!validRecent.length) { recentSection.style.display = 'none'; stationsLabel.style.display = 'none'; return; }
+      recentSection.style.display = 'block';
+      stationsLabel.style.display = 'block';
+      recentScroll.innerHTML = validRecent.map(s => `
+        <div class="recent-chip ${currentActiveId === s.id ? 'active-chip' : ''}" onclick="playRadio('${s.id}')">
+          <img src="${s.img}" alt="${s.name}">
+          <span class="recent-chip-name">${s.name}</span>
+        </div>`).join('');
+    }
+
+    /* ── RENDER STATIONS ── */
+    function renderStations(query = '') {
+      let filtered = stations.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+      if (currentGenre === 'Favourites') filtered = filtered.filter(s => favorites.includes(s.id));
+      else if (currentGenre !== 'all')   filtered = filtered.filter(s => s.genre === currentGenre);
+
+      if (!filtered.length) {
+        radioList.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            <div>কোনো স্টেশন পাওয়া যায়নি</div>
+          </div>`;
+        return;
+      }
+
+      radioList.innerHTML = '';
+      filtered.forEach(station => {
+        const isFav  = favorites.includes(station.id);
+        const noUrl  = !station.url;
+        const card   = document.createElement('div');
+        card.className = `radio-card ${currentActiveId === station.id ? 'active' : ''} ${noUrl ? 'unavailable' : ''}`;
+        card.id = `card-${station.id}`;
+        card.innerHTML = `
+          <div class="station-left">
+            <div class="station-img-wrap">
+              <img src="${station.img}" class="station-img" alt="${station.name}">
+            </div>
+            <div class="station-info">
+              <div class="station-name">${station.name}</div>
+              <div class="station-meta">
+                <span class="station-genre">${station.genre}</span>
+                ${noUrl ? '<span class="badge-soon">শীঘ্রই আসছে</span>' : ''}
+              </div>
+            </div>
+          </div>
+          <div class="station-right">
+            <button class="fav-btn ${isFav ? 'faved' : ''}" id="fav-${station.id}" onclick="toggleFav('${station.id}', event)">
+              <svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </button>
+            <button class="play-btn" onclick="playRadio('${station.id}')">
+              <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="pause-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              <div class="loading-spinner"></div>
+            </button>
+          </div>`;
+        radioList.appendChild(card);
+      });
+    }
+
+    /* ── PLAY ── */
+    function playRadio(stationId) {
+      const station = stations.find(s => s.id === stationId);
+      if (!station || !station.url) return;
+
+      // Toggle off
+      if (currentActiveId === stationId) {
+        audio.pause();
+        document.getElementById(`card-${stationId}`)?.classList.remove('active','loading');
+        visualizer.classList.remove('playing');
+        miniPlayer.classList.remove('visible','playing-state');
+        currentActiveId = null;
+        renderRecent();
+        return;
+      }
+
+      // Deactivate previous
+      if (currentActiveId) {
+        document.getElementById(`card-${currentActiveId}`)?.classList.remove('active','loading');
+      }
+
+      const card = document.getElementById(`card-${stationId}`);
+      if (card) card.classList.add('loading');
+      currentActiveId = stationId;
+
+      audio.src = station.url;
+      audio.volume = 0.8;
+      audio.play().then(() => {
+        card?.classList.remove('loading');
+        card?.classList.add('active');
+        visualizer.classList.add('playing');
+        miniPlayer.classList.add('visible','playing-state');
+        miniName.textContent = station.name;
+        addToRecent(stationId);
+        renderRecent();
+        updateMediaSession(station);
+      }).catch(() => {
+        card?.classList.remove('loading','active');
+        currentActiveId = null;
+      });
+    }
+
+    /* ── SKIP ── */
+    function skipStation(dir) {
+      // skip within available (url) stations only
+      const available = stations.filter(s => s.url);
+      if (!available.length) return;
+      if (!currentActiveId) { playRadio(available[0].id); return; }
+      const idx = available.findIndex(s => s.id === currentActiveId);
+      const next = available[(idx + dir + available.length) % available.length];
+      playRadio(next.id);
+    }
+
+    /* ── MINI PLAY/PAUSE ── */
+    function toggleMiniPlay() {
+      if (!currentActiveId) return;
+      const card = document.getElementById(`card-${currentActiveId}`);
+      if (audio.paused) {
+        audio.play();
+        card?.classList.add('active');
+        visualizer.classList.add('playing');
+        miniPlayer.classList.add('playing-state');
+      } else {
+        audio.pause();
+        card?.classList.remove('active');
+        visualizer.classList.remove('playing');
+        miniPlayer.classList.remove('playing-state');
+      }
+    }
+
+    /* ── FAVOURITES ── */
+    function toggleFav(id, e) {
+      if (e) e.stopPropagation();
+      const idx = favorites.indexOf(id);
+      if (idx >= 0) favorites.splice(idx, 1); else favorites.push(id);
+      localStorage.setItem('radio_favs', JSON.stringify(favorites));
+      const btn = document.getElementById(`fav-${id}`);
+      if (btn) {
+        const isFav = favorites.includes(id);
+        btn.className = `fav-btn ${isFav ? 'faved' : ''}`;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="${isFav ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+      }
+      if (currentGenre === 'Favourites') renderStations(searchInput.value);
+    }
+
+    /* ── MEDIA SESSION ── */
+    function updateMediaSession(station) {
+      if (!('mediaSession' in navigator)) return;
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: station.name, artist: '📻 Live Radio',
+        artwork: [{ src: station.img, sizes: '200x200', type: 'image/jpeg' }]
+      });
+      navigator.mediaSession.setActionHandler('play', () => {
+        audio.play(); miniPlayer.classList.add('playing-state'); visualizer.classList.add('playing');
+        document.getElementById(`card-${currentActiveId}`)?.classList.add('active');
+      });
+      navigator.mediaSession.setActionHandler('pause', () => {
+        audio.pause(); miniPlayer.classList.remove('playing-state'); visualizer.classList.remove('playing');
+        document.getElementById(`card-${currentActiveId}`)?.classList.remove('active');
+      });
+      navigator.mediaSession.setActionHandler('previoustrack', () => skipStation(-1));
+      navigator.mediaSession.setActionHandler('nexttrack',     () => skipStation(1));
+    }
+
+    /* ── GENRE TABS ── */
+    document.getElementById('genreTabs').addEventListener('click', e => {
+      if (!e.target.classList.contains('genre-tab')) return;
+      document.querySelectorAll('.genre-tab').forEach(t => t.classList.remove('active'));
+      e.target.classList.add('active');
+      currentGenre = e.target.dataset.genre;
+      renderStations(searchInput.value);
+    });
+
+    searchInput.addEventListener('input', e => renderStations(e.target.value));
+
+    /* ── INIT with skeleton ── */
+    showSkeleton();
+    setTimeout(() => {
+      renderRecent();
+      renderStations();
+    }, 800);
+  </script>
+</body>
+</html>
