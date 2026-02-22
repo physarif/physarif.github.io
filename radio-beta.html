@@ -657,8 +657,21 @@
     searchInput.addEventListener('input', e => renderStations(e.target.value));
 
     /* ── RECORDING ── */
-    let mediaRecorder = null;
-    let recordedChunks = [];
+    let mediaRecorder   = null;
+    let recordedChunks  = [];
+    let audioCtx        = null;
+    let audioSource     = null;
+    let audioDest       = null;
+
+    function initAudioGraph() {
+      if (audioCtx) return; // only once
+      audioCtx    = new (window.AudioContext || window.webkitAudioContext)();
+      audioSource = audioCtx.createMediaElementSource(audio);
+      audioDest   = audioCtx.createMediaStreamDestination();
+      // always route source → speakers AND → recorder destination
+      audioSource.connect(audioCtx.destination);
+      audioSource.connect(audioDest);
+    }
 
     function showToast(msg, duration = 3000) {
       const toast = document.getElementById('recToast');
@@ -670,32 +683,26 @@
     function toggleRecording() {
       const btn = document.getElementById('recBtn');
 
-      // Must be playing
       if (!currentActiveId || audio.paused) {
         showToast('⚠️ প্রথমে একটি স্টেশন চালু করুন');
         return;
       }
 
       if (mediaRecorder && mediaRecorder.state === 'recording') {
-        // Stop recording
         mediaRecorder.stop();
         return;
       }
 
-      // Start recording via Web Audio API → MediaStream → MediaRecorder
       try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const source = ctx.createMediaElementSource(audio);
-        const dest = ctx.createMediaStreamDestination();
-        source.connect(dest);
-        source.connect(ctx.destination); // keep playing
+        initAudioGraph();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
 
         recordedChunks = [];
         const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
           ? 'audio/webm;codecs=opus'
           : MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg';
 
-        mediaRecorder = new MediaRecorder(dest.stream, { mimeType });
+        mediaRecorder = new MediaRecorder(audioDest.stream, { mimeType });
 
         mediaRecorder.ondataavailable = e => {
           if (e.data && e.data.size > 0) recordedChunks.push(e.data);
@@ -720,7 +727,7 @@
           showToast('❌ রেকর্ড করা সম্ভব হয়নি (CORS সীমাবদ্ধতা)');
         };
 
-        mediaRecorder.start(1000); // collect every 1s
+        mediaRecorder.start(1000);
         btn.classList.add('recording');
         showToast('🔴 রেকর্ডিং শুরু হয়েছে…', 2000);
 
