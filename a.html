@@ -59,17 +59,9 @@
       from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.6; transform: scale(0.85); }
-    }
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50%       { opacity: 0; }
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
     }
     @keyframes equalizer {
       0%, 100% { height: 4px; }
@@ -82,7 +74,6 @@
       animation: fadeUp 0.7s ease both;
     }
 
-    /* Avatar row: avatar left, clock right */
     .avatar-row {
       display: flex;
       align-items: flex-start;
@@ -110,7 +101,8 @@
       box-shadow: 0 0 0 4px rgba(108,99,255,0.15);
       display: block;
     }
-    /* ── LOFI PLAYER on avatar bottom-right ── */
+
+    /* ── LOFI PLAYER ── */
     .lofi-btn {
       position: absolute;
       bottom: -2px; right: -2px;
@@ -158,38 +150,6 @@
     body.playing .lofi-eq { display: flex; }
     body.playing .lofi-play-icon { display: none; }
 
-    /* YouTube iframe hidden */
-    #yt-frame {
-      position: absolute;
-      width: 1px; height: 1px;
-      opacity: 0;
-      pointer-events: none;
-      top: 0; left: 0;
-    }
-
-    /* Lofi tooltip popup */
-    .lofi-popup {
-      position: absolute;
-      top: -44px; left: 50%;
-      transform: translateX(-50%);
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: 10px;
-      padding: 6px 12px;
-      white-space: nowrap;
-      font-family: 'Sora', sans-serif;
-      font-size: 0.6rem;
-      color: var(--accent2);
-      letter-spacing: 0.06em;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.25s;
-      z-index: 20;
-    }
-    .lofi-btn:hover + .lofi-popup,
-    body.playing .lofi-popup { opacity: 1; }
-    body.playing .lofi-popup { top: 32px; }
-
     .avatar-info h1 {
       font-family: 'Sora', sans-serif;
       font-size: 1.4rem;
@@ -206,7 +166,7 @@
       margin-top: 4px;
     }
 
-    /* ── CLOCK (right side) ── */
+    /* ── CLOCK ── */
     .hero-clock {
       display: flex;
       flex-direction: column;
@@ -401,10 +361,8 @@
     <!-- HERO -->
     <section class="hero">
       <div class="avatar-row">
-        <!-- LEFT: avatar + info -->
         <div class="avatar-left">
           <div class="avatar-wrap">
-            <!-- Lofi Player Button -->
             <button class="lofi-btn" id="lofiBtn" title="lofi play করুন" onclick="toggleLofi()">
               <span class="lofi-play-icon">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -413,8 +371,6 @@
                 <span></span><span></span><span></span>
               </span>
             </button>
-            <div class="lofi-popup" id="lofiPopup">lofi playing ♪</div>
-
             <img
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjyfKicXQuTf1l8ZClxd1V3cwifSScZRbfXyGN3Cb8GEdR4n8tzfmRhmkeQ80Ies3e0lxlw4OAeAk4T2GrzqXaFBCWlI3sSg_B5vNXDKaPjy-gmEZi610nHiHUeb9Pn_PfWZg-7DryADuIQUOh8waz4N0jyjFzM9qM07TTvESiMj7sLOt8/s1600-rw/19058.png"
               alt="Arif" class="avatar"
@@ -426,7 +382,6 @@
           </div>
         </div>
 
-        <!-- RIGHT: Clock -->
         <div class="hero-clock">
           <span class="hero-clock-time" id="heroTime">--:--:--</span>
           <span class="hero-clock-meta" id="heroMeta">---</span>
@@ -499,8 +454,8 @@
 
   </div>
 
-  <!-- Hidden YouTube IFrame API -->
-  <div id="yt-container" style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;top:0;left:0;">
+  <!-- Hidden YouTube IFrame -->
+  <div style="position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;top:0;left:0;">
     <div id="yt-player"></div>
   </div>
 
@@ -511,7 +466,6 @@
     }
 
     /* ── Clock ── */
-    const bnDays = ['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
     const bnMonths = ['বৈশাখ','জ্যৈষ্ঠ','আষাঢ়','শ্রাবণ','ভাদ্র','আশ্বিন','কার্তিক','অগ্রহায়ণ','পৌষ','মাঘ','ফাল্গুন','চৈত্র'];
 
     function toBanglaDate(gDate) {
@@ -543,7 +497,6 @@
       const m = String(now.getMinutes()).padStart(2, '0');
       const s = String(now.getSeconds()).padStart(2, '0');
       document.getElementById('heroTime').textContent = toBn(`${h}:${m}:${s}`);
-
       const { bDay, bMonth, bYear } = toBanglaDate(now);
       document.getElementById('heroMeta').innerHTML =
         `${toBn(bDay)} ${bnMonths[bMonth]} ${toBn(bYear)}`;
@@ -605,18 +558,16 @@
     setTimeout(typeNext, 900);
 
     /* ── Lofi YouTube Player ── */
-    // 24/7 lofi streams — fallback list
     const LOFI_VIDEOS = [
-      'jfKfPfyJRdk', // lofi hip hop radio - beats to relax/study to (ChilledCow)
-      '5qap5aO4i9A', // lofi hip hop radio
-      'DWcJFNfaw9c', // lofi beats
+      'jfKfPfyJRdk',
+      '5qap5aO4i9A',
+      'DWcJFNfaw9c',
     ];
 
     let ytPlayer = null;
     let isPlaying = false;
     let ytReady = false;
 
-    // Load YouTube IFrame API
     const tag = document.createElement('script');
     tag.src = 'https://www.youtube.com/iframe_api';
     document.head.appendChild(tag);
@@ -626,44 +577,27 @@
         height: '1',
         width: '1',
         videoId: LOFI_VIDEOS[0],
-        playerVars: {
-          autoplay: 0,
-          controls: 0,
-          loop: 1,
-          playsinline: 1,
-          mute: 0,
-        },
+        playerVars: { autoplay: 0, controls: 0, loop: 1, playsinline: 1, mute: 0 },
         events: {
           onReady: () => { ytReady = true; },
-          onError: (e) => {
-            // Try next video on error
+          onError: () => {
             const idx = LOFI_VIDEOS.indexOf(ytPlayer.getVideoData().video_id);
-            const next = LOFI_VIDEOS[(idx + 1) % LOFI_VIDEOS.length];
-            ytPlayer.loadVideoById(next);
+            ytPlayer.loadVideoById(LOFI_VIDEOS[(idx + 1) % LOFI_VIDEOS.length]);
           }
         }
       });
     };
 
     function toggleLofi() {
-      if (!ytReady) {
-        // API not ready yet, retry
-        setTimeout(toggleLofi, 500);
-        return;
-      }
+      if (!ytReady) { setTimeout(toggleLofi, 500); return; }
       if (!isPlaying) {
         ytPlayer.playVideo();
         isPlaying = true;
         document.body.classList.add('playing');
-        document.getElementById('lofiPopup').textContent = 'lofi playing ♪';
       } else {
         ytPlayer.pauseVideo();
         isPlaying = false;
         document.body.classList.remove('playing');
-        document.getElementById('lofiPopup').textContent = 'lofi paused';
-        setTimeout(() => {
-          document.getElementById('lofiPopup').textContent = 'lofi playing ♪';
-        }, 2000);
       }
     }
   </script>
