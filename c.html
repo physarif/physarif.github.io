@@ -32,19 +32,11 @@
       flex-direction: column;
     }
 
-    .wrap {
-      flex: 1;
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 0 20px;
-      width: 100%;
-    }
-
-    /* ── HEADER (Formerly Footer Style) ── */
+    /* ── HEADER ── */
     header {
       border-bottom: 1px solid var(--border);
       padding: 20px 0;
-      margin-bottom: 40px;
+      margin-bottom: 30px;
     }
     .header-inner {
       max-width: 680px;
@@ -75,8 +67,35 @@
       color: var(--muted2);
       transition: all 0.2s;
     }
-    .s-icon svg { width: 15px; height: 15px; }
+    .s-icon svg { width: 16px; height: 16px; }
     .s-icon:hover { color: var(--text); transform: translateY(-1px); }
+
+    .wrap {
+      flex: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px;
+      width: 100%;
+    }
+
+    /* ── SEARCH ── */
+    .search-container {
+      margin-bottom: 24px;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 14px 20px;
+      border-radius: 16px;
+      color: var(--text);
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--accent);
+    }
 
     /* ── RADIO LIST ── */
     .radio-list {
@@ -178,6 +197,9 @@
   </header>
 
   <div class="wrap">
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-input" placeholder="স্টেশন খুঁজুন...">
+    </div>
     <div class="radio-list" id="radioList"></div>
   </div>
 
@@ -186,13 +208,14 @@
   <script>
     const audio = document.getElementById('mainAudio');
     const radioListContainer = document.getElementById('radioList');
+    const searchInput = document.getElementById('searchInput');
     let currentActiveId = null;
 
     const stations = [
       { id: 'c1', name: 'Lofi Chill', url: 'http://stream.zeno.fm/f0bfdk2w34zuv', img: 'https://picsum.photos/seed/night/200' },
       { id: 'c2', name: 'Acoustic Mix', url: 'https://stream.zeno.fm/0r0xa792kwzuv', img: 'https://picsum.photos/seed/acoustic/200' },
-      { id: 'c3', name: 'Ambient Night', url: '', img: 'https://picsum.photos/seed/jazz/200' },
-      { id: 'c4', name: 'Jazz Cafe', url: '', img: 'https://picsum.photos/seed/jazz-cafe/200' },
+      { id: 'c3', name: 'Ambient Focus', url: 'http://stream.zeno.fm/6005scnzszhvv', img: 'https://picsum.photos/seed/focus/200' },
+      { id: 'c4', name: 'Jazz Cafe', url: 'http://stream.zeno.fm/8q6qy792kwzuv', img: 'https://picsum.photos/seed/jazz/200' },
       { id: 'c5', name: 'Piano Beats', url: '', img: 'https://picsum.photos/seed/piano/200' },
       { id: 'c6', name: 'Synthwave Drive', url: '', img: 'https://picsum.photos/seed/retro/200' },
       { id: 'c7', name: 'Classical FM', url: '', img: 'https://picsum.photos/seed/classic/200' },
@@ -203,22 +226,27 @@
       { id: 'c12', name: 'Easy Listening', url: '', img: 'https://picsum.photos/seed/relax/200' }
     ];
 
-    stations.forEach(station => {
-      const card = document.createElement('div');
-      card.className = 'radio-card';
-      card.id = station.id;
-      card.innerHTML = `
-        <div class="station-left">
-          <img src="${station.img}" class="station-img" alt="${station.name}">
-          <span class="station-name">${station.name}</span>
-        </div>
-        <button class="play-btn" onclick="playRadio('${station.url}', '${station.id}')">
-          <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          <svg class="pause-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        </button>
-      `;
-      radioListContainer.appendChild(card);
-    });
+    function renderStations(query = '') {
+      radioListContainer.innerHTML = '';
+      const filtered = stations.filter(s => s.name.toLowerCase().includes(query.toLowerCase()));
+      
+      filtered.forEach(station => {
+        const card = document.createElement('div');
+        card.className = `radio-card ${currentActiveId === station.id ? 'active' : ''}`;
+        card.id = station.id;
+        card.innerHTML = `
+          <div class="station-left">
+            <img src="${station.img}" class="station-img" alt="${station.name}">
+            <span class="station-name">${station.name}</span>
+          </div>
+          <button class="play-btn" onclick="playRadio('${station.url}', '${station.id}')">
+            <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="pause-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+        `;
+        radioListContainer.appendChild(card);
+      });
+    }
 
     function playRadio(url, cardId) {
       if(!url) return;
@@ -230,13 +258,20 @@
         return;
       }
       if (currentActiveId) {
-        document.getElementById(currentActiveId).classList.remove('active');
+        const prevCard = document.getElementById(currentActiveId);
+        if(prevCard) prevCard.classList.remove('active');
       }
       audio.src = url;
       audio.play();
       card.classList.add('active');
       currentActiveId = cardId;
     }
+
+    searchInput.addEventListener('input', (e) => {
+      renderStations(e.target.value);
+    });
+
+    renderStations();
   </script>
 </body>
 </html>
