@@ -3,64 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>বাংলাদেশ বেতার লাইভ</title>
+    <title>বাংলাদেশ বেতার - GitHub Live</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f2f5;
-            margin: 0;
-        }
-        .player-container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 300px;
-        }
-        h2 { color: #006a4e; margin-bottom: 10px; }
-        p { color: #666; font-size: 14px; }
-        audio {
-            width: 100%;
-            margin-top: 20px;
-        }
-        .status {
-            margin-top: 15px;
-            font-weight: bold;
-            color: #d9534f;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 320px; border-top: 5px solid #006a4e; }
+        h1 { color: #006a4e; font-size: 24px; margin-bottom: 5px; }
+        p { color: #555; margin-bottom: 20px; }
+        audio { width: 100%; border-radius: 50px; }
+        .status { margin-top: 15px; font-size: 13px; color: #888; }
     </style>
 </head>
 <body>
 
-<div class="player-container">
-    <h2>বাংলাদেশ বেতার</h2>
-    <p>ঢাকা-ক (লাইভ স্ট্রিমিং)</p>
+<div class="card">
+    <h1>বাংলাদেশ বেতার</h1>
+    <p>লাইভ স্ট্রিমিং (ঢাকা-ক)</p>
     
-    <audio controls autoplay>
-        <source src="http://103.69.149.230:8000/stream" type="audio/mpeg">
-        আপনার ব্রাউজারটি এই অডিও প্লেয়ার সাপোর্ট করে না।
+    <audio id="radioPlayer" controls>
+        <source src="https://at1.api.radio-browser.info/http/103.69.149.230:8000/stream" type="audio/mpeg">
+        আপনার ব্রাউজারটি অডিও সাপোর্ট করে না।
     </audio>
 
-    <div class="status" id="status-text"></div>
+    <div id="status" class="status">প্লে বাটনে ক্লিক করুন...</div>
 </div>
 
 <script>
-    const audio = document.querySelector('audio');
-    const statusText = document.getElementById('status-text');
+    const player = document.getElementById('radioPlayer');
+    const status = document.getElementById('status');
 
-    // যদি স্ট্রিমিং লোড হতে সমস্যা হয়
-    audio.onerror = function() {
-        statusText.innerText = "স্ট্রিমিং বর্তমানে অফলাইনে আছে।";
-    };
-
-    audio.onplaying = function() {
-        statusText.innerText = "এখন চলছে...";
-        statusText.style.color = "#006a4e";
+    player.onplay = () => { status.innerText = "এখন সম্প্রচারিত হচ্ছে..."; status.style.color = "green"; };
+    player.onpause = () => { status.innerText = "বন্ধ আছে"; status.style.color = "#888"; };
+    player.onerror = () => { 
+        status.innerText = "লিঙ্কটি বর্তমানে কাজ করছে না (সার্ভার ডাউন হতে পারে)"; 
+        status.style.color = "red";
     };
 </script>
 
