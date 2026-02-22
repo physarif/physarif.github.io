@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@physarif</title>
+  <meta name="description" content="আরিফ - পদার্থবিজ্ঞানের ছাত্র এবং ওয়েব ডেভেলপার।" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #08090a;
+      --surface: #111214;
+      --surface2: #18191d;
+      --border: #1f2025;
+      --border2: #2a2b32;
+      --text: #f0f0f0;
+      --muted: #6b6d78;
+      --muted2: #9a9daa;
+      --accent: #6c63ff;
+      --accent2: #a78bfa;
+      --green: #22d3a3;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans Bengali', 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Ambient glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -30vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw;
+      height: 60vh;
+      background: radial-gradient(ellipse, rgba(108,99,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,9,10,0.7);
+    }
+    nav .inner {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav .logo {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--accent2);
+      text-decoration: none;
+    }
+    nav .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+
+    /* HERO */
+    .hero {
+      padding: 56px 0 48px;
+      animation: fadeUp 0.7s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .avatar-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border2);
+      box-shadow: 0 0 0 4px rgba(108,99,255,0.15);
+      flex-shrink: 0;
+    }
+    .avatar-info h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .avatar-info .handle {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.78rem;
+      color: var(--accent2);
+      margin-top: 3px;
+      letter-spacing: 0.06em;
+    }
+
+    .bio-text {
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--muted2);
+      margin-bottom: 28px;
+    }
+    .bio-text strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Social chips */
+    .socials {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border2);
+      background: var(--surface);
+      font-family: 'Sora', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--muted2);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .chip svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .chip:hover {
+      border-color: var(--accent);
+      color: var(--accent2);
+      background: rgba(108,99,255,0.08);
+      transform: translateY(-1px);
+    }
+
+    /* DIVIDER */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 8px 0 32px;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+    .divider span {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border2);
+    }
+
+    /* PROJECT CARDS */
+    .projects {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 56px;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .card {
+      display: block;
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px 22px 18px;
+      transition: border-color 0.25s, background 0.25s, transform 0.2s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(108,99,255,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: 16px;
+    }
+    .card:hover {
+      border-color: var(--accent);
+      background: var(--surface2);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(108,99,255,0.12);
+    }
+    .card:hover::before { opacity: 1; }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .card-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .card-tag {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 999px;
+      flex-shrink: 0;
+    }
+    .tag-ecom   { background: rgba(251,191,36,0.12); color: #fbbf24; }
+    .tag-comm   { background: rgba(34,211,163,0.1);  color: #22d3a3; }
+    .tag-social { background: rgba(167,139,250,0.12); color: var(--accent2); }
+
+    .card-desc {
+      font-size: 0.9rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--muted2);
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+    .card-link {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--accent2);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      opacity: 0.7;
+      transition: opacity 0.2s, gap 0.2s;
+    }
+    .card:hover .card-link { opacity: 1; gap: 8px; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+      text-align: center;
+      animation: fadeUp 0.7s 0.4s ease both;
+    }
+    footer p {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    footer a { color: var(--accent2); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 480px) {
+      .avatar { width: 60px; height: 60px; }
+      .avatar-info h1 { font-size: 1.2rem; }
+      .card { padding: 18px 16px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="inner">
+      <a href="https://github.com/physarif" target="_blank" class="logo">@physarif</a>
+      <div class="dot" title="Available"></div>
+    </div>
+  </nav>
+
+  <div class="wrap">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="avatar-row">
+        <img
+          src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjyfKicXQuTf1l8ZClxd1V3cwifSScZRbfXyGN3Cb8GEdR4n8tzfmRhmkeQ80Ies3e0lxlw4OAeAk4T2GrzqXaFBCWlI3sSg_B5vNXDKaPjy-gmEZi610nHiHUeb9Pn_PfWZg-7DryADuIQUOh8waz4N0jyjFzM9qM07TTvESiMj7sLOt8/s1600-rw/19058.png"
+          alt="Arif"
+          class="avatar"
+        />
+        <div class="avatar-info">
+          <h1>আরিফ</h1>
+          <div class="handle">physarif · github.com/physarif</div>
+        </div>
+      </div>
+
+      <p class="bio-text">
+        <strong>পদার্থবিজ্ঞানে অনার্স</strong> করছি, তবে মনটা পড়ে থাকে কোডের দুনিয়ায়।
+        নতুন ওয়েব প্রজেক্ট তৈরি করতে ও টেকনোলজির সাথে আপডেট থাকতে ভালোবাসি।
+      </p>
+
+      <div class="socials">
+        <a href="https://www.facebook.com/share/physarif" target="_blank" class="chip">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          Facebook
+        </a>
+        <a href="https://www.x.com/physarif" target="_blank" class="chip">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Twitter / X
+        </a>
+        <a href="https://www.youtube.com/@physarif" target="_blank" class="chip">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.94 1.95C5.12 20 12 20 12 20s6.88 0 8.6-.47a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#08090a"/></svg>
+          YouTube
+        </a>
+        <a href="https://physarif.blogspot.com" target="_blank" class="chip">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.976 24H2.024C.907 24 0 23.093 0 21.976V2.024C0 .907.907 0 2.024 0h19.952C23.093 0 24 .907 24 2.024v19.952C24 23.093 23.093 24 21.976 24zM12 5.5H8.5C6.57 5.5 5 7.07 5 9v6c0 1.93 1.57 3.5 3.5 3.5h7c1.93 0 3.5-1.57 3.5-3.5v-3.25a.75.75 0 00-.75-.75H17a1.5 1.5 0 01-1.5-1.5V9c0-1.93-1.57-3.5-3.5-3.5zm0 9.75H8.75a.75.75 0 010-1.5H12a.75.75 0 010 1.5zm2.75-4H8.75a.75.75 0 010-1.5h6a.75.75 0 010 1.5z"/></svg>
+          Blogger
+        </a>
+      </div>
+    </section>
+
+    <!-- DIVIDER -->
+    <div class="divider">
+      <span>Projects</span>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="projects">
+
+      <a href="https://sonalishop.netlify.app" target="_blank" class="card">
+        <div class="card-top">
+          <span class="card-name">sonalishop</span>
+          <span class="card-tag tag-ecom">E-Commerce</span>
+        </div>
+        <p class="card-desc">
+          একটি পূর্ণাঙ্গ ই-কমার্স সাইট — পণ্য তালিকা, কার্ট সিস্টেম ও স্মুথ ইউজার এক্সপেরিয়েন্স সহ অনলাইন শপিং প্ল্যাটফর্ম।
+        </p>
+        <div class="card-footer">
+          <span class="card-link">
+            Visit site
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </div>
+      </a>
+
+      <a href="https://physflow.netlify.app" target="_blank" class="card">
+        <div class="card-top">
+          <span class="card-name">physflow</span>
+          <span class="card-tag tag-comm">Community</span>
+        </div>
+        <p class="card-desc">
+          Reddit-এর অনুপ্রেরণায় তৈরি একটি কমিউনিটি প্ল্যাটফর্ম — থ্রেড, আলোচনা ও ভোটিং সিস্টেম সহ সামাজিক ডিসকোর্স স্পেস।
+        </p>
+        <div class="card-footer">
+          <span class="card-link">
+            Visit site
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </div>
+      </a>
+
+      <a href="https://shonjog.netlify.app/" target="_blank" class="card">
+        <div class="card-top">
+          <span class="card-name">shonjog</span>
+          <span class="card-tag tag-social">Social</span>
+        </div>
+        <p class="card-desc">
+          Twitter-এর ক্লিন UI দেখে অনুপ্রাণিত হয়ে নিজে একটি মিনিমাল সোশ্যাল মিডিয়া সাইট বানানোর চেষ্টা — ফিড, পোস্ট ও প্রোফাইল সহ।
+        </p>
+        <div class="card-footer">
+          <span class="card-link">
+            Visit site
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>
+        crafted by <a href="https://github.com/physarif" target="_blank">@physarif</a>
+        &nbsp;·&nbsp;
+        <span id="yr"></span>
+      </p>
+    </footer>
+
+  </div>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
