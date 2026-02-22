@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলাদেশ বেতার লাইভ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f2f5;
+            margin: 0;
+        }
+        .player-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+        }
+        h2 { color: #006a4e; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; }
+        audio {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .status {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+
+<div class="player-container">
+    <h2>বাংলাদেশ বেতার</h2>
+    <p>ঢাকা-ক (লাইভ স্ট্রিমিং)</p>
+    
+    <audio controls autoplay>
+        <source src="http://103.69.149.230:8000/stream" type="audio/mpeg">
+        আপনার ব্রাউজারটি এই অডিও প্লেয়ার সাপোর্ট করে না।
+    </audio>
+
+    <div class="status" id="status-text"></div>
+</div>
+
+<script>
+    const audio = document.querySelector('audio');
+    const statusText = document.getElementById('status-text');
+
+    // যদি স্ট্রিমিং লোড হতে সমস্যা হয়
+    audio.onerror = function() {
+        statusText.innerText = "স্ট্রিমিং বর্তমানে অফলাইনে আছে।";
+    };
+
+    audio.onplaying = function() {
+        statusText.innerText = "এখন চলছে...";
+        statusText.style.color = "#006a4e";
+    };
+</script>
+
+</body>
+</html>
