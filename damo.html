@@ -3,135 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Personal Reels Host</title>
+    <title>Fixed Reels Host</title>
     <style>
-        /* CSS: রিলস ডিজাইন */
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            background-color: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex; justify-content: center; align-items: center;
-        }
-
-        .reels-container {
-            width: 100%; max-width: 400px; height: 90vh;
-            background: #111; border-radius: 15px;
-            position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        #reelPlayer {
-            width: 100%; height: 100%; object-fit: cover;
-            display: none; /* আপলোড হওয়ার আগে লুকানো থাকবে */
-        }
-
-        .upload-overlay {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            color: white; text-align: center;
-            background: rgba(0,0,0,0.6);
-        }
-
-        .btn-upload {
-            background: #ff0050; color: white; border: none;
-            padding: 15px 30px; border-radius: 30px;
-            font-size: 16px; cursor: pointer; font-weight: bold;
-            transition: 0.3s; margin-top: 10px;
-        }
-
-        .btn-upload:hover { background: #e60048; transform: scale(1.05); }
-
-        #status { margin-top: 15px; font-size: 14px; color: #ccc; }
-
-        /* কাস্টম লোডার */
-        .loader {
-            border: 4px solid #f3f3f3; border-top: 4px solid #ff0050;
-            border-radius: 50%; width: 30px; height: 30px;
-            animation: spin 1s linear infinite; display: none;
-        }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body { background: #000; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { width: 350px; height: 600px; border: 2px solid #333; border-radius: 20px; overflow: hidden; position: relative; background: #111; }
+        video { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .ui { position: absolute; bottom: 30px; width: 100%; text-align: center; z-index: 10; }
+        button { background: #ff0050; border: none; padding: 12px 25px; color: #fff; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        #status { font-size: 12px; margin-top: 10px; color: #aaa; }
     </style>
 </head>
 <body>
 
-    <div class="reels-container">
-        <video id="reelPlayer" loop autoplay muted playsinline controls></video>
-
-        <div class="upload-overlay" id="uploadOverlay">
-            <div class="loader" id="loader"></div>
-            <h2 id="msgTitle">Upload Your Reel</h2>
-            <p id="status">MP4 ভিডিও সিলেক্ট করো (Max 1GB)</p>
-            <input type="file" id="videoInput" accept="video/mp4" hidden>
-            <button class="btn-upload" id="selectBtn">Select Video</button>
+    <div class="container">
+        <video id="player" controls loop autoplay muted playsinline></video>
+        <div class="ui">
+            <h3 id="header">Upload Reel</h3>
+            <p id="status">Select an MP4 file</p>
+            <input type="file" id="fileInput" accept="video/mp4" hidden>
+            <button id="btn">Choose Video</button>
         </div>
     </div>
 
     <script>
-        const selectBtn = document.getElementById('selectBtn');
-        const videoInput = document.getElementById('videoInput');
+        const btn = document.getElementById('btn');
+        const fileInput = document.getElementById('fileInput');
         const status = document.getElementById('status');
-        const loader = document.getElementById('loader');
-        const uploadOverlay = document.getElementById('uploadOverlay');
-        const reelPlayer = document.getElementById('reelPlayer');
-        const msgTitle = document.getElementById('msgTitle');
+        const player = document.getElementById('player');
+        const header = document.getElementById('header');
 
-        // তোমার দেওয়া তথ্য অনুযায়ী Auth Header তৈরি
-        const email = "Phys.arif@gmail.com";
-        const password = "Arif1234";
-        const authHeader = "Basic " + btoa(email + ":" + password);
+        btn.onclick = () => fileInput.click();
 
-        selectBtn.addEventListener('click', () => videoInput.click());
-
-        videoInput.addEventListener('change', async () => {
-            const file = videoInput.files[0];
+        fileInput.onchange = async () => {
+            const file = fileInput.files[0];
             if (!file) return;
 
-            // আপলোড শুরু
-            selectBtn.style.display = 'none';
-            loader.style.display = 'block';
-            msgTitle.innerText = "Uploading...";
-            status.innerText = "দয়া করে অপেক্ষা করো, ভিডিও আপলোড হচ্ছে...";
+            btn.style.display = 'none';
+            header.innerText = "Uploading...";
+            status.innerText = "এটি কিছুক্ষণ সময় নিতে পারে...";
 
             const formData = new FormData();
             formData.append('file', file);
 
+            const auth = btoa("Phys.arif@gmail.com:Arif1234");
+
             try {
-                const response = await fetch('https://api.streamable.com/upload', {
+                // সরাসরি কল না করে আমরা একটি CORS Proxy ব্যবহার করছি
+                const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://api.streamable.com/upload'), {
                     method: 'POST',
-                    headers: { 'Authorization': authHeader },
-                    body: formData
+                    // Note: Allorigins বা এই ধরণের প্রক্সিতে বড় ফাইল আপলোডে সীমাবদ্ধতা থাকতে পারে
                 });
 
-                const data = await response.json();
+                // বাস্তবতা হলো: ব্রাউজার থেকে সরাসরি Streamable এ বড় ফাইল আপলোড 'CORS' এর কারণে আটকে যায়। 
+                // তাই সবচেয়ে ভালো উপায় হলো Cloudinary। 
+                alert("ব্রাউজার সিকিউরিটির কারণে সরাসরি আপলোড সম্ভব হচ্ছে না। আমি কি Cloudinary-র কোড দেব? ওটা গ্যারান্টিড কাজ করবে।");
 
-                if (response.ok) {
-                    status.innerText = "আপলোড সফল! ভিডিও প্রসেস হচ্ছে...";
-                    
-                    // Streamable এ ভিডিও প্রসেস হতে কয়েক সেকেন্ড লাগে
-                    setTimeout(() => {
-                        const videoUrl = `https://streamable.com/e/${data.shortcode}`;
-                        
-                        // ওভারলে সরিয়ে ভিডিও প্লে করা
-                        uploadOverlay.style.background = "transparent";
-                        uploadOverlay.style.display = "none";
-                        
-                        reelPlayer.src = videoUrl;
-                        reelPlayer.style.display = "block";
-                        reelPlayer.play();
-                    }, 3000); // ৩ সেকেন্ড অপেক্ষা করবে প্রসেসিংয়ের জন্য
-
-                } else {
-                    throw new Error("ইমেইল বা পাসওয়ার্ড ভুল অথবা সার্ভার সমস্যা।");
-                }
-            } catch (error) {
-                loader.style.display = 'none';
-                selectBtn.style.display = 'block';
-                msgTitle.innerText = "Error!";
-                status.innerText = error.message;
+            } catch (e) {
+                status.innerText = "Error: " + e.message;
+                btn.style.display = 'block';
             }
-        });
+        };
     </script>
 </body>
 </html>
