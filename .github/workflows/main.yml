@@ -24,8 +24,12 @@ jobs:
         run: npm install -g @bubblewrap/cli
 
       - name: Build APK
-        # এখানে আমরা ম্যানুয়ালি সব কনফিগারেশন ইনপুট দিচ্ছি যাতে কোনো প্রশ্ন না আসে
         run: |
+          # কনফিগারেশন ফাইল তৈরি করা যাতে Bubblewrap প্রশ্ন না করে
+          mkdir -p ~/.bubblewrap
+          echo '{"jdkPath":"'"$JAVA_HOME"'","androidSdkPath":"/usr/local/lib/android/sdk"}' > ~/.bubblewrap/config.json
+          
+          # এবার বিল্ড শুরু
           bubblewrap init --manifest=https://castfm.pages.dev/manifest.json --directory=./ --packageId=com.castfm.app --no-prompt
           bubblewrap build --skip-signing
 
