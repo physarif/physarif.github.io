@@ -1,32 +1,29 @@
 name: Generate CastFM APK
 on: 
-  workflow_dispatch: # এটি দিলে তুমি ম্যানুয়ালি বাটন টিপে বিল্ড শুরু করতে পারবে
+  workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4 # আপডেট করা হয়েছে v4 এ
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4 # আপডেট করা হয়েছে v4 এ
         with:
-          node-version: 18
+          node-version: 20 # লেটেস্ট স্টেবল ভার্সন
 
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
       - name: Initialize and Build APK
-        # এখানে তোমার PWA URL এবং আইকন লিঙ্কগুলো অটোমেটিক নিয়ে নেবে
         run: |
           bubblewrap init --manifest=https://castfm.pages.dev/manifest.json --directory=./ --metaData=./twa-manifest.json
           bubblewrap build --skip-signing
-        # আপাতত '--skip-signing' দিচ্ছি যাতে দ্রুত টেস্ট বিল্ড পাওয়া যায়। 
-        # পরে প্লে-স্টোরে দিতে চাইলে আমরা সাইনিং কী অ্যাড করব।
 
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # এখানে v4 ব্যবহার করা হয়েছে, যা এররটি সমাধান করবে
         with:
           name: CastFM-Release-APK
           path: ./*.apk
