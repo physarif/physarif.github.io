@@ -7,23 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4 # আপডেট করা হয়েছে v4 এ
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4 # আপডেট করা হয়েছে v4 এ
+        uses: actions/setup-node@v4
         with:
-          node-version: 20 # লেটেস্ট স্টেবল ভার্সন
+          node-version: 20
 
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
       - name: Initialize and Build APK
+        # এখানে 'yes' কমান্ডটি সব অটোমেটিক উত্তর দিয়ে দেবে
         run: |
-          bubblewrap init --manifest=https://castfm.pages.dev/manifest.json --directory=./ --metaData=./twa-manifest.json
-          bubblewrap build --skip-signing
+          yes | bubblewrap init --manifest=https://castfm.pages.dev/manifest.json --directory=./ --metaData=./twa-manifest.json
+          yes | bubblewrap build --skip-signing
 
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4 # এখানে v4 ব্যবহার করা হয়েছে, যা এররটি সমাধান করবে
+        uses: actions/upload-artifact@v4
         with:
           name: CastFM-Release-APK
           path: ./*.apk
