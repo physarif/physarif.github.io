@@ -18,10 +18,14 @@ jobs:
         run: npm install -g @bubblewrap/cli
 
       - name: Initialize and Build APK
-        # এখানে 'yes' কমান্ডটি সব অটোমেটিক উত্তর দিয়ে দেবে
+        # এখানে --packageId যোগ করা হয়েছে যা সমস্যার সমাধান করবে
         run: |
-          yes | bubblewrap init --manifest=https://castfm.pages.dev/manifest.json --directory=./ --metaData=./twa-manifest.json
-          yes | bubblewrap build --skip-signing
+          bubblewrap init --manifest=https://castfm.pages.dev/manifest.json \
+            --directory=./ \
+            --packageId=com.castfm.app \
+            --metaData=./twa-manifest.json \
+            --no-prompt
+          bubblewrap build --skip-signing
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
