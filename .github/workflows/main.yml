@@ -9,26 +9,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Build Android App
+        uses: flaming-codes/pwa-to-offline-app-action@v1.2.2
         with:
-          node-version: 20
+          # তোমার PWA এর লিঙ্ক
+          web-manifest-url: https://castfm.pages.dev/manifest.json
+          # অ্যান্ড্রয়েড প্যাকেজ আইডি
+          package-id: com.castfm.app
+          # কীস্টোর ছাড়াই টেস্ট বিল্ড তৈরি করবে
+          skip-signing: true
 
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      - name: Initialize and Build APK
-        # এখানে --packageId যোগ করা হয়েছে যা সমস্যার সমাধান করবে
-        run: |
-          bubblewrap init --manifest=https://castfm.pages.dev/manifest.json \
-            --directory=./ \
-            --packageId=com.castfm.app \
-            --metaData=./twa-manifest.json \
-            --no-prompt
-          bubblewrap build --skip-signing
-
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: CastFM-Release-APK
+          name: CastFM-App
           path: ./*.apk
