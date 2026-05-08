@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Results — KIPPS School</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --border: #e8eaf0;
+      --accent: #5D91E4;
+      --accent-soft: #e8f0fc;
+      --text: #1a1a2e;
+      --muted: #8a8fa8;
+      --muted2: #c4c8d8;
+      --success: #3a9e6e;
+      --error: #d94f4f;
+      --shadow-sm: 0 1px 4px rgba(0,0,0,0.06);
+      --shadow: 0 4px 20px rgba(93,145,228,0.10), 0 1px 4px rgba(0,0,0,0.06);
+      --shadow-lg: 0 8px 32px rgba(93,145,228,0.15), 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    input, select { -webkit-user-select: text; user-select: text; }
+
+    @keyframes fadeUp        { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes spin          { to { transform: rotate(360deg); } }
+    @keyframes skel-shimmer  { to { background-position: -200% 0; } }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(160deg, #0f1c35 0%, #16213e 50%, #1e3a6e 100%);
+      padding: 1.8rem 1.4rem 3rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 80% 10%, rgba(93,145,228,0.22) 0%, transparent 55%),
+        radial-gradient(ellipse at 15% 80%, rgba(30,90,180,0.18) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(93,145,228,0.6), transparent);
+    }
+    .hero-icon {
+      width: 64px; height: 64px; border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.18);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.65rem; flex-shrink: 0;
+      overflow: hidden;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem; font-weight: 600; color: #fff;
+      margin-bottom: 0.2rem; letter-spacing: 0.01em;
+      line-height: 1.35;
+    }
+    .hero p {
+      font-size: 0.72rem; font-weight: 400;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-top: 0.25rem;
+    }
+    .hero-divider {
+      width: 32px; height: 1.5px;
+      background: rgba(93,145,228,0.5);
+      margin: 0.35rem 0 0;
+    }
+
+    /* ── SEARCH CARD ── */
+    .search-card {
+      background: var(--surface);
+      border-radius: 20px; padding: 1.4rem;
+      margin: -1.8rem 1rem 1.4rem;
+      box-shadow: var(--shadow-lg);
+      position: relative; z-index: 10;
+      animation: fadeUp 0.4s ease both;
+    }
+    .search-card-title {
+      font-size: 0.7rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1rem;
+    }
+
+    .field { margin-bottom: 0.75rem; }
+    .field label {
+      display: block; font-size: 0.68rem; color: var(--muted);
+      font-weight: 600; margin-bottom: 0.28rem;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .field select, .field input {
+      width: 100%; padding: 0.62rem 0.85rem;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 0.84rem; font-family: 'Inter', sans-serif;
+      color: var(--text); background: var(--bg);
+      outline: none; transition: border-color 0.18s, box-shadow 0.18s;
+      appearance: none; cursor: pointer;
+    }
+    .field select:focus, .field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(93,145,228,0.12);
+    }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8fa8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.85rem center;
+      padding-right: 2.2rem;
+    }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+
+    .search-btn {
+      width: 100%; padding: 0.78rem;
+      background: #16213e; color: #fff;
+      border: none; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 600;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      margin-top: 0.25rem;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      transition: opacity 0.15s, transform 0.12s;
+    }
+    .search-btn:hover { opacity: 0.88; }
+    .search-btn:active { transform: scale(0.98); }
+    .search-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .cancel-btn {
+      padding: 0.78rem 1.1rem;
+      background: #e8eaf0; color: #333;
+      border: 1px solid #ccc; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 600;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      display: flex; align-items: center;
+      transition: opacity 0.15s, transform 0.12s; white-space: nowrap;
+    }
+    .cancel-btn:hover { opacity: 0.88; }
+    .cancel-btn:active { transform: scale(0.98); }
+
+    /* ── CONTENT ── */
+    .content { padding: 0 1rem 5rem; }
+
+    /* ── MSG ── */
+    .msg-box {
+      border-radius: 12px; padding: 0.9rem 1.1rem;
+      font-size: 0.82rem; font-weight: 500;
+      display: flex; align-items: center; gap: 0.55rem;
+      animation: fadeUp 0.3s ease both;
+    }
+    .msg-box.error { background: #fdf0f0; color: var(--error); border: 1px solid #f5c8c8; }
+
+    /* ── STUDENT CARD ── */
+    .student-card {
+      background: var(--surface); border-radius: 16px;
+      padding: 1.1rem; box-shadow: var(--shadow);
+      margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.9rem;
+      animation: fadeUp 0.35s ease both;
+      border: 1.5px solid var(--border);
+    }
+    .student-avatar {
+      width: 54px; height: 54px; border-radius: 13px;
+      object-fit: cover; flex-shrink: 0;
+      border: 2px solid var(--border); background: var(--bg);
+    }
+    .student-avatar-ph {
+      width: 54px; height: 54px; border-radius: 13px;
+      background: var(--accent-soft); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; border: 2px solid var(--border);
+    }
+    .student-info { flex: 1; min-width: 0; }
+    .student-name {
+      font-size: 0.97rem; font-weight: 600; color: var(--text);
+      margin-bottom: 0.22rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .student-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .meta-badge {
+      font-size: 0.67rem; font-weight: 500;
+      padding: 0.13rem 0.48rem; border-radius: 999px;
+      border: 1px solid var(--border); color: var(--muted); background: var(--bg);
+    }
+    .meta-badge.accent { background: var(--accent-soft); color: var(--accent); border-color: #c8d9f5; }
+
+    /* ── RESULT CARD ── */
+    .result-card {
+      background: var(--surface); border-radius: 16px;
+      border: 1.5px solid var(--border); box-shadow: var(--shadow-sm);
+      overflow: hidden; animation: fadeUp 0.38s ease 0.05s both;
+    }
+    .result-header {
+      padding: 0.95rem 1.1rem;
+      background: linear-gradient(135deg, #16213e, #1e3a6e);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    /* ── RESULT HEADER PILLS ── */
+    .result-header {
+      padding: 0.85rem 1.1rem;
+      background: linear-gradient(135deg, #16213e, #1e3a6e);
+    }
+    .result-info-pills { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+    .rinfo-pill {
+      font-size: 0.72rem; font-weight: 600; color: #fff;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0.22rem 0.7rem; border-radius: 999px;
+    }
+
+    /* ── SUBJECT TABLE ── */
+    .subj-table-header {
+      display: flex; align-items: center;
+      padding: 0.45rem 1.1rem;
+      background: #f4f6fb;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.68rem; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .subj-table-header span:first-child { flex: 1; }
+    .subj-table-header span:nth-child(2) { width: 48px; text-align: right; }
+    .subj-table-header span:nth-child(3) { width: 52px; text-align: right; }
+
+    .subj-row {
+      display: flex; align-items: center;
+      padding: 0.72rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .subj-row:last-child { border-bottom: none; }
+    .subj-name { flex: 1; font-size: 0.82rem; color: var(--text); }
+    .subj-marks {
+      font-size: 0.9rem; font-weight: 700;
+      width: 48px; text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .subj-grade {
+      width: 52px; text-align: right;
+      font-size: 0.78rem; font-weight: 700;
+    }
+    .c-high { color: var(--success); } .c-mid { color: var(--accent); }
+    .c-low  { color: var(--error);   } .c-absent { color: var(--muted2); font-weight:400; font-size:0.75rem; }
+    .bar-high { background: var(--success); } .bar-mid { background: var(--accent); } .bar-low { background: var(--error); }
+    .grade-aplus  { color: #16a34a; } .grade-a     { color: #22c55e; }
+    .grade-aminus { color: #65a30d; } .grade-b     { color: #ca8a04; }
+    .grade-c      { color: #ea580c; } .grade-d     { color: #dc2626; }
+    .grade-f      { color: #b91c1c; font-weight:800; } .grade-absent { color: var(--muted2); font-weight:400; }
+
+    /* ── RESULT FOOTER ── */
+    .result-footer {
+      background: #f4f6fb;
+      border-top: 1.5px solid var(--border);
+      padding: 0.3rem 0;
+    }
+    .result-footer-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.55rem 1.1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-footer-row:last-child { border-bottom: none; }
+    .rf-label { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+    .rf-value { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+    .status-passed { color: #16a34a; }
+    .status-failed { color: #dc2626; }
+    .position-badge { color: #16213e; font-size: 0.95rem; font-weight: 800; letter-spacing: -0.02em; }
+
+    /* ── PRINT BUTTON ── */
+    .print-btn {
+      width: 100%; margin-top: 0.75rem;
+      padding: 0.78rem;
+      background: #fff; color: #16213e;
+      border: 1.5px solid #16213e; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 600;
+      font-family: 'Inter', sans-serif; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      transition: background 0.15s, color 0.15s;
+    }
+    .print-btn:hover { background: #16213e; color: #fff; }
+    .print-btn:active { transform: scale(0.98); }
+
+    /* ── PRINT STYLES ── */
+    @media print {
+      @page { margin: 0.6cm; size: 100mm auto; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body { background: #fff !important; width: 100mm !important; margin: 0 auto; }
+      .search-card, .print-btn { display: none !important; }
+      .hero { padding: 1rem 1.2rem !important; }
+      .content { padding: 0 !important; width: 100% !important; }
+
+      /* School header for print */
+      .content::before {
+        content: '';
+        display: block;
+        text-align: center;
+        margin-bottom: 0.5rem;
+      }
+      .student-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        border-radius: 8px !important;
+        margin-bottom: 0.4rem;
+      }
+      .result-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        border-radius: 8px !important;
+        break-inside: avoid;
+        margin-top: 0;
+      }
+      .result-header { background: #16213e !important; }
+      .rinfo-pill { border: 1px solid rgba(255,255,255,0.3) !important; }
+      .result-footer { background: #f4f6fb !important; }
+      .subj-table-header { background: #f4f6fb !important; }
+    }
+
+    /* ── EMPTY ── */
+    .empty-box {
+      text-align: center; padding: 2.5rem 1.5rem;
+      background: var(--surface); border-radius: 16px;
+      border: 1.5px solid var(--border);
+      animation: fadeUp 0.35s ease both;
+    }
+    .empty-icon  { font-size: 2.2rem; margin-bottom: 0.6rem; }
+    .empty-title { font-size: 0.92rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; }
+    .empty-sub   { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── SPINNER ── */
+    .spinner {
+      width: 17px; height: 17px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite; display: inline-block;
+    }
+
+    /* ── SKELETON ── */
+    .skel {
+      background: linear-gradient(90deg,#eff1f7 25%,#f8f9fd 50%,#eff1f7 75%);
+      background-size: 200% 100%; animation: skel-shimmer 1.2s infinite; border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div style="display:flex;align-items:center;justify-content:center;gap:0.9rem;">
+      <div class="hero-icon"><img src="https://res.cloudinary.com/dharjj0kg/image/upload/v1778208469/wsmx6efbymhwflt5hf9l.png" alt="School Logo" style="width:100%;height:100%;object-fit:cover;"></div>
+      <div style="text-align:left;">
+        <h1 style="margin:0;">Kathalbari Islamia Private<br>Primary School</h1>
+        <div class="hero-divider"></div>
+        <p>Students Results Portal</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH CARD -->
+  <div class="search-card">
+    <div class="field-row">
+      <div class="field">
+        <label>Year</label>
+        <select id="s-year">
+          <option value="">— Year —</option>
+          <option value="2026">2026</option>
+          <option value="2027">2027</option>
+          <option value="2028">2028</option>
+          <option value="2029">2029</option>
+          <option value="2030">2030</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Terminal</label>
+        <select id="s-terminal">
+          <option value="">— Terminal —</option>
+          <option value="1st Terminal">1st Terminal</option>
+          <option value="2nd Terminal">2nd Terminal</option>
+          <option value="3rd Terminal">3rd Terminal</option>
+          <option value="Final Exam">Final Exam</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Class</label>
+        <select id="s-class">
+          <option value="">— Class —</option>
+          <option value="Play">Play</option>
+          <option value="Nursery">Nursery</option>
+          <option value="One">One</option>
+          <option value="Two">Two</option>
+          <option value="Three">Three</option>
+          <option value="Four">Four</option>
+          <option value="Five">Five</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Roll</label>
+        <input type="number" id="s-roll" placeholder="e.g. 5" min="1" inputmode="numeric"/>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:0.6rem;margin-top:0.25rem;">
+      <button class="cancel-btn" id="cancelBtn" onclick="location.reload()">
+        Cancel
+      </button>
+      <button class="search-btn" id="searchBtn" onclick="doSearch()" style="margin-top:0;flex:1;">
+        View Result
+      </button>
+    </div>
+  </div>
+
+  <!-- RESULT CONTENT -->
+  <div class="content" id="mainContent"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCPTGKcmQPCb3wytICdsMGFLw3dx6mAv5c",
+      authDomain: "kipps-school.firebaseapp.com",
+      databaseURL: "https://kipps-school-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "kipps-school",
+      storageBucket: "kipps-school.firebasestorage.app",
+      messagingSenderId: "864483844538",
+      appId: "1:864483844538:web:3535351b49d83586ccbd83"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+
+    const TERM_MAP = { "1st Terminal":"t1","2nd Terminal":"t2","3rd Terminal":"t3","Final Exam":"fe" };
+    const CLS_MAP  = { "Play":"pl","Nursery":"nu","One":"1","Two":"2","Three":"3","Four":"4","Five":"5" };
+
+    const SUBJ_ORDER = ["Bangla","English","Mathematics","Science","Bangladesh & Global Studies","Islam & Moral Education"];
+
+    function esc(str) {
+      if (str === null || str === undefined) return "";
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function marksClass(m) {
+      if (m === null || m === undefined) return "c-absent";
+      if (m >= 80) return "c-high";
+      if (m >= 50) return "c-mid";
+      return "c-low";
+    }
+    function barClass(m) {
+      if (m >= 80) return "bar-high";
+      if (m >= 50) return "bar-mid";
+      return "bar-low";
+    }
+    function gradeLabel(m) {
+      if (m === null || m === undefined) return { g: "Absent", cls: "grade-absent" };
+      if (m >= 80) return { g: "A+", cls: "grade-aplus" };
+      if (m >= 70) return { g: "A",  cls: "grade-a" };
+      if (m >= 60) return { g: "A-", cls: "grade-aminus" };
+      if (m >= 50) return { g: "B",  cls: "grade-b" };
+      if (m >= 40) return { g: "C",  cls: "grade-c" };
+      if (m >= 33) return { g: "D",  cls: "grade-d" };
+      return { g: "F", cls: "grade-f" };
+    }
+
+    window.mobilePrint = function() {
+      const vp = document.querySelector('meta[name="viewport"]');
+      const original = vp ? vp.content : '';
+      if (vp) vp.content = 'width=320';
+      setTimeout(() => {
+        window.print();
+        setTimeout(() => { if (vp) vp.content = original; }, 500);
+      }, 100);
+    }
+
+    function ordinalSuffix(n) {
+      const s = ["th","st","nd","rd"], v = n % 100;
+      return s[(v - 20) % 10] || s[v] || s[0];
+    }
+
+    window.doSearch = async function() {
+      const year     = document.getElementById("s-year").value;
+      const terminal = document.getElementById("s-terminal").value;
+      const cls      = document.getElementById("s-class").value;
+      const roll     = document.getElementById("s-roll").value.trim();
+      const content  = document.getElementById("mainContent");
+      const btn      = document.getElementById("searchBtn");
+
+      if (!year)     { showError("Please select a Year.");     return; }
+      if (!terminal) { showError("Please select a Terminal."); return; }
+      if (!cls)      { showError("Please select a Class.");    return; }
+      if (!roll)     { showError("Please enter Roll number."); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Loading...`;
+      showSkeleton(content);
+
+      try {
+        // 1. Find student by roll + class
+        const studSnap = await get(child(ref(db), "students"));
+        if (!studSnap.exists()) { showError("No student data found."); reset(btn); return; }
+
+        const students = studSnap.val();
+        const match = Object.entries(students).find(([, s]) =>
+          String(s.roll) === String(roll) && s.class === cls
+        );
+
+        if (!match) {
+          content.innerHTML = `
+            <div class="empty-box">
+              <div class="empty-icon">🔍</div>
+              <div class="empty-title">Student Not Found</div>
+              <div class="empty-sub">Roll <strong>${esc(roll)}</strong>, Class <strong>${esc(cls)}</strong> — কোনো student পাওয়া যায়নি।</div>
+            </div>`;
+          reset(btn); return;
+        }
+
+        const [studentKey, student] = match;
+        const sid = student.student_id || studentKey;
+
+        // 2. Build key prefix for this terminal
+        const termCode = TERM_MAP[terminal] || "t0";
+        const clsCode  = CLS_MAP[cls] || cls.toLowerCase();
+        const prefix   = `${year}-${termCode}-cls${clsCode}-`.toLowerCase();
+
+        // 3. Fetch all results
+        const resSnap = await get(child(ref(db), "results"));
+        const allResults = resSnap.exists() ? resSnap.val() : {};
+
+        // 4. Filter matching results with this student's marks
+        const subjectMarks = {}; // { subjectName: marks }
+
+        Object.entries(allResults).forEach(([rKey, rData]) => {
+          if (!rKey.startsWith(prefix)) return;
+          if (rData.year !== year || rData.terminal !== terminal || rData.class !== cls) return;
+          if (!rData.marks || rData.marks[sid] === undefined) return;
+          const subj = rData.subject || rKey;
+          subjectMarks[subj] = rData.marks[sid];
+        });
+
+        // 5. No result found
+        if (!Object.keys(subjectMarks).length) {
+          let html = buildStudentCard(student);
+          html += `
+            <div class="empty-box">
+              <div class="empty-icon">📋</div>
+              <div class="empty-title">Result Published হয়নি</div>
+              <div class="empty-sub"><strong>${esc(terminal)}, ${esc(year)}</strong> — এর result এখনো publish করা হয়নি।</div>
+            </div>`;
+          content.innerHTML = html;
+          reset(btn); return;
+        }
+
+        // 6. Sort subjects
+        const sorted = Object.entries(subjectMarks).sort((a, b) => {
+          const ai = SUBJ_ORDER.indexOf(a[0]), bi = SUBJ_ORDER.indexOf(b[0]);
+          if (ai === -1 && bi === -1) return a[0].localeCompare(b[0]);
+          if (ai === -1) return 1; if (bi === -1) return -1;
+          return ai - bi;
+        });
+
+        // 7. Average, total, status
+        const marksArr = sorted.map(([,m]) => m).filter(m => m !== null && m !== undefined);
+        const total = marksArr.reduce((s, m) => s + Number(m), 0);
+        const avg = marksArr.length ? (total / marksArr.length).toFixed(1) : null;
+        const hasFail = sorted.some(([,m]) => m !== null && m !== undefined && Number(m) < 33);
+        const status = hasFail ? "Failed" : "Passed";
+        const statusCls = hasFail ? "status-failed" : "status-passed";
+
+        // 7b. Calculate position — collect totals of all students in same class+terminal+year
+        const studentTotals = {}; // { sid: total }
+        Object.values(students).forEach(st => {
+          const stId = st.student_id || Object.keys(students).find(k => students[k] === st);
+          if (st.class !== cls) return;
+          let stTotal = 0;
+          Object.entries(allResults).forEach(([rKey, rData]) => {
+            if (!rKey.startsWith(prefix)) return;
+            if (rData.year !== year || rData.terminal !== terminal || rData.class !== cls) return;
+            if (!rData.marks || rData.marks[stId] === undefined) return;
+            const m = rData.marks[stId];
+            if (m !== null && m !== undefined) stTotal += Number(m);
+          });
+          studentTotals[stId] = stTotal;
+        });
+        const sortedTotals = Object.values(studentTotals).sort((a, b) => b - a);
+        const position = sortedTotals.indexOf(total) + 1;
+        const totalStudents = sortedTotals.length;
+
+        // 8. Render
+        let html = buildStudentCard(student);
+
+        html += `
+          <div class="result-card">
+            <div class="result-header">
+              <div class="result-info-pills">
+                <span class="rinfo-pill">${esc(cls)}</span>
+                <span class="rinfo-pill">${esc(terminal)}</span>
+                <span class="rinfo-pill">${esc(year)}</span>
+              </div>
+            </div>
+            <div class="subj-table-header">
+              <span>Subject</span>
+              <span>Marks</span>
+              <span>Grade</span>
+            </div>`;
+
+        sorted.forEach(([subj, marks]) => {
+          const mc  = marksClass(marks);
+          const gl  = gradeLabel(marks);
+          html += `
+            <div class="subj-row">
+              <div class="subj-name">${esc(subj)}</div>
+              <div class="subj-marks ${mc}">${marks !== null && marks !== undefined ? esc(marks) : "—"}</div>
+              <span class="subj-grade ${gl.cls}">${gl.g}</span>
+            </div>`;
+        });
+
+        html += `
+            <div class="result-footer">
+              <div class="result-footer-row">
+                <span class="rf-label">Total</span>
+                <span class="rf-value">${total}</span>
+              </div>
+              <div class="result-footer-row">
+                <span class="rf-label">Average</span>
+                <span class="rf-value">${avg !== null ? avg : "—"}</span>
+              </div>
+              <div class="result-footer-row">
+                <span class="rf-label">Position</span>
+                <span class="rf-value position-badge">#${position}</span>
+              </div>
+              <div class="result-footer-row">
+                <span class="rf-label">Status</span>
+                <span class="rf-value ${statusCls}">${status}</span>
+              </div>
+            </div>
+          </div>
+          <button class="print-btn" onclick="mobilePrint()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print Result
+          </button>`;
+        content.innerHTML = html;
+
+      } catch(e) {
+        showError("Error: " + e.message);
+      }
+
+      reset(btn);
+    };
+
+    function buildStudentCard(s) {
+      const av = s.photo
+        ? `<img class="student-avatar" src="${esc(s.photo)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="student-avatar-ph" style="display:none;">🎓</div>`
+        : `<div class="student-avatar-ph">🎓</div>`;
+      return `
+        <div class="student-card">
+          ${av}
+          <div class="student-info">
+            <div class="student-name">${esc(s.name || "—")}</div>
+            <div class="student-meta">
+              <span class="meta-badge accent">#${esc(s.roll)}</span>
+              <span class="meta-badge accent">${esc(s.class)}</span>
+              ${s.section ? `<span class="meta-badge">${esc(s.section)}</span>` : ""}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function showError(msg) {
+      document.getElementById("mainContent").innerHTML =
+        `<div class="msg-box error">⚠️ ${esc(msg)}</div>`;
+    }
+
+    function showSkeleton(el) {
+      el.innerHTML = `
+        <div class="student-card" style="animation:none;">
+          <div class="skel" style="width:54px;height:54px;border-radius:13px;flex-shrink:0;"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:0.45rem;">
+            <div class="skel" style="height:13px;width:52%;"></div>
+            <div class="skel" style="height:10px;width:35%;"></div>
+          </div>
+        </div>
+        <div class="result-card" style="animation:none;">
+          <div style="padding:0.95rem 1.1rem;background:#e8eaf0;display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;flex-direction:column;gap:0.4rem;">
+              <div class="skel" style="height:13px;width:110px;"></div>
+              <div class="skel" style="height:10px;width:70px;"></div>
+            </div>
+            <div class="skel" style="height:42px;width:62px;border-radius:10px;"></div>
+          </div>
+          ${[1,2,3,4,5,6].map(() => `
+            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.72rem 1.1rem;border-bottom:1px solid var(--border);">
+              <div class="skel" style="height:11px;flex:1;"></div>
+              <div class="skel" style="height:4px;width:68px;border-radius:999px;"></div>
+              <div class="skel" style="height:13px;width:28px;"></div>
+            </div>`).join("")}
+        </div>`;
+    }
+
+    function reset(btn) {
+      btn.disabled = false;
+      btn.innerHTML = `View Result`;
+    }
+
+    document.getElementById("s-roll").addEventListener("keydown", e => {
+      if (e.key === "Enter") window.doSearch();
+    });
+  </script>
+</body>
+</html>
