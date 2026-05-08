@@ -87,7 +87,7 @@
     .search-card {
       background: var(--surface);
       border-radius: 20px; padding: 1.4rem;
-      margin: -1.8rem 1rem 1.4rem;
+      margin: 1rem 1rem 1.4rem;
       box-shadow: var(--shadow-lg);
       position: relative; z-index: 10;
       animation: fadeUp 0.4s ease both;
@@ -162,36 +162,42 @@
     /* ── STUDENT CARD ── */
     .student-card {
       background: var(--surface); border-radius: 16px;
-      padding: 1.1rem; box-shadow: var(--shadow);
+      overflow: hidden; box-shadow: var(--shadow);
       margin-bottom: 1rem;
-      display: flex; align-items: center; gap: 0.9rem;
       animation: fadeUp 0.35s ease both;
       border: 1.5px solid var(--border);
     }
+    .student-card-header {
+      background: linear-gradient(135deg, #0f1c35, #16213e);
+      padding: 0.7rem 1rem;
+      font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.6);
+      text-transform: uppercase; letter-spacing: 0.07em;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .student-card-header span { color: #fff; font-size: 0.78rem; }
+    .student-info-table { width: 100%; border-collapse: collapse; }
+    .student-info-table td {
+      padding: 0.48rem 1rem;
+      font-size: 0.8rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .student-info-table tr:last-child td { border-bottom: none; }
+    .sit-label {
+      color: var(--muted); font-weight: 500;
+      white-space: nowrap; width: 38%;
+    }
+    .sit-value { color: var(--text); font-weight: 600; }
     .student-avatar {
-      width: 54px; height: 54px; border-radius: 13px;
-      object-fit: cover; flex-shrink: 0;
-      border: 2px solid var(--border); background: var(--bg);
+      width: 54px; height: 54px; border-radius: 8px;
+      object-fit: cover; border: 1.5px solid var(--border);
     }
     .student-avatar-ph {
-      width: 54px; height: 54px; border-radius: 13px;
-      background: var(--accent-soft); flex-shrink: 0;
+      width: 54px; height: 54px; border-radius: 8px;
+      background: var(--accent-soft);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; border: 2px solid var(--border);
+      font-size: 1.5rem; border: 1.5px solid var(--border);
     }
-    .student-info { flex: 1; min-width: 0; }
-    .student-name {
-      font-size: 0.97rem; font-weight: 600; color: var(--text);
-      margin-bottom: 0.22rem;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .student-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-    .meta-badge {
-      font-size: 0.67rem; font-weight: 500;
-      padding: 0.13rem 0.48rem; border-radius: 999px;
-      border: 1px solid var(--border); color: var(--muted); background: var(--bg);
-    }
-    .meta-badge.accent { background: var(--accent-soft); color: var(--accent); border-color: #c8d9f5; }
 
     /* ── RESULT CARD ── */
     .result-card {
@@ -286,28 +292,47 @@
     .print-btn:hover { background: #16213e; color: #fff; }
     .print-btn:active { transform: scale(0.98); }
 
+    /* ── PRINT EXAM INFO ── */
+    .print-exam-info { display: none; }
+    @media print {
+      .print-exam-info {
+        display: flex; gap: 0.4rem; align-items: center;
+        font-size: 0.72rem; font-weight: 600; color: #444;
+        background: #f4f6fb; border: 1px solid #ddd;
+        border-radius: 8px; padding: 0.45rem 0.85rem;
+        margin-bottom: 0.4rem;
+      }
+    }
+
     /* ── PRINT STYLES ── */
     @media print {
       @page { margin: 0.6cm; size: 100mm auto; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
       body { background: #fff !important; width: 100mm !important; margin: 0 auto; }
-      .search-card, .print-btn { display: none !important; }
-      .hero { padding: 1rem 1.2rem !important; }
-      .content { padding: 0 !important; width: 100% !important; }
+      .print-btn { display: none !important; }
 
-      /* School header for print */
-      .content::before {
-        content: '';
-        display: block;
-        text-align: center;
-        margin-bottom: 0.5rem;
+      /* Hide banner & search card on print */
+      .school-banner { display: none !important; }
+      .search-card {
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
       }
+      .search-card .field, .search-card .field-row,
+      .search-card label, .search-card select,
+      .search-card input, .cancel-btn, .search-btn { display: none !important; }
+
+      .content { padding: 0 !important; width: 100% !important; }
       .student-card {
         box-shadow: none !important;
         border: 1px solid #ddd !important;
         border-radius: 8px !important;
         margin-bottom: 0.4rem;
       }
+      .student-card-header { background: #16213e !important; }
       .result-card {
         box-shadow: none !important;
         border: 1px solid #ddd !important;
@@ -315,8 +340,6 @@
         break-inside: avoid;
         margin-top: 0;
       }
-      .result-header { background: #16213e !important; }
-      .rinfo-pill { border: 1px solid rgba(255,255,255,0.3) !important; }
       .result-footer { background: #f4f6fb !important; }
       .subj-table-header { background: #f4f6fb !important; }
     }
@@ -349,15 +372,12 @@
 </head>
 <body>
 
-  <!-- HERO -->
-  <div class="hero">
-    <div style="display:flex;align-items:center;justify-content:center;gap:0.9rem;">
-      <div class="hero-icon"><img src="https://res.cloudinary.com/dharjj0kg/image/upload/v1778208469/wsmx6efbymhwflt5hf9l.png" alt="School Logo" style="width:100%;height:100%;object-fit:cover;"></div>
-      <div style="text-align:left;">
-        <h1 style="margin:0;">Kathalbari Islamia Private<br>Primary School</h1>
-        <div class="hero-divider"></div>
-        <p>Students Results Portal</p>
-      </div>
+  <!-- SCHOOL BANNER -->
+  <div class="school-banner" style="background:linear-gradient(135deg,#0f1c35,#16213e);border-radius:16px;margin:1rem 1rem 0;padding:1.1rem 1.2rem;display:flex;align-items:center;gap:1rem;">
+    <img src="https://res.cloudinary.com/dharjj0kg/image/upload/v1778208469/wsmx6efbymhwflt5hf9l.png" alt="School Logo" style="width:54px;height:54px;border-radius:10px;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.3);">
+    <div>
+      <div style="font-size:0.95rem;font-weight:700;color:#fff;line-height:1.35;">Kathalbari Islamia Private Primary School</div>
+      <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);margin-top:0.2rem;letter-spacing:0.04em;">Students Results Portal</div>
     </div>
   </div>
 
@@ -545,7 +565,7 @@
 
         // 5. No result found
         if (!Object.keys(subjectMarks).length) {
-          let html = buildStudentCard(student);
+          let html = buildStudentCard(student, terminal, year);
           html += `
             <div class="empty-box">
               <div class="empty-icon">📋</div>
@@ -592,17 +612,12 @@
         const totalStudents = sortedTotals.length;
 
         // 8. Render
-        let html = buildStudentCard(student);
+        let html = buildStudentCard(student, terminal, year);
+
+
 
         html += `
           <div class="result-card">
-            <div class="result-header">
-              <div class="result-info-pills">
-                <span class="rinfo-pill">${esc(cls)}</span>
-                <span class="rinfo-pill">${esc(terminal)}</span>
-                <span class="rinfo-pill">${esc(year)}</span>
-              </div>
-            </div>
             <div class="subj-table-header">
               <span>Subject</span>
               <span>Marks</span>
@@ -653,21 +668,36 @@
       reset(btn);
     };
 
-    function buildStudentCard(s) {
+    function buildStudentCard(s, terminal, year) {
       const av = s.photo
         ? `<img class="student-avatar" src="${esc(s.photo)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="student-avatar-ph" style="display:none;">🎓</div>`
         : `<div class="student-avatar-ph">🎓</div>`;
       return `
         <div class="student-card">
-          ${av}
-          <div class="student-info">
-            <div class="student-name">${esc(s.name || "—")}</div>
-            <div class="student-meta">
-              <span class="meta-badge accent">#${esc(s.roll)}</span>
-              <span class="meta-badge accent">${esc(s.class)}</span>
-              ${s.section ? `<span class="meta-badge">${esc(s.section)}</span>` : ""}
-            </div>
-          </div>
+          <table class="student-info-table">
+            <tr>
+              <td class="sit-label">Name</td>
+              <td class="sit-value">${esc(s.name || "—")}</td>
+              <td rowspan="2" style="width:70px;padding:0.4rem 0.8rem 0.4rem 0;vertical-align:middle;text-align:right;border-bottom:none;">${av}</td>
+            </tr>
+            <tr>
+              <td class="sit-label">Roll No.</td>
+              <td class="sit-value" colspan="2">${esc(s.roll || "—")}</td>
+            </tr>
+            <tr>
+              <td class="sit-label">Class</td>
+              <td class="sit-value" colspan="2">${esc(s.class || "—")}</td>
+            </tr>
+            ${s.section ? `<tr><td class="sit-label">Section</td><td class="sit-value" colspan="2">${esc(s.section)}</td></tr>` : ""}
+            <tr>
+              <td class="sit-label">Terminal</td>
+              <td class="sit-value" colspan="2">${esc(terminal || "—")}</td>
+            </tr>
+            <tr>
+              <td class="sit-label">Year</td>
+              <td class="sit-value" colspan="2">${esc(year || "—")}</td>
+            </tr>
+          </table>
         </div>`;
     }
 
@@ -677,27 +707,36 @@
     }
 
     function showSkeleton(el) {
+      const skelRow = (labelW, valW, hasPhoto) => `
+        <tr>
+          <td class="sit-label"><div class="skel" style="height:11px;width:${labelW};border-radius:6px;"></div></td>
+          <td class="sit-value" ${hasPhoto ? '' : 'colspan="2"'}><div class="skel" style="height:13px;width:${valW};border-radius:6px;"></div></td>
+          ${hasPhoto ? `<td style="width:70px;padding:0.4rem 0.8rem 0.4rem 0;vertical-align:middle;text-align:right;border-bottom:none;"><div class="skel" style="width:54px;height:62px;border-radius:10px;display:inline-block;"></div></td>` : ''}
+        </tr>`;
       el.innerHTML = `
         <div class="student-card" style="animation:none;">
-          <div class="skel" style="width:54px;height:54px;border-radius:13px;flex-shrink:0;"></div>
-          <div style="flex:1;display:flex;flex-direction:column;gap:0.45rem;">
-            <div class="skel" style="height:13px;width:52%;"></div>
-            <div class="skel" style="height:10px;width:35%;"></div>
-          </div>
+          <table class="student-info-table">
+            ${skelRow('38px','55%', true)}
+            ${skelRow('44px','40%', false)}
+            ${skelRow('30px','35%', false)}
+            ${skelRow('42px','45%', false)}
+            ${skelRow('50px','60%', false)}
+            ${skelRow('24px','28%', false)}
+          </table>
         </div>
         <div class="result-card" style="animation:none;">
           <div style="padding:0.95rem 1.1rem;background:#e8eaf0;display:flex;justify-content:space-between;align-items:center;">
             <div style="display:flex;flex-direction:column;gap:0.4rem;">
-              <div class="skel" style="height:13px;width:110px;"></div>
-              <div class="skel" style="height:10px;width:70px;"></div>
+              <div class="skel" style="height:13px;width:110px;border-radius:6px;"></div>
+              <div class="skel" style="height:10px;width:70px;border-radius:6px;"></div>
             </div>
             <div class="skel" style="height:42px;width:62px;border-radius:10px;"></div>
           </div>
           ${[1,2,3,4,5,6].map(() => `
             <div style="display:flex;align-items:center;gap:0.75rem;padding:0.72rem 1.1rem;border-bottom:1px solid var(--border);">
-              <div class="skel" style="height:11px;flex:1;"></div>
+              <div class="skel" style="height:11px;flex:1;border-radius:6px;"></div>
               <div class="skel" style="height:4px;width:68px;border-radius:999px;"></div>
-              <div class="skel" style="height:13px;width:28px;"></div>
+              <div class="skel" style="height:13px;width:28px;border-radius:6px;"></div>
             </div>`).join("")}
         </div>`;
     }
