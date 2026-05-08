@@ -358,7 +358,7 @@
 <div id="loginScreen" style="display:none;position:fixed;inset:0;z-index:9998;background:var(--bg);display:none;align-items:center;justify-content:center;padding:1.5rem;">
   <div style="width:100%;max-width:360px;animation:fadeUp 0.4s ease both;">
     <div style="text-align:center;margin-bottom:2rem;">
-      <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:400;letter-spacing:-0.02em;margin-bottom:0.3rem;">CastFM</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:400;letter-spacing:-0.02em;margin-bottom:0.3rem;">KIPPS School</div>
       <div style="font-size:0.75rem;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;">Admin Dashboard</div>
       <div style="width:32px;height:1px;background:var(--border2);margin:1rem auto 0;"></div>
     </div>
@@ -380,8 +380,6 @@
         Sign In
       </button>
     </div>
-
-    <div style="text-align:center;margin-top:1.25rem;font-size:0.7rem;color:var(--muted2);">Restricted access · CastFM Admins only</div>
   </div>
 </div>
 
@@ -1553,153 +1551,7 @@
 
     })();
 
-    // === REELS ===
-    (function() {
-      var db = _db_videos; // same Firebase instance, reels node
-      let RL_allReels   = {};
-      let RL_editingKey = null;
-
-      function RL_getNextKey() {
-        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-        let suffix = "";
-        for (let i = 0; i < 8; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
-        const key = "r_" + suffix;
-        return RL_allReels[key] ? RL_getNextKey() : key;
-      }
-
-      function RL_updateAutoKey() {
-        if (!RL_editingKey) document.getElementById("rl-fKey").value = RL_getNextKey();
-      }
-
-      function RL_esc(str) {
-        if (!str) return "";
-        return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-      }
-
-      // ─── LOAD ────────────────────────────────────────────
-      window.RL_loadAll = async function() {
-        const btn = document.getElementById("rl-refreshBtn");
-        btn.classList.add("loading");
-        try {
-          const snap = await get(child(ref(db), "reels"));
-          RL_allReels = snap.exists() ? snap.val() : {};
-          RL_renderItems(RL_allReels);
-          RL_updateAutoKey();
-          if (!RL_editingKey) document.getElementById("rl-fPublishedAt").value = new Date().toISOString().slice(0,10);
-        } catch(e) {
-          showToast("Failed to load: " + e.message, "error-t");
-        }
-        btn.classList.remove("loading");
-      };
-
-      // ─── RENDER ──────────────────────────────────────────
-      function RL_renderItems(data) {
-        const list = document.getElementById("rl-itemList");
-        const entries = Object.entries(data).sort((a, b) => (b[1].id || 0) - (a[1].id || 0));
-        document.getElementById("rl-itemCount").textContent = entries.length + " reel" + (entries.length !== 1 ? "s" : "");
-        createPager(entries, list, "rl-sentinel",
-          ([key, s]) => {
-            const imgTag = s.img
-              ? `<img class="li-thumb" src="${RL_esc(s.img)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" alt=""/><div class="li-thumb-placeholder" style="display:none;">🎞️</div>`
-              : `<div class="li-thumb-placeholder">🎞️</div>`;
-            return `<div class="list-item">${imgTag}<div class="li-info"><div class="li-name">${RL_esc(s.title || key)}</div><div class="li-meta"><span class="li-id">#${s.id || "—"}</span>${s.featured ? `<span class="li-featured">Featured</span>` : ""}${s.seo ? `<span style="color:var(--muted2);">${RL_esc(s.seo)}</span>` : ""}</div></div><div class="li-actions"><button class="si-btn edit" onclick="RL_editItem('${key}')">Edit</button><button class="si-btn del" onclick="RL_deleteItem('${key}')">Delete</button></div></div>`;
-          },
-          `<div class="empty-state"><div class="empty-icon">🎞️</div>No reels yet. Add one above!</div>`
-        );
-      }
-
-      // ─── SEARCH ──────────────────────────────────────────
-      window.RL_filterItems = function() {
-        const q = document.getElementById("rl-searchInput").value.toLowerCase();
-        if (!q) { RL_renderItems(RL_allReels); return; }
-        const filtered = {};
-        Object.entries(RL_allReels).forEach(([k, v]) => {
-          if ((v.title||"").toLowerCase().includes(q) || k.toLowerCase().includes(q)) filtered[k] = v;
-        });
-        RL_renderItems(filtered);
-      };
-
-      // ─── SUBMIT ──────────────────────────────────────────
-      window.RL_submitReel = async function() {
-        const id    = parseInt(document.getElementById("rl-fId").value) || 0;
-        const key   = RL_editingKey || RL_getNextKey();
-        const title = document.getElementById("rl-fTitle").value.trim();
-        const url   = document.getElementById("rl-fUrl").value.trim();
-        const img   = document.getElementById("rl-fImg").value.trim();
-        const desc  = document.getElementById("rl-fDesc").value.trim();
-        const seo   = document.getElementById("rl-fSeo").value.trim();
-        const publishedAt = document.getElementById("rl-fPublishedAt").value || new Date().toISOString().slice(0,10);
-        const featured = document.getElementById("rl-fFeatured").checked;
-
-        if (!title) { showToast("Title is required!", "error-t"); return; }
-
-        const btn = document.getElementById("rl-submitBtn");
-        btn.disabled = true; btn.textContent = "Saving...";
-
-        try {
-          await set(ref(db, "reels/" + key), { id, title, url, img, desc, seo, featured, publishedAt });
-          RL_allReels[key] = { id, title, url, img, desc, seo, featured, publishedAt };
-          RL_renderItems(RL_allReels);
-          const wasEditing = !!RL_editingKey;
-          RL_editingKey = null;
-          RL_clearForm();
-          showToast(wasEditing ? "Reel updated!" : "Reel added!", "success");
-        } catch(e) {
-          showToast("Error: " + e.message, "error-t");
-        }
-
-        btn.disabled = false;
-        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Reel`;
-      };
-
-      // ─── EDIT ────────────────────────────────────────────
-      window.RL_editItem = function(key) {
-        const s = RL_allReels[key];
-        if (!s) return;
-        RL_editingKey = key;
-
-        document.getElementById("rl-fId").value          = s.id          || "";
-        document.getElementById("rl-fKey").value         = key;
-        document.getElementById("rl-fTitle").value       = s.title       || "";
-        document.getElementById("rl-fUrl").value         = s.url         || "";
-        document.getElementById("rl-fImg").value         = s.img         || "";
-        document.getElementById("rl-fDesc").value        = s.desc        || "";
-        document.getElementById("rl-fSeo").value         = s.seo         || "";
-        document.getElementById("rl-fFeatured").checked  = s.featured    || false;
-        document.getElementById("rl-fPublishedAt").value = s.publishedAt || new Date().toISOString().slice(0,10);
-
-        document.getElementById("rl-formTitle").textContent = "Edit Reel — " + key;
-        document.getElementById("rl-submitBtn").innerHTML = `✎ Update Reel`;
-        document.getElementById("rl-cancelBtn").style.display = "inline-flex";
-        document.getElementById("rl-addCard").scrollIntoView({ behavior: "smooth" });
-      };
-
-      window.RL_cancelEdit = function() { RL_editingKey = null; RL_clearForm(); };
-
-      function RL_clearForm() {
-        ["rl-fId","rl-fTitle","rl-fUrl","rl-fImg","rl-fDesc","rl-fSeo"].forEach(id => document.getElementById(id).value = "");
-        document.getElementById("rl-fFeatured").checked = false;
-        document.getElementById("rl-fPublishedAt").value = new Date().toISOString().slice(0,10);
-        document.getElementById("rl-formTitle").textContent = "Add New Reel";
-        document.getElementById("rl-submitBtn").innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Reel`;
-        document.getElementById("rl-cancelBtn").style.display = "none";
-        RL_editingKey = null;
-        RL_updateAutoKey();
-      }
-
-      // ─── DELETE ──────────────────────────────────────────
-      window.RL_deleteItem = async function(key) {
-        if (!confirm(`Delete "${key}"? This cannot be undone.`)) return;
-        try {
-          await remove(ref(db, "reels/" + key));
-          delete RL_allReels[key];
-          RL_renderItems(RL_allReels);
-          showToast("Reel deleted.", "success");
-        } catch(e) {
-          showToast("Error: " + e.message, "error-t");
-        }
-      };
-    })();
+    
 
     // === STATIONS ===
     (function() {
