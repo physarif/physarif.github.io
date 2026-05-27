@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>এডমিন প্যানেল - লেখক ফোরাম</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; transition: all 0.3s; }
+        .admin-card { transition: all 0.2s; }
+        .tab-active { background-color: #3498db !important; color: white !important; }
+        /* HTML কন্টেন্ট রেন্ডার করার জন্য ছোট ফিক্স */
+        .post-content img { max-width: 100px; border-radius: 4px; display: inline-block; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 pb-10">
+
+<main id="admin-main" class="max-w-3xl mx-auto px-4 py-6 hidden">
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4">
+            <button onclick="location.href='index.html'" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <div>
+                <h1 class="text-xl font-bold">এডমিন প্যানেল</h1>
+                <p id="view-title" class="text-xs text-gray-500">পেন্ডিং পোস্ট ম্যানেজমেন্ট</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <span class="px-3 py-1 bg-accent/10 text-accent text-[10px] font-bold rounded-full uppercase tracking-widest border border-accent/20">Verified Admin</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-8">
+        <div class="bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm">
+            <p class="text-xs text-gray-500 mb-1 font-bold">আইটেম সংখ্যা</p>
+            <p id="item-count" class="text-2xl font-black text-accent">0</p>
+        </div>
+        <div class="bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm">
+            <p class="text-xs text-gray-500 mb-1 font-bold">স্ট্যাটাস</p>
+            <p id="status-text" class="text-sm font-bold text-green-500 italic">সিস্টেম অনলাইন</p>
+        </div>
+    </div>
+
+    <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+        <button onclick="switchTab('pending')" id="btn-pending" class="px-4 py-2 text-xs font-bold rounded-lg bg-white dark:bg-darkCard border dark:border-darkBorder whitespace-nowrap tab-active">পেন্ডিং পোস্ট</button>
+        <button onclick="switchTab('all')" id="btn-all" class="px-4 py-2 text-xs font-bold rounded-lg bg-white dark:bg-darkCard border dark:border-darkBorder whitespace-nowrap">সব পোস্ট</button>
+        <button onclick="switchTab('comments')" id="btn-comments" class="px-4 py-2 text-xs font-bold rounded-lg bg-white dark:bg-darkCard border dark:border-darkBorder whitespace-nowrap">সব কমেন্ট</button>
+    </div>
+
+    <div id="content-list" class="space-y-4">
+        <div class="flex justify-center py-20"><div class="animate-spin rounded-full h-6 w-6 border-b-2 border-accent"></div></div>
+    </div>
+</main>
+
+<div id="access-denied" class="h-screen flex items-center justify-center hidden">
+    <div class="text-center">
+        <h1 class="text-4xl font-black text-red-500 mb-2">Access Denied</h1>
+        <p class="text-gray-500">আপনার এই পেজে প্রবেশের অনুমতি নেই।</p>
+        <button onclick="location.href='index.html'" class="mt-4 text-accent font-bold underline">হোমে ফিরে যান</button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, where, doc, updateDoc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCXGkduHCDLLNxkOU59asVJl5J3oOAp3HE",
+        authDomain: "my-interactive-project-2b460.firebaseapp.com",
+        projectId: "my-interactive-project-2b460",
+        storageBucket: "my-interactive-project-2b460.firebasestorage.app",
+        messagingSenderId: "196849485958",
+        appId: "1:196849485958:web:fdd3b3d5e898cd197be907",
+        measurementId: "G-HNHSWST7WS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const ADMIN_EMAIL = 'phys.arif@gmail.com';
+    const POSTS_PATH = 'blog_comments/pages/forum_v2_voted';
+    const COMMENTS_PATH = 'blog_comments/pages/forum_comments';
+
+    let currentMode = 'pending';
+    let unsubscribe = null;
+
+    onAuthStateChanged(auth, (user) => {
+        if (user && user.email === ADMIN_EMAIL) {
+            document.getElementById('admin-main').classList.remove('hidden');
+            document.getElementById('access-denied').classList.add('hidden');
+            switchTab('pending');
+        } else {
+            document.getElementById('access-denied').classList.remove('hidden');
+            document.getElementById('admin-main').classList.add('hidden');
+            // লগইন না থাকলে হোমে পাঠিয়ে দিবে ৩ সেকেন্ড পর
+            if(!user) setTimeout(() => { location.href = 'index.html'; }, 3000);
+        }
+    });
+
+    window.switchTab = (mode) => {
+        currentMode = mode;
+        ['pending', 'all', 'comments'].forEach(m => {
+            document.getElementById(`btn-${m}`).classList.remove('tab-active');
+        });
+        document.getElementById(`btn-${mode}`).classList.add('tab-active');
+        
+        const labels = { 'pending': 'পেন্ডিং পোস্ট ম্যানেজমেন্ট', 'all': 'সকল পোস্টের তালিকা', 'comments': 'সকল কমেন্টের তালিকা' };
+        document.getElementById('view-title').innerText = labels[mode];
+
+        loadData();
+    };
+
+    function loadData() {
+        if (unsubscribe) unsubscribe();
+        
+        const colRef = collection(db, (currentMode === 'comments' ? COMMENTS_PATH : POSTS_PATH));
+        let q;
+
+        if (currentMode === 'pending') {
+            q = query(colRef, where("status", "==", "pending"), orderBy("at", "desc"));
+        } else {
+            // পোস্ট পেজের টাইমস্ট্যাম্প 'at' অনুযায়ী সর্ট হবে
+            q = query(colRef, orderBy("at", "desc"));
+        }
+
+        unsubscribe = onSnapshot(q, (snapshot) => {
+            const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('item-count').innerText = data.length;
+            renderItems(data);
+        }, (error) => {
+            console.error("Error loading data: ", error);
+            document.getElementById('content-list').innerHTML = `<p class="text-center text-red-500 py-10">ডাটা লোড করতে সমস্যা হচ্ছে। সর্টিং এর জন্য Firestore Index প্রয়োজন হতে পারে। ব্রাউজার কনসোল চেক করুন।</p>`;
+        });
+    }
+
+    function renderItems(items) {
+        const container = document.getElementById('content-list');
+        if (items.length === 0) {
+            container.innerHTML = `<div class="text-center py-20 text-gray-400 bg-white dark:bg-darkCard rounded-2xl border dark:border-darkBorder">কোনো তথ্য পাওয়া যায়নি</div>`;
+            return;
+        }
+
+        container.innerHTML = items.map(item => `
+            <div class="admin-card bg-white dark:bg-darkCard p-5 rounded-xl border dark:border-darkBorder shadow-sm relative overflow-hidden">
+                ${item.status === 'pending' ? '<div class="absolute top-0 right-0 bg-orange-500 text-[8px] text-white px-2 py-0.5 rounded-bl-lg font-bold">PENDING</div>' : ''}
+                <div class="flex items-center gap-3 mb-4">
+                    <img src="${item.photoURL || 'https://via.placeholder.com/40'}" class="w-8 h-8 rounded-full border dark:border-gray-700">
+                    <div>
+                        <p class="text-sm font-bold">${item.name || 'Anonymous'}</p>
+                        <p class="text-[10px] text-gray-400">${item.uid || 'No UID'}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    ${item.title ? `<h3 class="text-md font-bold text-accent mb-2">${item.title}</h3>` : ''}
+                    <div class="post-content text-sm text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-darkBg p-3 rounded-lg border dark:border-darkBorder line-clamp-4">
+                        ${item.msg || item.text || 'No content available'}
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    ${item.status === 'pending' ? `
+                        <button onclick="approvePost('${item.id}')" class="flex-1 py-2 bg-green-600 text-white rounded-lg text-[10px] font-bold hover:bg-green-700 transition-colors">APPROVE</button>
+                    ` : ''}
+                    <button onclick="deleteItem('${item.id}')" class="flex-1 py-2 bg-red-100 text-red-500 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-[10px] font-bold hover:bg-red-200 transition-colors uppercase tracking-wider">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.approvePost = async (id) => {
+        if(confirm('আইটেমটি কি পাবলিশ করতে চান?')) {
+            try {
+                const docRef = doc(db, POSTS_PATH, id);
+                await updateDoc(docRef, { status: 'published' });
+                alert('সফলভাবে পাবলিশ করা হয়েছে!');
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+    };
+
+    window.deleteItem = async (id) => {
+        if(confirm('এটি চিরতরে মুছে ফেলতে চান?')) {
+            try {
+                const path = (currentMode === 'comments' ? COMMENTS_PATH : POSTS_PATH);
+                await deleteDoc(doc(db, path, id));
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+    };
+
+    // Auto Dark Mode
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('dark');
+    }
+</script>
+</body>
+</html>

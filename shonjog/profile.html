@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রোফাইল - সংযোগ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { darkBg: '#0b0e11', darkCard: '#15191c', darkBorder: '#2d333b', accent: '#1d9bf0' } 
+                } 
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; transition: background 0.3s, color 0.3s; }
+        @keyframes pageReveal { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-reveal { animation: pageReveal 0.5s ease-out forwards; }
+        
+        .forum-card { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-left: 3px solid transparent; cursor: pointer; }
+        .forum-card:hover { border-left-color: #1d9bf0; transform: translateY(-2px); }
+        
+        .tab-active { border-bottom: 2px solid #1d9bf0; color: #1d9bf0; }
+        .line-clamp-3 { display: -webkit-box !important; -webkit-line-clamp: 3 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; white-space: normal !important; word-break: break-word; }
+        
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100">
+
+<main class="max-w-2xl mx-auto px-4 py-6 animate-reveal">
+    <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4">
+            <button onclick="window.history.back()" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <h1 class="text-xl font-bold">প্রোফাইল</h1>
+        </div>
+        
+        <div class="flex items-center gap-2">
+            <button id="edit-btn" class="hidden p-2 rounded-lg border dark:border-darkBorder hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
+                <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            </button>
+            <button id="logout-btn" class="hidden p-2 rounded-lg border dark:border-darkBorder hover:bg-gray-100 dark:hover:bg-darkCard transition-all">
+                <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="user-info" class="bg-white dark:bg-darkCard p-6 rounded-2xl border dark:border-darkBorder shadow-sm mb-8">
+        <div class="flex items-center gap-6">
+            <img id="user-photo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="w-20 h-20 rounded-full border-2 border-accent/20 object-cover shadow-lg bg-gray-100 dark:bg-darkBg">
+            <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                    <h2 id="user-name" class="text-xl font-bold leading-none min-h-[20px]"></h2>
+                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-orange-50 dark:bg-orange-500/10 text-orange-600 border border-orange-200 dark:border-orange-500/20">
+                        <span id="total-upvotes-display">০</span>
+                    </span>
+                </div>
+                <p id="user-bio" class="text-xs text-gray-500 dark:text-gray-400 mb-3 italic min-h-[16px]"></p>
+                <div id="social-links" class="flex gap-3 text-gray-400"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex border-b dark:border-darkBorder mb-6">
+        <button id="tab-posts" class="flex-1 py-3 text-[13px] font-bold tab-active">পোস্ট (<span id="count-posts">০</span>)</button>
+        <button id="tab-comments" class="flex-1 py-3 text-[13px] font-bold text-gray-400">মন্তব্য (<span id="count-comments">০</span>)</button>
+        <button id="tab-bookmarks" class="hidden flex-1 py-3 text-[13px] font-bold text-gray-400">বুকমার্ক (<span id="count-bookmarks">০</span>)</button>
+    </div>
+    <div id="content-container" class="space-y-4 pb-10"></div>
+</main>
+
+<div id="edit-modal" class="modal px-4">
+    <div class="bg-white dark:bg-darkCard w-full max-w-sm p-6 rounded-2xl shadow-2xl animate-reveal max-h-[90vh] overflow-y-auto">
+        <h3 class="text-lg font-bold mb-4">প্রোফাইল এডিট</h3>
+        <label class="block text-[11px] font-bold text-gray-400 mb-1 uppercase">সাধারণ তথ্য</label>
+        <input id="edit-name-input" type="text" placeholder="নাম" class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder p-2.5 rounded-lg text-sm mb-3 outline-none focus:ring-1 focus:ring-accent">
+        <textarea id="edit-bio-input" placeholder="আপনার সম্পর্কে কিছু লিখুন..." class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder p-2.5 rounded-lg text-sm mb-4 outline-none resize-none h-20 focus:ring-1 focus:ring-accent"></textarea>
+        
+        <label class="block text-[11px] font-bold text-gray-400 mb-1 uppercase">সোশ্যাল লিঙ্ক</label>
+        <div class="space-y-2 mb-4">
+            <input id="edit-fb-input" type="text" placeholder="facebook.com/username" class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder p-2.5 rounded-lg text-sm outline-none">
+            <input id="edit-tw-input" type="text" placeholder="x.com/username" class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder p-2.5 rounded-lg text-sm outline-none">
+            <input id="edit-yt-input" type="text" placeholder="youtube.com/@channel" class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder p-2.5 rounded-lg text-sm outline-none">
+            <input id="edit-web-input" type="text" placeholder="website.com" class="w-full bg-gray-50 dark:bg-darkBg border dark:border-darkBorder p-2.5 rounded-lg text-sm outline-none">
+        </div>
+
+        <div class="flex gap-3 mt-2">
+            <button onclick="document.getElementById('edit-modal').classList.remove('active')" class="flex-1 py-2 text-sm text-gray-500 font-medium">বাতিল</button>
+            <button id="save-profile-btn" class="flex-1 py-2 bg-accent text-white rounded-lg text-sm font-bold">সেভ করুন</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, where, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCXGkduHCDLLNxkOU59asVJl5J3oOAp3HE",
+        authDomain: "my-interactive-project-2b460.firebaseapp.com",
+        projectId: "my-interactive-project-2b460",
+        storageBucket: "my-interactive-project-2b460.firebasestorage.app",
+        messagingSenderId: "196849485958",
+        appId: "1:196849485958:web:fdd3b3d5e898cd197be907",
+        measurementId: "G-HNHSWST7WS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const profileIdFromURL = urlParams.get('uid');
+    let targetUserId = null;
+    let currentPhotoURL = ""; 
+    let currentTab = 'posts', userPosts = [], userComments = [], userBookmarks = [];
+    let currentSocialData = { fb: '', tw: '', yt: '', web: '' };
+
+    function timeAgo(seconds) {
+        if (!seconds) return 'এই মাত্র';
+        const diff = Math.floor(Date.now() / 1000) - seconds;
+        const bnNumbers = { '0': '০', '1': '১', '2': '২', '3': '৩', '4': '৪', '5': '৫', '6': '৬', '7': '৭', '8': '৮', '9': '৯' };
+        if (diff < 60) return 'এই মাত্র';
+        const units = [
+            { label: 'বছর', sec: 31536000 }, { label: 'মাস', sec: 2592000 },
+            { label: 'দিন', sec: 86400 }, { label: 'ঘণ্টা', sec: 3600 },
+            { label: 'মিনিট', sec: 60 }
+        ];
+        for (const unit of units) {
+            const count = Math.floor(diff / unit.sec);
+            if (count >= 1) return count.toString().split('').map(d => bnNumbers[d] || d).join('') + " " + unit.label + " আগে";
+        }
+        return 'এই মাত্র';
+    }
+
+    function getYoutubeId(url) {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    }
+
+    onAuthStateChanged(auth, (user) => {
+        targetUserId = profileIdFromURL || (user ? user.uid : null);
+        if (!targetUserId) { location.href = 'index.html'; return; }
+
+        if (user && user.uid === targetUserId) {
+            document.getElementById('logout-btn').classList.remove('hidden');
+            document.getElementById('edit-btn').classList.remove('hidden');
+            document.getElementById('tab-bookmarks').classList.remove('hidden');
+            currentPhotoURL = user.photoURL;
+            fetchUserBookmarks();
+        }
+        
+        fetchUserData();
+        fetchUserPosts();
+        fetchUserComments();
+    });
+
+    function fetchUserData() {
+        onSnapshot(doc(db, `users/${targetUserId}`), async (snapshot) => {
+            if (snapshot.exists()) {
+                updateUI(snapshot.data());
+            } else {
+                const q = query(collection(db, 'blog_comments/pages/forum_v2_voted'), where("uid", "==", targetUserId));
+                const snap = await getDocs(q);
+                if(!snap.empty) updateUI(snap.docs[0].data());
+            }
+        });
+    }
+
+    const formatUrl = (url) => url && (url.startsWith('http') ? url : `https://${url}`);
+
+    function updateUI(data) {
+        if (!data) return;
+        if (data.photoURL) currentPhotoURL = data.photoURL;
+        document.getElementById('user-name').innerText = data.name || "";
+        document.getElementById('user-photo').src = currentPhotoURL || `https://ui-avatars.com/api/?name=${data.name || 'User'}`;
+        document.getElementById('user-bio').innerText = data.bio || "সংযোগ এর একজন একটিভ ইউজার";
+        
+        currentSocialData = { fb: data.fb || '', tw: data.tw || '', yt: data.yt || '', web: data.web || '' };
+        const socialContainer = document.getElementById('social-links');
+        socialContainer.innerHTML = '';
+        
+        const icons = {
+            fb: '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/></svg>',
+            tw: '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+            yt: '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
+            web: '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>'
+        };
+
+        Object.keys(currentSocialData).forEach(key => {
+            if (currentSocialData[key]) {
+                socialContainer.innerHTML += `<a href="${formatUrl(currentSocialData[key])}" target="_blank" class="hover:text-accent transition-colors">${icons[key]}</a>`;
+            }
+        });
+    }
+
+    function calculateTotalVotes() {
+        const totalVotes = userPosts.reduce((acc, curr) => acc + (curr.votes || 0), 0);
+        document.getElementById('total-upvotes-display').innerText = totalVotes.toLocaleString('bn-BD');
+    }
+
+    document.getElementById('save-profile-btn').onclick = async () => {
+        const newName = document.getElementById('edit-name-input').value;
+        if (!newName) return;
+        const data = {
+            name: newName, 
+            bio: document.getElementById('edit-bio-input').value, 
+            fb: document.getElementById('edit-fb-input').value,
+            tw: document.getElementById('edit-tw-input').value,
+            yt: document.getElementById('edit-yt-input').value,
+            web: document.getElementById('edit-web-input').value,
+            photoURL: currentPhotoURL, uid: targetUserId, updatedAt: new Date()
+        };
+        try {
+            await setDoc(doc(db, `users/${targetUserId}`), data, { merge: true });
+            document.getElementById('edit-modal').classList.remove('active');
+        } catch (e) { console.error(e); }
+    };
+
+    document.getElementById('edit-btn').onclick = () => {
+        document.getElementById('edit-name-input').value = document.getElementById('user-name').innerText;
+        document.getElementById('edit-bio-input').value = document.getElementById('user-bio').innerText;
+        document.getElementById('edit-fb-input').value = currentSocialData.fb;
+        document.getElementById('edit-tw-input').value = currentSocialData.tw;
+        document.getElementById('edit-yt-input').value = currentSocialData.yt;
+        document.getElementById('edit-web-input').value = currentSocialData.web;
+        document.getElementById('edit-modal').classList.add('active');
+    };
+
+    function fetchUserPosts() {
+        onSnapshot(query(collection(db, 'blog_comments/pages/forum_v2_voted'), where("uid", "==", targetUserId)), (snap) => {
+            userPosts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('count-posts').innerText = userPosts.length.toLocaleString('bn-BD');
+            calculateTotalVotes();
+            if(currentTab === 'posts') renderItems(userPosts);
+        });
+    }
+
+    async function fetchUserComments() {
+        const postsSnap = await getDocs(collection(db, 'blog_comments/pages/forum_v2_voted'));
+        userComments = [];
+        for (const postDoc of postsSnap.docs) {
+            onSnapshot(query(collection(db, `blog_comments/pages/forum_v2_voted/${postDoc.id}/comments`), where("uid", "==", targetUserId)), (snap) => {
+                userComments = userComments.filter(c => c.postId !== postDoc.id);
+                snap.forEach(d => userComments.push({ id: d.id, postId: postDoc.id, ...d.data() }));
+                document.getElementById('count-comments').innerText = userComments.length.toLocaleString('bn-BD');
+                if(currentTab === 'comments') renderItems(userComments);
+            });
+        }
+    }
+
+    function fetchUserBookmarks() {
+        onSnapshot(collection(db, `users/${targetUserId}/bookmarks`), (snap) => {
+            userBookmarks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('count-bookmarks').innerText = userBookmarks.length.toLocaleString('bn-BD');
+            if(currentTab === 'bookmarks') renderItems(userBookmarks);
+        });
+    }
+
+    function renderItems(items) {
+        const container = document.getElementById('content-container');
+        if (items.length === 0) { container.innerHTML = `<div class="text-center py-14 text-gray-400 italic text-sm">কোনো তথ্য নেই</div>`; return; }
+        
+        const sortedItems = items.sort((a,b) => (b.at?.seconds||0) - (a.at?.seconds||0));
+
+        container.innerHTML = sortedItems.map(item => {
+            const isComment = !!item.postId;
+            const targetUrl = isComment ? `post.html?id=${item.postId}` : `post.html?id=${item.id}`;
+            const userPhoto = item.photoURL || currentPhotoURL || `https://ui-avatars.com/api/?name=${item.name || 'User'}`;
+            
+            let rawMsg = (item.msg || item.text || '');
+            const youtubeId = getYoutubeId(item.youtubeUrl || rawMsg);
+            
+            // ইউটিউব লিংক থাকলে টেক্সট থেকে সেটি সরানো (হোম পেজের মতো)
+            if (youtubeId) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = rawMsg;
+                const iframes = tempDiv.getElementsByTagName('iframe');
+                while(iframes.length > 0) iframes[0].parentNode.removeChild(iframes[0]);
+                const links = tempDiv.getElementsByTagName('a');
+                for (let i = links.length - 1; i >= 0; i--) {
+                    if (links[i].href.includes('youtube.com') || links[i].href.includes('youtu.be')) {
+                        links[i].parentNode.removeChild(links[i]);
+                    }
+                }
+                rawMsg = tempDiv.innerHTML.replace(/(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/\S+/g, '');
+            }
+
+            const postImage = (item.image || item.imageUrl) ? `<img src="${item.image || item.imageUrl}" class="mt-3 rounded-lg w-full max-h-96 object-cover border dark:border-darkBorder">` : '';
+            const youtubeEmbed = youtubeId ? `
+                <div class="mt-3 aspect-video rounded-lg overflow-hidden border dark:border-darkBorder">
+                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/${youtubeId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>` : '';
+
+            return `
+            <div class="forum-card bg-white dark:bg-darkCard p-4 rounded-xl border dark:border-darkBorder shadow-sm" onclick="location.href='${targetUrl}'">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-2">
+                        <img src="${userPhoto}" class="w-5 h-5 rounded-full object-cover">
+                        <span class="text-[11px] font-bold text-gray-500 uppercase truncate">${item.name || document.getElementById('user-name').innerText}</span>
+                        <span class="text-[10px] text-gray-300 whitespace-nowrap">• ${timeAgo(item.at?.seconds)}</span>
+                        ${isComment ? '<span class="ml-auto text-[9px] px-1.5 py-0.5 bg-gray-100 dark:bg-darkBg text-gray-400 rounded">মন্তব্য</span>' : ''}
+                    </div>
+                    <div class="post-content text-sm leading-relaxed text-gray-800 dark:text-gray-200 line-clamp-3">
+                        ${rawMsg}
+                    </div>
+                    ${postImage}
+                    ${youtubeEmbed}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function updateTabUI(tab) {
+        currentTab = tab;
+        ['posts', 'comments', 'bookmarks'].forEach(t => {
+            const btn = document.getElementById(`tab-${t}`);
+            if(btn) { btn.classList.toggle('tab-active', t === tab); btn.classList.toggle('text-gray-400', t !== tab); }
+        });
+        if(tab === 'posts') renderItems(userPosts);
+        else if(tab === 'comments') renderItems(userComments);
+        else renderItems(userBookmarks);
+    }
+
+    document.getElementById('tab-posts').onclick = () => updateTabUI('posts');
+    document.getElementById('tab-comments').onclick = () => updateTabUI('comments');
+    document.getElementById('tab-bookmarks').onclick = () => updateTabUI('bookmarks');
+    document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.href = 'index.html');
+</script>
+</body>
+</html>

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>পোস্ট বিস্তারিত - লেখক ফোরাম</title>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { 
+                extend: { 
+                    colors: { 
+                        darkBg: '#0b0e11', 
+                        darkCard: '#15191c', 
+                        darkBorder: '#2d333b', 
+                        accent: '#3498db'
+                    } 
+                } 
+            }
+        }
+
+        function applyTheme() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+        applyTheme();
+
+        function timeAgo(date) {
+            if (!date) return '';
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval).toLocaleString('bn-BD') + " বছর আগে";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval).toLocaleString('bn-BD') + " মাস আগে";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval).toLocaleString('bn-BD') + " দিন আগে";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval).toLocaleString('bn-BD') + " ঘণ্টা আগে";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval).toLocaleString('bn-BD') + " মিনিট আগে";
+            return "এই মাত্র";
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Hind Siliguri', sans-serif; }
+        .post-content img { border-radius: 12px; margin: 1.5rem auto; display: block; max-width: 100%; }
+        #comment-window { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); transform: translateY(100%); }
+        #comment-window.active { transform: translateY(0); }
+        .comment-list::-webkit-scrollbar { width: 4px; }
+        .comment-list::-webkit-scrollbar-thumb { background: #3498db; border-radius: 10px; }
+        .mention { color: #3498db; font-weight: bold; margin-right: 4px; }
+        .vote-positive { color: #3498db; } 
+        .vote-negative { color: #e74c3c; } 
+        .btn-active-up { color: #3498db !important; }
+        .btn-active-down { color: #e74c3c !important; }
+        .dark #comment-window { background-color: #0b0e11; color: #f3f4f6; }
+        .clickable { cursor: pointer; transition: opacity 0.2s; }
+        .clickable:hover { opacity: 0.8; }
+        .active-bookmark { color: #3498db !important; fill: currentColor; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 antialiased overflow-x-hidden">
+
+<nav class="bg-white/90 dark:bg-darkBg/90 border-b border-gray-200 dark:border-darkBorder z-[100] backdrop-blur-md">
+    <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-1">
+            <button onclick="history.back()" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full transition-all">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+        </div>
+        
+        <div class="flex items-center gap-1">
+            <button id="share-btn" title="শেয়ার" class="p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full text-gray-500">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+    </svg>
+</button>
+
+            <button id="bookmark-btn" class="hidden p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full text-gray-500 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+            </button>
+            
+            <button id="edit-btn" title="সম্পাদনা" class="hidden p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full text-gray-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+            </button>
+
+            <button id="delete-btn" title="ডিলিট" class="hidden p-2 hover:bg-gray-100 dark:hover:bg-darkCard rounded-full text-red-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 py-8 mb-24">
+    <header class="mb-10">
+        <div class="flex items-center justify-between py-6 border-y border-gray-100 dark:border-darkBorder">
+            <div class="flex items-center gap-3 w-full">
+                <img id="author-img" class="w-14 h-14 rounded-full ring-2 ring-gray-100 dark:ring-darkBorder clickable" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+                <div class="flex-1 flex items-center justify-between">
+                    <div>
+                        <p id="author-name" class="font-bold text-lg leading-none clickable"></p>
+                        <p id="post-date" class="text-xs text-gray-500 font-medium mt-1"></p>
+                    </div>
+                    <div id="author-vote-box" class="flex items-center bg-gray-100 dark:bg-darkCard rounded-2xl p-1 border border-gray-200 dark:border-darkBorder ml-4 hidden">
+                        <button id="upvote-btn" class="p-2 text-gray-400 hover:text-blue-500 transition-all active:scale-90"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M4 14h4v7a1 1 0 001 1h6a1 1 0 001-1v-7h4a1.001 1.001 0 00.781-1.625l-8-10c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 004 14z"/></svg></button>
+                        <span id="vote-count" class="px-2 text-base font-bold min-w-[30px] text-center">0</span>
+                        <button id="downvote-btn" class="p-2 text-gray-400 hover:text-red-500 transition-all active:scale-90"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M20 10h-4V3a1 1 0 00-1-1H9a1 1 0 00-1 1v7H4a1.001 1.001 0 00-.781 1.625l8 10c.381.475 1.181.475 1.562 0l8-10A1.001 1.001 0 0020 10z"/></svg></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <article id="post-display-content" class="post-content prose prose-lg dark:prose-invert max-w-none"></article>
+    <div id="post-tags" class="mt-8 flex flex-wrap gap-2"></div>
+</main>
+
+<button id="open-comment-btn" class="fixed bottom-8 right-6 w-14 h-14 bg-accent text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-[100] shadow-accent/40">
+    <div class="w-8 h-8 flex items-center justify-center">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+        </svg>
+    </div>
+</button>
+
+<div id="comment-window" class="fixed inset-0 bg-white dark:bg-darkBg z-[110] flex flex-col hidden">
+    <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-darkBorder">
+        <button id="close-comment-btn" class="text-gray-500 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2"></path></svg></button>
+        <h3 class="font-bold">আলোচনা</h3>
+        <button id="submit-comment" class="px-5 py-2 bg-accent text-white rounded-full text-sm font-bold disabled:opacity-50 hidden">পাবলিশ</button>
+    </div>
+    <div id="input-section" class="p-4 border-b border-gray-50 dark:border-darkBorder hidden">
+        <div id="reply-label" class="hidden flex items-center justify-between mb-2 px-3 py-1 bg-accent/10 rounded-lg text-[11px] text-accent font-bold"><span id="reply-to-name"></span><button onclick="cancelReply()" class="text-gray-400">✕</button></div>
+        <div class="flex gap-3">
+            <img id="user-avatar" src="" class="w-10 h-10 rounded-full">
+            <textarea id="comment-text" placeholder="আপনার মন্তব্য..." class="flex-1 bg-transparent border-none text-base outline-none resize-none h-20 focus:ring-0 dark:text-white"></textarea>
+        </div>
+    </div>
+    <div id="login-notice" class="p-8 text-center hidden"><p class="text-gray-500 text-sm mb-4">মন্তব্য করতে লগইন করুন</p><button onclick="location.href='login.html'" class="px-6 py-2 bg-accent text-white rounded-full font-bold text-sm">লগইন করুন</button></div>
+    <div id="comments-container" class="flex-1 overflow-y-auto p-4 space-y-4 comment-list"></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getFirestore, doc, collection, addDoc, deleteDoc, query, orderBy, onSnapshot, serverTimestamp, runTransaction, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+    const firebaseConfig = { apiKey: "AIzaSyCXGkduHCDLLNxkOU59asVJl5J3oOAp3HE", authDomain: "my-interactive-project-2b460.firebaseapp.com", projectId: "my-interactive-project-2b460", storageBucket: "my-interactive-project-2b460.firebasestorage.app", messagingSenderId: "196849485958", appId: "1:196849485958:web:fdd3b3d5e898cd197be907", measurementId: "G-HNHSWST7WS" };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+    const adminEmail = "phys.arif@gmail.com";
+    let currentUser = null, postData = null, replyTarget = null;
+
+    onAuthStateChanged(auth, u => {
+        currentUser = u;
+        document.getElementById('input-section').classList.toggle('hidden', !u);
+        document.getElementById('submit-comment').classList.toggle('hidden', !u);
+        document.getElementById('login-notice').classList.toggle('hidden', !!u);
+        
+        if(u) {
+            document.getElementById('user-avatar').src = u.photoURL || `https://ui-avatars.com/api/?name=${u.displayName}`;
+            document.getElementById('bookmark-btn').classList.remove('hidden');
+            checkBookmarkStatus();
+        } else {
+            document.getElementById('bookmark-btn').classList.add('hidden');
+        }
+        loadPostData();
+    });
+
+    async function checkBookmarkStatus() {
+        if (!currentUser || !postId) return;
+        const bRef = doc(db, `users/${currentUser.uid}/bookmarks`, postId);
+        const bSnap = await getDoc(bRef);
+        if (bSnap.exists()) document.getElementById('bookmark-btn').classList.add('active-bookmark');
+    }
+
+    document.getElementById('bookmark-btn').onclick = async () => {
+        if (!currentUser) return alert("লগইন করুন");
+        const bRef = doc(db, `users/${currentUser.uid}/bookmarks`, postId);
+        const bSnap = await getDoc(bRef);
+        if (bSnap.exists()) {
+            await deleteDoc(bRef);
+            document.getElementById('bookmark-btn').classList.remove('active-bookmark');
+        } else {
+            await setDoc(bRef, { title: postData.title, id: postId, at: serverTimestamp() });
+            document.getElementById('bookmark-btn').classList.add('active-bookmark');
+        }
+    };
+
+    function loadPostData() {
+        if (!postId) return;
+        onSnapshot(doc(db, 'blog_comments/pages/forum_v2_voted', postId), (snap) => {
+            if (snap.exists()) {
+                postData = snap.data();
+                document.getElementById('post-display-content').innerHTML = postData.msg || "";
+                document.getElementById('author-name').innerText = postData.name || "অজ্ঞাত";
+                document.getElementById('author-img').src = postData.photoURL || `https://ui-avatars.com/api/?name=${postData.name}`;
+                if(postData.at) document.getElementById('post-date').innerText = timeAgo(postData.at.toDate());
+                
+                if (currentUser) {
+                    const isAdmin = currentUser.email === adminEmail;
+                    const isAuthor = currentUser.uid === postData.uid;
+                    document.getElementById('edit-btn').classList.toggle('hidden', !(isAdmin || isAuthor));
+                    document.getElementById('delete-btn').classList.toggle('hidden', !(isAdmin || isAuthor));
+                }
+
+                const goToProfile = () => { if(postData.uid) window.location.href = `profile.html?uid=${postData.uid}`; };
+                document.getElementById('author-img').onclick = goToProfile;
+                document.getElementById('author-name').onclick = goToProfile;
+
+                const tagsContainer = document.getElementById('post-tags');
+                tagsContainer.innerHTML = '';
+                const currentTags = postData.hashtags || postData.tags;
+                if (currentTags && Array.isArray(currentTags)) {
+                    currentTags.forEach(tag => {
+                        const cleanTag = tag.startsWith('#') ? tag.substring(1) : tag;
+                        const tagEl = document.createElement('a'); 
+                        tagEl.href = `explore.html?tag=${encodeURIComponent(cleanTag)}`;
+                        tagEl.className = 'px-3 py-1 bg-accent/10 text-accent rounded-full text-sm font-medium hover:bg-accent hover:text-white transition-all';
+                        tagEl.innerText = `#${cleanTag}`;
+                        tagsContainer.appendChild(tagEl);
+                    });
+                }
+
+                document.getElementById('vote-count').innerText = postData.votes || 0;
+                document.getElementById('author-vote-box').classList.remove('hidden');
+                document.getElementById('upvote-btn').classList.toggle('btn-active-up', postData.upvoters?.includes(currentUser?.uid));
+                document.getElementById('downvote-btn').classList.toggle('btn-active-down', postData.downvoters?.includes(currentUser?.uid));
+            }
+        });
+    }
+
+    document.getElementById('share-btn').onclick = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: postData.title, text: postData.title, url: window.location.href });
+            } catch (err) { console.log(err); }
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert("লিঙ্ক কপি করা হয়েছে!");
+        }
+    };
+    
+    document.getElementById('edit-btn').onclick = () => window.location.href = `compose.html?id=${postId}`;
+    document.getElementById('delete-btn').onclick = async () => {
+        if(confirm("পোস্টটি চিরতরে ডিলিট করতে চান?")) {
+            await deleteDoc(doc(db, 'blog_comments/pages/forum_v2_voted', postId));
+            window.location.href = 'index.html';
+        }
+    };
+
+    async function handleVote(type) {
+        if (!currentUser) return alert("ভোট দিতে লগইন করুন");
+        const docRef = doc(db, 'blog_comments/pages/forum_v2_voted', postId);
+        
+        await runTransaction(db, async (t) => {
+            const snap = await t.get(docRef);
+            const d = snap.data();
+            let v = d.votes || 0, up = d.upvoters || [], down = d.downvoters || [], uid = currentUser.uid;
+            
+            if(type === 'up') {
+                if(up.includes(uid)) return;
+                if(down.includes(uid)) { down = down.filter(i => i !== uid); v += 2; } else v += 1;
+                up.push(uid);
+            } else {
+                if(down.includes(uid)) return;
+                if(up.includes(uid)) { up = up.filter(i => i !== uid); v -= 2; } else v -= 1;
+                down.push(uid);
+            }
+            t.update(docRef, { votes: v, upvoters: up, downvoters: down });
+        });
+
+        if(type === 'up' && postData && postData.uid !== currentUser.uid) {
+            await addDoc(collection(db, "users", postData.uid, "notifications"), {
+                message: `${currentUser.displayName} আপনার পোস্টটি আপবোট করেছেন।`,
+                type: "upvote",
+                postId: postId,
+                at: serverTimestamp(),
+                read: false
+            });
+        }
+    }
+
+    document.getElementById('upvote-btn').onclick = () => handleVote('up');
+    document.getElementById('downvote-btn').onclick = () => handleVote('down');
+
+    function loadComments() {
+        const q = query(collection(db, `blog_comments/pages/forum_v2_voted/${postId}/comments`), orderBy('at', 'asc'));
+        onSnapshot(q, (snapshot) => {
+            const container = document.getElementById('comments-container');
+            container.innerHTML = '';
+            const commentsMap = {};
+            const commentsData = [];
+            snapshot.forEach((doc) => {
+                const data = { id: doc.id, ...doc.data() };
+                commentsMap[data.id] = data;
+                data.replies = [];
+                commentsData.push(data);
+            });
+            const rootComments = [];
+            commentsData.forEach(c => {
+                if (c.replyToId && commentsMap[c.replyToId]) commentsMap[c.replyToId].replies.push(c);
+                else rootComments.push(c);
+            });
+            rootComments.forEach(c => renderComment(c, container, 0));
+        });
+    }
+
+    function renderComment(c, container, depth) {
+        const isMyComment = currentUser && (currentUser.uid === c.uid || currentUser.email === adminEmail);
+        const div = document.createElement('div');
+        div.className = `flex gap-3 pt-2 ${depth > 0 ? 'ml-8 border-l-2 border-gray-100 dark:border-darkBorder pl-3' : ''}`;
+        div.innerHTML = `
+            <img src="${c.photoURL || 'https://ui-avatars.com/api/?name='+c.name}" class="${depth > 0 ? 'w-7 h-7' : 'w-9 h-9'} rounded-full clickable" onclick="window.location.href='profile.html?uid=${c.uid}'">
+            <div class="flex-1 bg-gray-50 dark:bg-darkCard p-3 rounded-2xl rounded-tl-none">
+                <div class="flex justify-between items-center mb-1">
+                    <h4 class="font-bold text-xs text-accent clickable" onclick="window.location.href='profile.html?uid=${c.uid}'">${c.name}</h4>
+                    <span class="text-[9px] text-gray-500">${c.at ? timeAgo(c.at.toDate()) : ''}</span>
+                </div>
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                    ${c.mentionName ? `<span class="mention">@${c.mentionName}</span>` : ''} ${c.text}
+                </p>
+                ${currentUser ? `<div class="flex gap-4 mt-2">
+                    <button onclick="window.initReply('${c.id}', '${c.name}', '${c.uid}')" class="text-[10px] font-bold text-gray-400 hover:text-accent">রিপ্লাই</button>
+                    ${isMyComment ? `<button onclick="window.deleteComment('${c.id}')" class="text-[10px] font-bold text-gray-400 hover:text-red-500">ডিলিট</button>` : ''}
+                    <button onclick="window.reportComment('${c.id}', '${c.text.replace(/'/g, "\\'")}')" class="text-[10px] font-bold text-gray-400 hover:text-orange-500">রিপোর্ট</button>
+                </div>` : ''}
+            </div>`;
+        container.appendChild(div);
+        if (c.replies) c.replies.forEach(reply => renderComment(reply, container, depth + 1));
+    }
+
+    window.initReply = (id, name, targetUid) => { 
+        replyTarget = { id, name, targetUid }; 
+        document.getElementById('reply-label').classList.remove('hidden'); 
+        document.getElementById('reply-to-name').innerText = `@${name}`; 
+        document.getElementById('comment-text').focus(); 
+    };
+
+    window.cancelReply = () => { replyTarget = null; document.getElementById('reply-label').classList.add('hidden'); };
+    
+    window.deleteComment = async (id) => { if(confirm("ডিলিট করবেন?")) await deleteDoc(doc(db, `blog_comments/pages/forum_v2_voted/${postId}/comments`, id)); };
+    
+    window.reportComment = async (commentId, commentText) => {
+        if (!currentUser) return alert("রিপোর্ট করতে লগইন করুন");
+        const reason = prompt("রিপোর্ট করার কারণ লিখুন:");
+        if (reason) {
+            try {
+                await addDoc(collection(db, "reports"), { type: "comment", commentId, text: commentText, reason, reportedBy: currentUser.uid, reporterName: currentUser.displayName, postId, at: serverTimestamp() });
+                alert("রিপোর্ট জমা হয়েছে।");
+            } catch (e) { alert("ত্রুটি হয়েছে!"); }
+        }
+    };
+
+    document.getElementById('open-comment-btn').onclick = () => { document.getElementById('comment-window').classList.remove('hidden'); setTimeout(() => { document.getElementById('comment-window').classList.add('active'); loadComments(); }, 10); };
+    document.getElementById('close-comment-btn').onclick = () => { document.getElementById('comment-window').classList.remove('active'); setTimeout(() => document.getElementById('comment-window').classList.add('hidden'), 300); };
+    
+    document.getElementById('submit-comment').onclick = async () => {
+        const text = document.getElementById('comment-text').value.trim();
+        if (!text || !currentUser) return;
+
+        const commentData = { 
+            text, 
+            uid: currentUser.uid, 
+            name: currentUser.displayName, 
+            photoURL: currentUser.photoURL, 
+            at: serverTimestamp(), 
+            replyToId: replyTarget ? replyTarget.id : null, 
+            mentionName: replyTarget ? replyTarget.name : null 
+        };
+
+        await addDoc(collection(db, `blog_comments/pages/forum_v2_voted/${postId}/comments`), commentData);
+
+        // ১. যদি এটি একটি রিপ্লাই হয়, তবে কমেন্ট দাতাকে নোটিফিকেশন পাঠাও
+        if (replyTarget && replyTarget.targetUid !== currentUser.uid) {
+            await addDoc(collection(db, "users", replyTarget.targetUid, "notifications"), {
+                message: `${currentUser.displayName} আপনার মন্তব্যের রিপ্লাই দিয়েছেন।`,
+                type: "comments",
+                postId: postId,
+                at: serverTimestamp(),
+                read: false
+            });
+        } 
+        // ২. যদি এটি নতুন কমেন্ট হয়, তবে পোস্টের মালিককে পাঠাও (যদি রিপ্লাই না হয়)
+        else if (!replyTarget && postData && postData.uid !== currentUser.uid) {
+            await addDoc(collection(db, "users", postData.uid, "notifications"), {
+                message: `${currentUser.displayName} আপনার পোস্টে মন্তব্য করেছেন।`,
+                type: "comments",
+                postId: postId,
+                at: serverTimestamp(),
+                read: false
+            });
+        }
+
+        document.getElementById('comment-text').value = ""; 
+        window.cancelReply();
+    };
+</script>
+</body>
+</html>
