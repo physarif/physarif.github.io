@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegraph & Firebase Instant Poster</title>
+    
+    <!-- Quill.js Editor Stylesheet -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0088cc;
+            --primary-hover: #006699;
+            --bg-color: #f4f7f9;
+            --text-color: #333;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: #ffffff;
+            width: 100%;
+            max-width: 750px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 2px solid #eef2f5;
+            padding-bottom: 10px;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd6dd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        #editor-container {
+            height: 280px;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            font-size: 16px;
+        }
+
+        .ql-toolbar.ql-snow {
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            background: #fafafa;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #status-card {
+            margin-top: 25px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .status-loading {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            border: 1px solid #bbdefb;
+        }
+
+        .status-success {
+            background-color: #e8f5e9;
+            color: #1b5e20;
+            border: 1px solid #c8e6c9;
+        }
+
+        .status-error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        #telegraph-link {
+            font-weight: bold;
+            color: var(--primary-color);
+            word-break: break-all;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>টেলিগ্রাম ইনস্ট্যান্ট ভিউ পোস্টার</h2>
+    
+    <div class="form-group">
+        <label for="title">পোস্টের শিরোনাম (Title):</label>
+        <input type="text" id="title" placeholder="এখানে টাইটেল লিখুন...">
+    </div>
+
+    <div class="form-group">
+        <label for="author">লেখকের নাম (Author - ঐচ্ছিক):</label>
+        <input type="text" id="author" placeholder="আপনার নাম বা চ্যানেলের নাম...">
+    </div>
+
+    <div class="form-group">
+        <label>মূল কন্টেন্ট (Body):</label>
+        <div id="editor-container"></div>
+    </div>
+
+    <button id="submit-btn" onclick="publishPost()">টেলিগ্রাফ ও ফায়ারবেসে পাবলিশ করুন</button>
+
+    <div id="status-card">
+        <span id="status-text"></span>
+        <div id="link-area" style="display:none;">
+            টেলিগ্রাম লিঙ্ক: <a id="telegraph-link" href="#" target="_blank"></a>
+        </div>
+    </div>
+</div>
+
+<!-- Quill.js Editor Core Library -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+<!-- Firebase SDK Realtime Database Implementation -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // আপনার ফায়ারবেস কনফিগারেশন
+    const firebaseConfig = {
+        apiKey: "AIzaSyDoBm0oeDAWlZOs8395CANQPnEPpixrYso",
+        authDomain: "telegraph-bot-posts.firebaseapp.com",
+        databaseURL: "https://telegraph-bot-posts-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "telegraph-bot-posts",
+        storageBucket: "telegraph-bot-posts.firebasestorage.app",
+        messagingSenderId: "525665384310",
+        appId: "1:525665384310:web:b61e81ecee86c826e22c57"
+    };
+
+    // আপনার জেনারেট করা টেলিগ্রাফ অ্যাক্সেস টোকেন
+    const TELEGRAPH_ACCESS_TOKEN = '5f428bfb53ee8d4d39c8dc5235209cd1c039817d8ff834eb88db1a24ad54';
+
+    // Firebase Init
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Quill Editor Init
+    const quill = new Quill('#editor-container', {
+        theme: 'snow',
+        placeholder: 'এখানে আপনার পোস্টের বিস্তারিত লিখুন। শর্টকাট (Ctrl+B, Ctrl+I) কাজ করবে...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['link', 'blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+            ]
+        }
+    });
+
+    // কাস্টম এবং নির্ভরযোগ্য HTML to Telegraph Node রূপান্তরকারী ফাংশন
+    function convertHtmlToTelegraphNodes(htmlString) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlString, 'text/html');
+        
+        function parseNode(node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                return node.nodeValue;
+            }
+
+            if (node.nodeType !== Node.ELEMENT_NODE) {
+                return null;
+            }
+
+            const tag = node.tagName.toLowerCase();
+            let telegraphTag = tag;
+
+            if (tag === 'strong') telegraphTag = 'b';
+            if (tag === 'em') telegraphTag = 'i';
+            if (tag === 'h1' || tag === 'h2') telegraphTag = 'h3';
+
+            const allowedTags = [
+                'a', 'aside', 'b', 'blockquote', 'br', 'code', 'em', 'figcaption', 'figure', 
+                'h3', 'h4', 'hr', 'i', 'iframe', 'img', 'li', 'ol', 'p', 'pre', 's', 'strong', 'u', 'ul', 'video'
+            ];
+
+            const nodeObj = { tag: telegraphTag };
+
+            if (tag === 'a' && node.hasAttribute('href')) {
+                nodeObj.attrs = { href: node.getAttribute('href') };
+            }
+            if (tag === 'img' && node.hasAttribute('src')) {
+                nodeObj.attrs = { src: node.getAttribute('src') };
+            }
+
+            const children = [];
+            node.childNodes.forEach(child => {
+                const parsed = parseNode(child);
+                if (parsed !== null) {
+                    if (Array.isArray(parsed)) {
+                        children.push(...parsed);
+                    } else {
+                        children.push(parsed);
+                    }
+                }
+            });
+
+            if (children.length > 0) {
+                nodeObj.children = children;
+            }
+
+            if (!allowedTags.includes(telegraphTag)) {
+                return children.length > 0 ? (children.length === 1 ? children[0] : children) : null;
+            }
+
+            return nodeObj;
+        }
+
+        const nodes = [];
+        doc.body.childNodes.forEach(child => {
+            const parsed = parseNode(child);
+            if (parsed !== null) {
+                if (Array.isArray(parsed)) {
+                    nodes.push(...parsed);
+                } else {
+                    nodes.push(parsed);
+                }
+            }
+        });
+
+        return nodes;
+    }
+
+    window.publishPost = async function() {
+        const title = document.getElementById('title').value.trim();
+        const author = document.getElementById('author').value.trim();
+        const htmlContent = quill.getSemanticHTML();
+        
+        const submitBtn = document.getElementById('submit-btn');
+        const statusCard = document.getElementById('status-card');
+        const statusText = document.getElementById('status-text');
+        const linkArea = document.getElementById('link-area');
+        const telegraphLink = document.getElementById('telegraph-link');
+
+        if (!title || quill.getText().trim().length === 0) {
+            alert("দয়া করে টাইটেল এবং মূল কন্টেন্ট দুটোই লিখুন!");
+            return;
+        }
+
+        submitBtn.disabled = true;
+        statusCard.className = "status-loading";
+        statusCard.style.display = "block";
+        linkArea.style.display = "none";
+        statusText.innerText = "কন্টেন্ট প্রসেস করা হচ্ছে...";
+
+        try {
+            statusText.innerText = "টেলিগ্রাফের উপযোগী ফরম্যাটে রূপান্তর করা হচ্ছে...";
+            const telegraphNodes = convertHtmlToTelegraphNodes(htmlContent);
+
+            statusText.innerText = "টেলিগ্রাফে ইনস্ট্যান্ট ভিউ পোস্ট তৈরি হচ্ছে...";
+            
+            // সমাধান: JSON-এর পরিবর্তে URL-Encoded ফরম্যাটে ডেটা পাঠানো (CORS ঝামেলা এড়াতে)
+            const formData = new URLSearchParams();
+            formData.append('access_token', TELEGRAPH_ACCESS_TOKEN);
+            formData.append('title', title);
+            formData.append('author_name', author || 'Anonymous');
+            formData.append('content', JSON.stringify(telegraphNodes)); // টেলিগ্রাফের জন্য কন্টেন্ট নোড স্ট্রিং হওয়া আবশ্যক
+            formData.append('return_content', 'false');
+
+            const telegraphResponse = await fetch('https://api.telegra.ph/createPage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData
+            });
+
+            const telegraphData = await telegraphResponse.json();
+
+            if (!telegraphData.ok) {
+                throw new Error("Telegraph Error: " + telegraphData.error);
+            }
+
+            const liveTelegraphUrl = telegraphData.result.url;
+
+            statusText.innerText = "লিঙ্ক তৈরি হয়েছে! ফায়ারবেস রিয়েল-টাইম ডেটাবেজে সেভ করা হচ্ছে...";
+            
+            // Firebase Realtime Database-এ ডেটা জমা করা
+            const postsRef = ref(db, 'posts');
+            const newPostRef = push(postsRef);
+            await set(newPostRef, {
+                title: title,
+                author: author || 'Anonymous',
+                contentHtml: htmlContent,
+                telegraphUrl: liveTelegraphUrl,
+                createdAt: Date.now()
+            });
+
+            statusCard.className = "status-success";
+            statusText.innerText = "🎉 অভিনন্দন! পোস্টটি সফলভাবে টেলিগ্রাফ এবং ফায়ারবেসে পাবলিশ হয়েছে।";
+            telegraphLink.href = liveTelegraphUrl;
+            telegraphLink.innerText = liveTelegraphUrl;
+            linkArea.style.display = "block";
+
+            // ফর্ম রিসেট
+            document.getElementById('title').value = '';
+            document.getElementById('author').value = '';
+            quill.setContents([]);
+
+        } catch (error) {
+            console.error(error);
+            statusCard.className = "status-error";
+            statusText.innerText = "❌ সমস্যা হয়েছে: " + error.message;
+        } finally {
+            submitBtn.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>
+
