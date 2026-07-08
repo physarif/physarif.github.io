@@ -1,178 +1,642 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegraph & Firebase Instant Poster</title>
+    <title>Telegraph Dashboard</title>
     
     <!-- Quill.js Editor Stylesheet -->
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
     
+    <!-- Google Fonts for Modern Typography & Stylish Branding -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <style>
         :root {
+            --primary-gradient: linear-gradient(135deg, #0088cc 0%, #00a2ed 100%);
             --primary-color: #0088cc;
             --primary-hover: #006699;
-            --bg-color: #f4f7f9;
-            --text-color: #333;
+            --edit-color: #f39c12;
+            --edit-hover: #d35400;
+            --delete-color: #e74c3c;
+            --delete-hover: #c0392b;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-sub: #7f8c8d;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-main);
             margin: 0;
-            padding: 15px;
+            padding: 0;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
-        .container {
-            background: #ffffff;
+        body.fullscreen-mode {
+            overflow: hidden; /* ফুলস্ক্রিন থাকা অবস্থায় ব্যাকগ্রাউন্ড স্ক্রল বন্ধ রাখবে */
+        }
+
+        /* Hero Section Styling - Compact & Sleek Text Style */
+        .hero-section {
+            background: var(--primary-gradient);
+            color: white;
             width: 100%;
-            max-width: 750px;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            box-sizing: border-box;
-        }
-
-        h2 {
-            margin-top: 0;
-            color: var(--primary-color);
-            border-bottom: 2px solid #eef2f5;
-            padding-bottom: 10px;
-            font-size: 22px;
+            padding: 35px 20px;
             text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccd6dd;
-            border-radius: 6px;
-            font-size: 16px;
             box-sizing: border-box;
-            transition: border-color 0.2s;
+            border-bottom-left-radius: 24px;
+            border-bottom-right-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0, 136, 204, 0.15);
+            margin-bottom: 25px;
         }
 
-        input[type="text"]:focus {
-            border-color: var(--primary-color);
+        .hero-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 38px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            opacity: 0.9;
+            margin: 6px 0 0 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #bae6fd;
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 950px;
+            padding: 0 20px 40px 20px;
+            box-sizing: border-box;
+        }
+
+        /* Card Layout styling */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* SOCIAL MEDIA COMPOSER STYLING */
+        .composer-card {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Fullscreen Active Mode Styling */
+        .composer-card.fullscreen-active {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            border-radius: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            background: var(--card-bg);
+        }
+
+        .composer-card.fullscreen-active .composer-inputs {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+        }
+
+        .composer-card.fullscreen-active #editor-container {
+            flex: 1;
+            height: auto !important;
+        }
+
+        /* Seamless Unified Text Editor Area */
+        .composer-inputs {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #fafafa;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .composer-inputs:focus-within {
+            border-color: #93c5fd;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.08);
+        }
+
+        /* Borderless dynamic title field */
+        .composer-title-field {
+            width: 100%;
+            border: none;
             outline: none;
+            padding: 16px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            background: transparent;
+            box-sizing: border-box;
+            border-bottom: 1px solid #f1f5f9;
+            font-family: inherit;
         }
 
+        .composer-title-field::placeholder {
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        /* Quill Editor overrides for seamless design */
         #editor-container {
-            height: 280px;
-            border-bottom-left-radius: 6px;
-            border-bottom-right-radius: 6px;
-            font-size: 16px;
+            height: 220px;
+            border: none !important;
+            font-size: 15px;
+            font-family: inherit;
+            background: transparent;
         }
 
         .ql-toolbar.ql-snow {
-            border-top-left-radius: 6px;
-            border-top-right-radius: 6px;
-            background: #fafafa;
+            border: none !important;
+            border-top: 1px solid #f1f5f9 !important;
+            background: #f8fafc;
+            padding: 8px 12px !important;
         }
 
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 6px;
+        /* Action Footer */
+        .composer-footer {
+            display: flex;
+            justify-content: space-between; /* এডিটর বাটন বামে এবং অ্যাকশন বাটন ডানে বিন্যস্ত করার জন্য */
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-top: 8px;
+        }
+
+        /* Control Actions */
+        .composer-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .composer-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 30px;
             cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-            margin-top: 10px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: none;
+            font-family: inherit;
         }
 
-        button:hover {
-            background-color: var(--primary-hover);
+        /* Collapse / Uncollapse Toggle Icon Button */
+        .composer-btn-fullscreen {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
         }
 
-        button:disabled {
-            background-color: #cccccc;
+        .composer-btn-fullscreen:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .composer-btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            display: inline-flex; /* Permanently visible */
+        }
+
+        .composer-btn-cancel:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .composer-btn-post {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 136, 204, 0.15);
+        }
+
+        .composer-btn-post:hover {
+            transform: translateY(-1px);
+            opacity: 0.95;
+        }
+
+        .composer-btn-post:disabled {
+            background: #cbd5e1 !important;
+            box-shadow: none !important;
             cursor: not-allowed;
+            transform: none !important;
         }
 
+        /* Alert and feedback boxes */
         #status-card {
-            margin-top: 25px;
+            margin-top: 15px;
             padding: 15px 20px;
-            border-radius: 6px;
+            border-radius: 12px;
             display: none;
+            font-weight: 500;
             animation: fadeIn 0.3s ease;
         }
 
         .status-loading {
-            background-color: #e3f2fd;
-            color: #0d47a1;
-            border: 1px solid #bbdefb;
+            background-color: #f0f9ff;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
         }
 
         .status-success {
-            background-color: #e8f5e9;
-            color: #1b5e20;
-            border: 1px solid #c8e6c9;
+            background-color: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
         }
 
         .status-error {
-            background-color: #ffebee;
-            color: #c62828;
-            border: 1px solid #ffcdd2;
+            background-color: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
         }
 
         #telegraph-link {
-            font-weight: bold;
+            font-weight: 700;
             color: var(--primary-color);
             word-break: break-all;
             display: inline-block;
             margin-top: 8px;
+            text-decoration: none;
+            border-bottom: 1px dashed var(--primary-color);
+        }
+
+        #telegraph-link:hover {
+            color: var(--primary-hover);
+        }
+
+        /* History items list - Scroll removed, integrated into body */
+        .history-header-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 0 5px;
+        }
+
+        .history-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .total-posts-badge {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 6px rgba(0, 136, 204, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .post-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Post Item - Optimized to give maximum width to the Title */
+        .post-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s;
+            gap: 20px; /* Strong gap separation */
+        }
+
+        .post-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.05);
+            border-color: #cbd5e1;
+        }
+
+        .post-info {
+            flex: 1; /* Takes maximum available space */
+            min-width: 0; /* Prevents text overflow breaking the flex container */
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .post-item-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin: 0;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Smooth text ellipsis if title is extremely long */
+        }
+
+        .post-item-meta {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+        /* Actions layout - Keep it compact and structured */
+        .post-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0; /* Prevents actions from shrinking and losing structure */
+        }
+
+        .btn-action {
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px; /* Pill styled buttons */
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+            font-family: inherit;
+        }
+
+        .btn-edit {
+            background-color: #fff7ed;
+            color: #c2410c;
+            border: 1px solid #fed7aa;
+        }
+
+        .btn-edit:hover {
+            background-color: #ffedd5;
+            transform: translateY(-1px);
+        }
+
+        /* Brand new Copy button styling */
+        .btn-copy {
+            background-color: #f0f9ff;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+        }
+
+        .btn-copy:hover {
+            background-color: #e0f2fe;
+            transform: translateY(-1px);
+        }
+
+        /* Danger Delete button styling */
+        .btn-delete-item {
+            background-color: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-delete-item:hover {
+            background-color: #fee2e2;
+            transform: translateY(-1px);
+        }
+
+        /* Custom Confirmation Modal Styling */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border-radius: 16px;
+            max-width: 440px;
+            width: 90%;
+            padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-icon {
+            width: 56px;
+            height: 56px;
+            background: #fef2f2;
+            color: #ef4444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px auto;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-modal {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        /* Loader Icon design */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 18px;
+            height: 18px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Mobile Optimization */
+        @media (max-width: 600px) {
+            .post-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                padding: 14px;
+            }
+            .post-info {
+                width: 100%;
+            }
+            .post-item-title {
+                white-space: normal; /* Wrap text on mobile for better visibility */
+            }
+            .post-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
     </style>
 </head>
 <body>
 
+<!-- Hero Header Section -->
+<div class="hero-section">
+    <h1 class="hero-title">Telegraph</h1>
+    <div class="hero-subtitle">Add, View & Manage Posts</div>
+</div>
+
 <div class="container">
-    <h2>টেলিগ্রাম ইনস্ট্যান্ট ভিউ পোস্টার</h2>
-    
-    <div class="form-group">
-        <label for="title">পোস্টের শিরোনাম (Title):</label>
-        <input type="text" id="title" placeholder="এখানে টাইটেল লিখুন...">
+    <!-- Social Styled Post Creation and Editing Card -->
+    <div class="card composer-card" id="composer-card">
+        <!-- Main Form Input Elements -->
+        <div class="composer-inputs">
+            <!-- Sleek title input -->
+            <input type="text" id="title" class="composer-title-field" placeholder="Write a catchy headline...">
+            
+            <!-- Sleek editor container -->
+            <div id="editor-container"></div>
+        </div>
+
+        <!-- Social Footer Options -->
+        <div class="composer-footer">
+            <!-- Collapse/Uncollapse full screen toggle button placed beautifully on the left side -->
+            <button class="composer-btn-fullscreen" id="fullscreen-toggle" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+                <svg id="fullscreen-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                </svg>
+            </button>
+            
+            <div class="composer-actions">
+                <!-- Cancel/Clear Button -->
+                <button class="composer-btn composer-btn-cancel" id="cancel-btn" onclick="cancelEdit()">Cancel</button>
+                <button class="composer-btn composer-btn-post" id="submit-btn" onclick="publishPost()">Post</button>
+            </div>
+        </div>
+
+        <!-- Feedback & Status info block -->
+        <div id="status-card">
+            <span id="status-text"></span>
+            <div id="link-area" style="display:none; margin-top: 8px;">
+                Telegraph Link: <a id="telegraph-link" href="#" target="_blank"></a>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="author">লেখকের নাম (Author - ঐচ্ছিক):</label>
-        <input type="text" id="author" placeholder="আপনার নাম বা চ্যানেলের নাম...">
+    <!-- History/Feed Section - Structured with All Posts Header and Dynamic Count -->
+    <div>
+        <div class="history-header-wrapper">
+            <h2 class="history-section-title">All Posts</h2>
+            <div class="total-posts-badge" id="total-posts-counter">
+                <span>0</span> Posts
+            </div>
+        </div>
+        <div class="post-list" id="post-list-container">
+            <div style="text-align: center; color: var(--text-sub); padding: 30px;">Loading posts...</div>
+        </div>
     </div>
+</div>
 
-    <div class="form-group">
-        <label>মূল কন্টেন্ট (Body):</label>
-        <div id="editor-container"></div>
-    </div>
-
-    <button id="submit-btn" onclick="publishPost()">টেলিগ্রাফ ও ফায়ারবেসে পাবলিশ করুন</button>
-
-    <div id="status-card">
-        <span id="status-text"></span>
-        <div id="link-area" style="display:none;">
-            টেলিগ্রাম লিঙ্ক: <a id="telegraph-link" href="#" target="_blank"></a>
+<!-- Custom Confirmation Modal -->
+<div class="modal-overlay" id="confirm-modal">
+    <div class="modal-card">
+        <div class="modal-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </div>
+        <h3 class="modal-title">Delete Post?</h3>
+        <p class="modal-desc">This will blank out the content on Telegraph and permanently remove this record from your dashboard. This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button class="btn-modal" style="background-color: #64748b;" onclick="closeConfirmModal()">Cancel</button>
+            <button class="btn-modal" id="modal-delete-btn" style="background-color: #ef4444;" onclick="executeDelete()">Delete</button>
         </div>
     </div>
 </div>
@@ -183,7 +647,7 @@
 <!-- Firebase SDK Realtime Database Implementation -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     // আপনার ফায়ারবেস কনফিগারেশন
     const firebaseConfig = {
@@ -203,21 +667,288 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Quill Editor Init
-    const quill = new Quill('#editor-container', {
-        theme: 'snow',
-        placeholder: 'এখানে আপনার পোস্টের বিস্তারিত লিখুন। শর্টকাট (Ctrl+B, Ctrl+I) কাজ করবে...',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, false] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                ['link', 'blockquote', 'code-block'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }]
-            ]
+    // এডিট ও ডিলিট মোড ট্র্যাকিং ভ্যারিয়েবল
+    let editingPostKey = null; 
+    let editingTelegraphUrl = "";
+    let postKeyToDelete = null;
+    let localPosts = {};
+
+    // ইউটিউব/ভিমিও সাধারণ লিঙ্ককে এমবেডেড লিঙ্কে কনভার্ট করার গ্লোবাল হেল্পার ফাংশন
+    function getEmbedUrl(url) {
+        let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+        let match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            return `https://www.youtube.com/embed/${match[2]}`;
+        }
+        
+        regExp = /vimeo\.com\/([0-9]+)/;
+        match = url.match(regExp);
+        if (match && match[1]) {
+            return `https://player.vimeo.com/video/${match[1]}`;
+        }
+        return null;
+    }
+
+    // Fullscreen view toggle handler
+    window.toggleFullscreen = function() {
+        const card = document.getElementById('composer-card');
+        const icon = document.getElementById('fullscreen-icon');
+        const isFullscreen = card.classList.toggle('fullscreen-active');
+        document.body.classList.toggle('fullscreen-mode', isFullscreen);
+
+        if (isFullscreen) {
+            // Collapse (Minimize) icon
+            icon.innerHTML = `<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/>`;
+            document.getElementById('fullscreen-toggle').title = "Exit Fullscreen";
+        } else {
+            // Expand (Maximize) icon
+            icon.innerHTML = `<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>`;
+            document.getElementById('fullscreen-toggle').title = "Toggle Fullscreen";
+        }
+    }
+
+    // Escape key দিয়ে ফুলস্ক্রিন থেকে বের হওয়ার সুবিধা
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const card = document.getElementById('composer-card');
+            if (card.classList.contains('fullscreen-active')) {
+                window.toggleFullscreen();
+            }
         }
     });
 
-    // কাস্টম এবং নির্ভরযোগ্য HTML to Telegraph Node রূপান্তরকারী ফাংশন
+    // আইফ্রেম ফ্রেন্ডলি কপি ফাংশনালিটি
+    window.copyLink = function(url, btn) {
+        const tempInput = document.createElement('input');
+        tempInput.value = url;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        tempInput.setSelectionRange(0, 99999); // মোবাইল ব্রাউজারের সুরক্ষার জন্য
+        
+        try {
+            document.execCommand('copy');
+            
+            // বাটনে কপি হওয়ার ভিজ্যুয়াল ফিডব্যাক
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                Copied!
+            `;
+            btn.style.backgroundColor = '#dcfce7';
+            btn.style.color = '#166534';
+            btn.style.borderColor = '#bbf7d0';
+
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
+                btn.style.borderColor = '';
+            }, 2000);
+        } catch (err) {
+            console.error('Could not copy link:', err);
+        } finally {
+            document.body.removeChild(tempInput);
+        }
+    }
+
+    // ডিলিট কনফার্মেশন মোডাল ওপেন করা
+    window.openConfirmModal = function(key) {
+        postKeyToDelete = key;
+        const modal = document.getElementById('confirm-modal');
+        modal.style.display = 'flex';
+    }
+
+    // ডিলিট কনফার্মেশন মোডাল ক্লোজ করা
+    window.closeConfirmModal = function() {
+        postKeyToDelete = null;
+        const modal = document.getElementById('confirm-modal');
+        modal.style.display = 'none';
+        
+        // বাটনের লোডিং ট্র্যাকিং রিসেট করুন
+        const deleteBtn = document.getElementById('modal-delete-btn');
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = 'Delete';
+    }
+
+    // কন্টেন্ট ক্লিয়ার করে এবং ফায়ারবেস থেকে ডিলিট করার মূল প্রক্রিয়া
+    window.executeDelete = async function() {
+        if (!postKeyToDelete) return;
+        
+        const deleteBtn = document.getElementById('modal-delete-btn');
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = `<span class="spinner" style="width: 14px; height: 14px;"></span> &nbsp; Deleting...`;
+
+        const post = localPosts[postKeyToDelete];
+        if (!post) {
+            closeConfirmModal();
+            return;
+        }
+
+        try {
+            // ১. টেলিগ্রাফে থাকা সেই পোস্টের লিঙ্ক থেকে কন্টেন্ট সম্পূর্ণরূপে মুছে ফেলা (Blank out/Archive)
+            if (post.telegraphUrl) {
+                const urlParts = post.telegraphUrl.split('/');
+                const telegraphPath = urlParts[urlParts.length - 1];
+
+                // খালি টেলিগ্রাফ নোড (Deleted Status Message)
+                const emptyNodes = [
+                    {
+                        tag: "p",
+                        children: ["This post has been deleted by the author."]
+                    }
+                ];
+
+                const formData = new URLSearchParams();
+                formData.append('access_token', TELEGRAPH_ACCESS_TOKEN);
+                formData.append('path', telegraphPath);
+                formData.append('title', 'Post Removed');
+                formData.append('author_name', 'Anonymous');
+                formData.append('content', JSON.stringify(emptyNodes));
+                formData.append('return_content', 'false');
+
+                // টেলিগ্রাফ পেজ এডিট করা হচ্ছে
+                await fetch('https://api.telegra.ph/editPage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+            }
+
+            // ২. ফায়ারবেস ডেটাবেস থেকে উক্ত পোস্টের রেকর্ড মুছে ফেলা
+            const postRef = ref(db, `posts/${postKeyToDelete}`);
+            await remove(postRef);
+
+            closeConfirmModal();
+
+        } catch (error) {
+            console.error("Deletion failed:", error);
+            const deleteBtn = document.getElementById('modal-delete-btn');
+            deleteBtn.innerHTML = `Error! Try again`;
+            deleteBtn.disabled = false;
+        }
+    }
+
+    // Quill Editor Init (Image and Video embedded inside the toolbar)
+    const quill = new Quill('#editor-container', {
+        theme: 'snow',
+        placeholder: 'What is on your mind? Add images or videos directly using the editor buttons above...',
+        modules: {
+            toolbar: {
+                container: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['image', 'video', 'link', 'blockquote', 'code-block'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }]
+                ],
+                handlers: {
+                    image: function() {
+                        const range = this.quill.getSelection(true);
+                        const value = prompt('Enter Direct Image Link (URL):');
+                        if (value) {
+                            this.quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
+                        }
+                    },
+                    video: function() {
+                        const range = this.quill.getSelection(true);
+                        const value = prompt('Enter YouTube or raw video (.mp4) URL:');
+                        if (value) {
+                            const embedUrl = getEmbedUrl(value) || value;
+                            this.quill.insertEmbed(range.index, 'video', embedUrl, Quill.sources.USER);
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // ফায়ারবেস থেকে পোস্টের তালিকা লোড করা
+    const postsRef = ref(db, 'posts');
+    onValue(postsRef, (snapshot) => {
+        const data = snapshot.val();
+        const container = document.getElementById('post-list-container');
+        const counterSpan = document.querySelector('#total-posts-counter span');
+        container.innerHTML = "";
+
+        if (!data) {
+            counterSpan.innerText = "0";
+            container.innerHTML = `<div style="text-align: center; color: var(--text-sub); padding: 30px; background: white; border-radius: 12px; border: 1px dashed var(--border-color)">No posts published yet. Use the form above to publish your first post!</div>`;
+            return;
+        }
+
+        localPosts = data;
+        const totalPosts = Object.keys(data).length;
+        counterSpan.innerText = totalPosts;
+
+        const sortedKeys = Object.keys(data).reverse();
+
+        sortedKeys.forEach(key => {
+            const post = data[key];
+            const dateStr = post.createdAt ? new Date(post.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : "Unknown time";
+
+            const item = document.createElement('div');
+            item.className = 'post-item';
+            item.innerHTML = `
+                <div class="post-info">
+                    <div class="post-item-title" title="${post.title}">${post.title}</div>
+                    <div class="post-item-meta">${dateStr}</div>
+                </div>
+                <div class="post-actions">
+                    <button class="btn-action btn-copy" onclick="copyLink('${post.telegraphUrl}', this)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copy
+                    </button>
+                    <button class="btn-action btn-edit" onclick="startEdit('${key}')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        Edit
+                    </button>
+                    <button class="btn-action btn-delete-item" onclick="openConfirmModal('${key}')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        Delete
+                    </button>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    });
+
+    // এডিট মোড শুরু করার ফাংশন
+    window.startEdit = function(key) {
+        const post = localPosts[key];
+        if (!post) return;
+
+        editingPostKey = key;
+        editingTelegraphUrl = post.telegraphUrl;
+
+        document.getElementById('title').value = post.title;
+        quill.setContents([]);
+        quill.clipboard.dangerouslyPasteHTML(post.contentHtml || "");
+
+        document.getElementById('submit-btn').innerText = "Update";
+        document.getElementById('status-card').style.display = "none";
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // এডিট মোড বাতিল এবং ফর্মের অল ফিল্ড ক্লিয়ার করার সমন্বিত ফাংশন
+    window.cancelEdit = function() {
+        editingPostKey = null;
+        editingTelegraphUrl = "";
+
+        // ক্লিয়ার অল ইনপুট ফিল্ডস
+        document.getElementById('title').value = '';
+        quill.setContents([]);
+
+        document.getElementById('submit-btn').innerText = "Post";
+        document.getElementById('status-card').style.display = "none";
+
+        // ফুলস্ক্রিন অ্যাক্টিভ থাকলে বন্ধ করুন
+        const card = document.getElementById('composer-card');
+        if (card.classList.contains('fullscreen-active')) {
+            window.toggleFullscreen();
+        }
+    }
+
+    // কাস্টম HTML to Telegraph Node রূপান্তরকারী ফাংশন (র-ভিডিও ও আইফ্রেম সাপোর্ট সহ)
     function convertHtmlToTelegraphNodes(htmlString) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlString, 'text/html');
@@ -238,6 +969,15 @@
             if (tag === 'em') telegraphTag = 'i';
             if (tag === 'h1' || tag === 'h2') telegraphTag = 'h3';
 
+            const srcAttr = node.getAttribute('src') || node.getAttribute('href') || '';
+            const isVideoFile = /\.(?:mp4|webm|ogg|mov|3gp)(?:\?.*)?$/i.test(srcAttr);
+
+            if (tag === 'video' || (tag === 'iframe' && isVideoFile) || (tag === 'a' && isVideoFile)) {
+                telegraphTag = 'video';
+            } else if (tag === 'iframe') {
+                telegraphTag = 'iframe';
+            }
+
             const allowedTags = [
                 'a', 'aside', 'b', 'blockquote', 'br', 'code', 'em', 'figcaption', 'figure', 
                 'h3', 'h4', 'hr', 'i', 'iframe', 'img', 'li', 'ol', 'p', 'pre', 's', 'strong', 'u', 'ul', 'video'
@@ -245,31 +985,41 @@
 
             const nodeObj = { tag: telegraphTag };
 
-            if (tag === 'a' && node.hasAttribute('href')) {
-                nodeObj.attrs = { href: node.getAttribute('href') };
-            }
-            if (tag === 'img' && node.hasAttribute('src')) {
-                nodeObj.attrs = { src: node.getAttribute('src') };
+            if (telegraphTag === 'a' && (node.hasAttribute('href') || node.hasAttribute('src'))) {
+                nodeObj.attrs = { href: node.getAttribute('href') || node.getAttribute('src') };
+            } else if (telegraphTag === 'img') {
+                nodeObj.attrs = { src: srcAttr };
+            } else if (telegraphTag === 'video') {
+                nodeObj.attrs = { src: srcAttr };
+            } else if (telegraphTag === 'iframe') {
+                nodeObj.attrs = {
+                    src: srcAttr,
+                    width: node.getAttribute('width') || '640',
+                    height: node.getAttribute('height') || '360'
+                };
             }
 
-            const children = [];
-            node.childNodes.forEach(child => {
-                const parsed = parseNode(child);
-                if (parsed !== null) {
-                    if (Array.isArray(parsed)) {
-                        children.push(...parsed);
-                    } else {
-                        children.push(parsed);
+            const selfClosingTags = ['img', 'video', 'iframe', 'br', 'hr'];
+            
+            if (!selfClosingTags.includes(telegraphTag)) {
+                const children = [];
+                node.childNodes.forEach(child => {
+                    const parsed = parseNode(child);
+                    if (parsed !== null) {
+                        if (Array.isArray(parsed)) {
+                            children.push(...parsed);
+                        } else {
+                            children.push(parsed);
+                        }
                     }
+                });
+                if (children.length > 0) {
+                    nodeObj.children = children;
                 }
-            });
-
-            if (children.length > 0) {
-                nodeObj.children = children;
             }
 
             if (!allowedTags.includes(telegraphTag)) {
-                return children.length > 0 ? (children.length === 1 ? children[0] : children) : null;
+                return nodeObj.children ? (nodeObj.children.length === 1 ? nodeObj.children[0] : nodeObj.children) : null;
             }
 
             return nodeObj;
@@ -290,9 +1040,9 @@
         return nodes;
     }
 
+    // পাবলিশ বা এডিট করার ফাংশন
     window.publishPost = async function() {
         const title = document.getElementById('title').value.trim();
-        const author = document.getElementById('author').value.trim();
         const htmlContent = quill.getSemanticHTML();
         
         const submitBtn = document.getElementById('submit-btn');
@@ -302,74 +1052,106 @@
         const telegraphLink = document.getElementById('telegraph-link');
 
         if (!title || quill.getText().trim().length === 0) {
-            alert("দয়া করে টাইটেল এবং মূল কন্টেন্ট দুটোই লিখুন!");
+            statusCard.className = "status-card status-error";
+            statusCard.style.display = "block";
+            statusText.innerText = "⚠️ Please write both a title and main content!";
             return;
         }
 
         submitBtn.disabled = true;
-        statusCard.className = "status-loading";
+        statusCard.className = "status-card status-loading";
         statusCard.style.display = "block";
         linkArea.style.display = "none";
-        statusText.innerText = "কন্টেন্ট প্রসেস করা হচ্ছে...";
+        
+        statusText.innerHTML = `<span class="spinner"></span> &nbsp; ` + (editingPostKey ? "Updating post..." : "Processing...");
 
         try {
-            statusText.innerText = "টেলিগ্রাফের উপযোগী ফরম্যাটে রূপান্তর করা হচ্ছে...";
             const telegraphNodes = convertHtmlToTelegraphNodes(htmlContent);
 
-            statusText.innerText = "টেলিগ্রাফে ইনস্ট্যান্ট ভিউ পোস্ট তৈরি হচ্ছে...";
-            
-            // সমাধান: JSON-এর পরিবর্তে URL-Encoded ফরম্যাটে ডেটা পাঠানো (CORS ঝামেলা এড়াতে)
-            const formData = new URLSearchParams();
-            formData.append('access_token', TELEGRAPH_ACCESS_TOKEN);
-            formData.append('title', title);
-            formData.append('author_name', author || 'Anonymous');
-            formData.append('content', JSON.stringify(telegraphNodes)); // টেলিগ্রাফের জন্য কন্টেন্ট নোড স্ট্রিং হওয়া আবশ্যক
-            formData.append('return_content', 'false');
+            let liveTelegraphUrl = "";
 
-            const telegraphResponse = await fetch('https://api.telegra.ph/createPage', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: formData
-            });
+            if (editingPostKey) {
+                const urlParts = editingTelegraphUrl.split('/');
+                const telegraphPath = urlParts[urlParts.length - 1];
 
-            const telegraphData = await telegraphResponse.json();
+                const formData = new URLSearchParams();
+                formData.append('access_token', TELEGRAPH_ACCESS_TOKEN);
+                formData.append('path', telegraphPath);
+                formData.append('title', title);
+                formData.append('author_name', 'Anonymous');
+                formData.append('content', JSON.stringify(telegraphNodes));
+                formData.append('return_content', 'false');
 
-            if (!telegraphData.ok) {
-                throw new Error("Telegraph Error: " + telegraphData.error);
+                const telegraphResponse = await fetch('https://api.telegra.ph/editPage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+
+                const telegraphData = await telegraphResponse.json();
+
+                if (!telegraphData.ok) {
+                    throw new Error("Telegraph Update Error: " + telegraphData.error);
+                }
+
+                liveTelegraphUrl = telegraphData.result.url;
+
+                const postRef = ref(db, `posts/${editingPostKey}`);
+                await update(postRef, {
+                    title: title,
+                    author: 'Anonymous',
+                    contentHtml: htmlContent,
+                    lastUpdated: Date.now()
+                });
+
+                statusCard.className = "status-card status-success";
+                statusText.innerText = "🎉 Success! The post has been updated live.";
+
+            } else {
+                const formData = new URLSearchParams();
+                formData.append('access_token', TELEGRAPH_ACCESS_TOKEN);
+                formData.append('title', title);
+                formData.append('author_name', 'Anonymous');
+                formData.append('content', JSON.stringify(telegraphNodes));
+                formData.append('return_content', 'false');
+
+                const telegraphResponse = await fetch('https://api.telegra.ph/createPage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+
+                const telegraphData = await telegraphResponse.json();
+
+                if (!telegraphData.ok) {
+                    throw new Error("Telegraph Create Error: " + telegraphData.error);
+                }
+
+                liveTelegraphUrl = telegraphData.result.url;
+
+                const newPostRef = push(postsRef);
+                await set(newPostRef, {
+                    title: title,
+                    author: 'Anonymous',
+                    contentHtml: htmlContent,
+                    telegraphUrl: liveTelegraphUrl,
+                    createdAt: Date.now()
+                });
+
+                statusCard.className = "status-card status-success";
+                statusText.innerText = "🎉 Success! The new post has been published.";
             }
 
-            const liveTelegraphUrl = telegraphData.result.url;
-
-            statusText.innerText = "লিঙ্ক তৈরি হয়েছে! ফায়ারবেস রিয়েল-টাইম ডেটাবেজে সেভ করা হচ্ছে...";
-            
-            // Firebase Realtime Database-এ ডেটা জমা করা
-            const postsRef = ref(db, 'posts');
-            const newPostRef = push(postsRef);
-            await set(newPostRef, {
-                title: title,
-                author: author || 'Anonymous',
-                contentHtml: htmlContent,
-                telegraphUrl: liveTelegraphUrl,
-                createdAt: Date.now()
-            });
-
-            statusCard.className = "status-success";
-            statusText.innerText = "🎉 অভিনন্দন! পোস্টটি সফলভাবে টেলিগ্রাফ এবং ফায়ারবেসে পাবলিশ হয়েছে।";
             telegraphLink.href = liveTelegraphUrl;
             telegraphLink.innerText = liveTelegraphUrl;
             linkArea.style.display = "block";
 
-            // ফর্ম রিসেট
-            document.getElementById('title').value = '';
-            document.getElementById('author').value = '';
-            quill.setContents([]);
+            cancelEdit(); 
 
         } catch (error) {
             console.error(error);
-            statusCard.className = "status-error";
-            statusText.innerText = "❌ সমস্যা হয়েছে: " + error.message;
+            statusCard.className = "status-card status-error";
+            statusText.innerText = "❌ Error: " + error.message;
         } finally {
             submitBtn.disabled = false;
         }
