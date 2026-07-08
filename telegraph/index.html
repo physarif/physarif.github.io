@@ -354,6 +354,44 @@
             transform: none !important;
         }
 
+        /* Search Bar Styling - আইকন ডান পাশে রাখার জন্য প্যাডিং অ্যাডজাস্ট করা হয়েছে */
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 42px 12px 16px; /* ডান পাশে আইকনের জন্য প্যাডিং বাড়ানো হয়েছে */
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            outline: none;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            border-color: #93c5fd;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.08);
+        }
+
+        .search-icon-wrapper {
+            position: absolute;
+            right: 14px; /* আইকনটি ডান পাশে পজিশন করা হয়েছে */
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
         /* Alert and feedback boxes */
         #status-card {
             margin-top: 15px;
@@ -658,7 +696,7 @@
         <!-- Main Form Input Elements -->
         <div class="composer-inputs">
             <!-- Sleek title input -->
-            <input type="text" id="title" class="composer-title-field" placeholder="Write a catchy headline...">
+            <input type="text" id="title" class="composer-title-field" placeholder="Write a headline...">
             
             <!-- Sleek editor container -->
             <div id="editor-container"></div>
@@ -697,6 +735,18 @@
                 <span>0</span> Posts
             </div>
         </div>
+
+        <!-- সার্চ বার এলিমেন্ট -->
+        <div class="search-container">
+            <div class="search-icon-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <input type="text" id="search-input" class="search-input" placeholder="Search posts by title..." oninput="filterPosts()">
+        </div>
+
         <div class="post-list" id="post-list-container">
             <div style="text-align: center; color: var(--text-sub); padding: 30px;">Loading posts...</div>
         </div>
@@ -749,6 +799,7 @@
     let editingTelegraphUrl = "";
     let postKeyToDelete = null;
     let localPosts = {};
+    let currentSearchQuery = "";
 
     // ইউটিউব/ভিমিও সাধারণ লিঙ্ককে এমবেডেড লিঙ্কে কনভার্ট করার গ্লোবাল হেল্পার ফাংশন
     function getEmbedUrl(url) {
@@ -957,7 +1008,7 @@
     // Quill Editor Init (Image and Video embedded inside the toolbar)
     const quill = new Quill('#editor-container', {
         theme: 'snow',
-        placeholder: 'What is on your mind? Add images or videos directly using the editor buttons above...',
+        placeholder: 'What is on your mind? Style your post using the editor buttons above...',
         modules: {
             toolbar: {
                 container: [
@@ -987,28 +1038,36 @@
         }
     });
 
-    // ফায়ারবেস থেকে পোস্টের তালিকা লোড করা
-    const postsRef = ref(db, 'posts');
-    onValue(postsRef, (snapshot) => {
-        const data = snapshot.val();
+    // পোস্ট রেন্ডার করার জন্য ডেডিকেটেড ফাংশন (সার্চ ফিল্টারিং লজিক সহ)
+    function renderPosts() {
         const container = document.getElementById('post-list-container');
         const counterSpan = document.querySelector('#total-posts-counter span');
         container.innerHTML = "";
 
-        if (!data) {
+        if (!localPosts || Object.keys(localPosts).length === 0) {
             counterSpan.innerText = "0";
             container.innerHTML = `<div style="text-align: center; color: var(--text-sub); padding: 30px; background: white; border-radius: 12px; border: 1px dashed var(--border-color)">No posts published yet. Use the form above to publish your first post!</div>`;
             return;
         }
 
-        localPosts = data;
-        const totalPosts = Object.keys(data).length;
-        counterSpan.innerText = totalPosts;
+        const sortedKeys = Object.keys(localPosts).reverse();
 
-        const sortedKeys = Object.keys(data).reverse();
+        // সার্চ ইনপুটের ভিত্তিতে ফিল্টার করা হচ্ছে
+        const filteredKeys = sortedKeys.filter(key => {
+            const post = localPosts[key];
+            return post.title && post.title.toLowerCase().includes(currentSearchQuery);
+        });
 
-        sortedKeys.forEach(key => {
-            const post = data[key];
+        // পোস্টের কাউন্টার আপডেট
+        counterSpan.innerText = filteredKeys.length;
+
+        if (filteredKeys.length === 0) {
+            container.innerHTML = `<div style="text-align: center; color: var(--text-sub); padding: 30px; background: white; border-radius: 12px; border: 1px dashed var(--border-color)">No matching posts found.</div>`;
+            return;
+        }
+
+        filteredKeys.forEach(key => {
+            const post = localPosts[key];
             const dateStr = post.createdAt ? new Date(post.createdAt).toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : "Unknown time";
 
             const item = document.createElement('div');
@@ -1035,6 +1094,20 @@
             `;
             container.appendChild(item);
         });
+    }
+
+    // টাইপ করার সাথে সাথে সার্চ ফিল্টারিং হ্যান্ডল করার ফাংশন
+    window.filterPosts = function() {
+        currentSearchQuery = document.getElementById('search-input').value.trim().toLowerCase();
+        renderPosts();
+    }
+
+    // ফায়ারবেস থেকে পোস্টের তালিকা লোড করা
+    const postsRef = ref(db, 'posts');
+    onValue(postsRef, (snapshot) => {
+        const data = snapshot.val();
+        localPosts = data || {};
+        renderPosts();
     });
 
     // এডিট মোড শুরু করার ফাংশন
@@ -1067,7 +1140,7 @@
         document.getElementById('submit-btn').innerText = "Post";
         document.getElementById('status-card').style.display = "none";
 
-        // ফুলস্ক্রিন অ্যাক্টিভ থাকলে হ্যাশ রিমুভ করে সাধারণ অবস্থায় নিয়ে যাবে
+        // ফুলস্ক্রিন অ্যাক্টিভ থাকলে বন্ধ করুন
         if (window.location.hash === '#fullscreen') {
             history.back();
         } else {
