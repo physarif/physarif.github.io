@@ -112,7 +112,7 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Fullscreen Active Mode Styling */
+        /* Fullscreen Active Mode Styling with smooth transition */
         .composer-card.fullscreen-active {
             position: fixed;
             top: 0;
@@ -129,18 +129,69 @@
             padding: 20px;
             box-sizing: border-box;
             background: var(--card-bg);
+            overflow: hidden; /* পুরো ফুলস্ক্রিন কন্টেইনার স্ক্রল হওয়া বন্ধ করবে */
+            
+            /* প্রবেশ করার অ্যানিমেশন */
+            animation: fullscreenEnter 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* ফুলস্ক্রিন থেকে বের হওয়ার স্মুথ অ্যানিমেশন ক্লাস */
+        .composer-card.fullscreen-exit {
+            animation: fullscreenExit 0.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes fullscreenEnter {
+            from {
+                opacity: 0;
+                transform: scale(0.97) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes fullscreenExit {
+            from {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.97) translateY(10px);
+            }
         }
 
         .composer-card.fullscreen-active .composer-inputs {
             flex: 1;
             display: flex;
             flex-direction: column;
+            min-height: 0; /* হাইট ফিক্সড রেখে চাইল্ডকে বাধ্য করবে স্ক্রল হতে */
             background: #ffffff;
+            overflow: hidden;
         }
 
         .composer-card.fullscreen-active #editor-container {
             flex: 1;
+            min-height: 0; /* Quill এডিটরের হাইট ফিক্সড করে দেবে */
             height: auto !important;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Quill এডিটরের ভেতরের টেক্সট এরিয়া স্ক্রল করানোর নিয়ম */
+        .composer-card.fullscreen-active .ql-container {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .composer-card.fullscreen-active .ql-editor {
+            flex: 1;
+            overflow-y: auto; /* শুধু লেখার অংশ স্ক্রল হবে */
         }
 
         /* Seamless Unified Text Editor Area */
@@ -689,21 +740,31 @@
         return null;
     }
 
-    // Fullscreen view toggle handler
+    // ফুলস্ক্রিন ভিউ টগল করার স্মুথ হ্যান্ডলার ফাংশন
     window.toggleFullscreen = function() {
         const card = document.getElementById('composer-card');
         const icon = document.getElementById('fullscreen-icon');
-        const isFullscreen = card.classList.toggle('fullscreen-active');
-        document.body.classList.toggle('fullscreen-mode', isFullscreen);
+        const isCurrentlyFullscreen = card.classList.contains('fullscreen-active');
 
-        if (isFullscreen) {
-            // Collapse (Minimize) icon
+        if (!isCurrentlyFullscreen) {
+            // ফুলস্ক্রিন অ্যাক্টিভ করা
+            card.classList.remove('fullscreen-exit');
+            card.classList.add('fullscreen-active');
+            document.body.classList.add('fullscreen-mode');
             icon.innerHTML = `<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/>`;
             document.getElementById('fullscreen-toggle').title = "Exit Fullscreen";
         } else {
-            // Expand (Maximize) icon
-            icon.innerHTML = `<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>`;
-            document.getElementById('fullscreen-toggle').title = "Toggle Fullscreen";
+            // ফুলস্ক্রিন বন্ধ করার সময় এক্সিট অ্যানিমেশন দিয়ে ক্লোজ করা
+            card.classList.add('fullscreen-exit');
+            
+            // অ্যানিমেশন টাইমআউট (২০০ মিলি-সেকেন্ড) শেষ হলে সম্পূর্ণভাবে ক্লাসগুলো সরানো হবে
+            setTimeout(() => {
+                card.classList.remove('fullscreen-active');
+                card.classList.remove('fullscreen-exit');
+                document.body.classList.remove('fullscreen-mode');
+                icon.innerHTML = `<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>`;
+                document.getElementById('fullscreen-toggle').title = "Toggle Fullscreen";
+            }, 200);
         }
     }
 
