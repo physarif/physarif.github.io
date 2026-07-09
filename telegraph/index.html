@@ -30,6 +30,10 @@
             --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
         
+        html {
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
@@ -40,17 +44,7 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-        }
-
-        /* ফুলস্ক্রিন অ্যাক্টিভ থাকলে ব্রাউজার লেভেলের সমস্ত স্ক্রল পুরোপুরি লক করে দেওয়া হবে */
-        html.fullscreen-mode,
-        body.fullscreen-mode {
-            overflow: hidden !important;
-            height: 100% !important;
-            width: 100% !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
+            overflow-x: hidden;
         }
 
         /* Hero Section Styling - Compact & Sleek Text Style */
@@ -94,8 +88,8 @@
         /* Container */
         .container {
             width: 100%;
-            max-width: 950px;
-            padding: 0 20px 40px 20px;
+            max-width: 100%;
+            padding: 0 30px 40px 30px;
             box-sizing: border-box;
         }
 
@@ -111,113 +105,23 @@
 
         /* SOCIAL MEDIA COMPOSER STYLING */
         .composer-card {
-            padding: 24px;
+            padding: 24px 12px;
             display: flex;
             flex-direction: column;
             gap: 16px;
             border: 1px solid rgba(226, 232, 240, 0.8);
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
+            box-shadow: none;
+            box-sizing: border-box;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            width: 100vw;
+            margin-left: -50vw;
+            margin-right: -50vw;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Fullscreen Active Mode - Using top/bottom absolute positioning to dynamically fit visual viewport */
-        .composer-card.fullscreen-active {
-            position: fixed !important;
-            top: 0 !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: auto !important;
-            height: auto !important;
-            z-index: 9999 !important;
-            border-radius: 0 !important;
-            margin: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            padding: 20px !important;
-            box-sizing: border-box !important;
-            background: var(--card-bg) !important;
-            overflow: hidden !important;
-            
-            /* এন্ট্রি অ্যানিমেশন */
-            animation: fullscreenEnter 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-
-        /* ফুলস্ক্রিন ক্লোজ করার ফেইড আউট অ্যানিমেশন */
-        .composer-card.fullscreen-exit {
-            animation: fullscreenExit 0.2s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-        }
-
-        @keyframes fullscreenEnter {
-            from {
-                opacity: 0;
-                transform: scale(0.97) translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        @keyframes fullscreenExit {
-            from {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-            to {
-                opacity: 0;
-                transform: scale(0.97) translateY(10px);
-            }
-        }
-
-        .composer-card.fullscreen-active .composer-inputs {
-            flex: 1 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            min-height: 0 !important;
-            background: #ffffff !important;
-            overflow: hidden !important;
-            margin-bottom: 10px !important;
-        }
-
-        .composer-card.fullscreen-active #editor-container {
-            flex: 1 !important;
-            min-height: 0 !important;
-            height: auto !important;
-            display: flex !important;
-            flex-direction: column !important;
-            overflow: hidden !important;
-        }
-
-        /* Quill এডিটরের কন্টেইনার এবং এডিটর জোনের ফিক্সড স্ক্রল */
-        .composer-card.fullscreen-active .ql-container {
-            flex: 1 !important;
-            min-height: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            overflow: hidden !important;
-        }
-
-        .composer-card.fullscreen-active .ql-editor {
-            flex: 1 !important;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch !important; /* iOS স্মুথ স্ক্রলিং */
-        }
-
-        .composer-card.fullscreen-active .composer-title-field {
-            flex-shrink: 0 !important;
-        }
-
-        .composer-card.fullscreen-active .ql-toolbar {
-            flex-shrink: 0 !important;
-        }
-
-        /* ফুলস্ক্রিনে ফুটার সবসময় নিচে আটকে থাকবে */
-        .composer-card.fullscreen-active .composer-footer {
-            flex-shrink: 0 !important;
-            padding-top: 10px !important;
-            background: var(--card-bg) !important;
-            border-top: 1px solid var(--border-color) !important;
-            margin-top: auto !important;
         }
 
         /* Seamless Unified Text Editor Area */
@@ -225,7 +129,6 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             background: #fafafa;
-            overflow: hidden;
             transition: all 0.2s ease;
         }
 
@@ -248,6 +151,7 @@
             box-sizing: border-box;
             border-bottom: 1px solid #f1f5f9;
             font-family: inherit;
+            border-radius: 12px 12px 0 0;
         }
 
         .composer-title-field::placeholder {
@@ -257,20 +161,85 @@
 
         /* Quill Editor overrides for seamless design */
         #editor-container {
-            height: 220px;
             border: none !important;
-            font-size: 15px;
+            font-size: 16px;
             font-family: inherit;
             background: transparent;
+        }
+
+        /* লেখার জন্য প্রশস্ত, আরামদায়ক জায়গা — কন্টেন্ট বাড়লে বক্সও বাড়বে, পেজ স্ক্রল হবে */
+        .ql-editor {
+            min-height: 180px;
+            padding: 22px 24px 30px 24px !important;
+            font-size: 16px;
+            line-height: 1.85;
+            color: #1e293b;
+            font-family: inherit;
+        }
+
+        .ql-editor.ql-blank::before {
+            font-style: normal;
+            color: #94a3b8;
+            font-size: 16px;
+            left: 24px !important;
+        }
+
+        .ql-editor p {
+            margin-bottom: 14px;
+        }
+
+        .ql-editor h1, .ql-editor h2 {
+            color: #0f172a;
+            font-weight: 800;
+            margin: 22px 0 12px 0;
+        }
+
+        /* ব্লগের মতো উদ্ধৃতি স্টাইল */
+        .ql-editor blockquote {
+            border-left: 4px solid var(--primary-color);
+            background: #f0f9ff;
+            margin: 16px 0;
+            padding: 12px 18px;
+            color: #334155;
+            font-style: italic;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .ql-editor code, .ql-editor pre.ql-syntax {
+            font-family: 'Courier New', monospace;
+            background: #f1f5f9;
+            border-radius: 6px;
+        }
+
+        .ql-editor pre.ql-syntax {
+            padding: 14px 16px;
+            color: #0f172a;
+        }
+
+        .ql-editor img {
+            border-radius: 10px;
+            max-width: 100%;
+        }
+
+        .ql-editor iframe {
+            border-radius: 10px;
         }
 
         .ql-toolbar.ql-snow {
             border: none !important;
             border-top: 1px solid #f1f5f9 !important;
             background: #f8fafc;
-            padding: 8px 12px !important;
+            padding: 10px 14px !important;
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            border-radius: 0;
         }
 
+        #editor-container .ql-container.ql-snow {
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
+        }
         /* Action Footer */
         .composer-footer {
             display: flex;
@@ -288,23 +257,8 @@
             gap: 10px;
         }
 
-        .composer-btn {
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 700;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            border: none;
-            font-family: inherit;
-        }
-
-        /* Collapse / Uncollapse Toggle Icon Button */
-        .composer-btn-fullscreen {
+        /* Photo/Video Upload Icon Button (left side of the footer) */
+        .composer-btn-upload {
             background: #f1f5f9;
             color: #475569;
             border: 1px solid #e2e8f0;
@@ -319,9 +273,24 @@
             transition: all 0.2s ease;
         }
 
-        .composer-btn-fullscreen:hover {
+        .composer-btn-upload:hover {
             background: #e2e8f0;
             color: #0f172a;
+        }
+
+        .composer-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: none;
+            font-family: inherit;
         }
 
         .composer-btn-cancel {
@@ -435,6 +404,21 @@
         }
 
         /* History items list - Scroll removed, integrated into body */
+        .post-view-section {
+            background: var(--card-bg);
+            padding: 24px 12px 30px 12px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-left: none;
+            border-right: none;
+            box-sizing: border-box;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            width: 100vw;
+            margin-left: -50vw;
+            margin-right: -50vw;
+        }
+
         .history-header-wrapper {
             display: flex;
             justify-content: space-between;
@@ -473,7 +457,7 @@
         .post-item {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 12px 20px;
+            padding: 16px 20px;
             border-radius: 12px;
             display: flex;
             justify-content: space-between;
@@ -512,9 +496,28 @@
             color: var(--text-sub);
         }
 
+        /* Telegraph URL shown under the title - click to copy */
+        .post-item-url {
+            font-size: 12px;
+            color: var(--primary-color);
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .post-item-url:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
         /* Actions layout - Keep it compact and structured */
         .post-actions {
             display: flex;
+            align-items: center;
             gap: 6px;
             flex-shrink: 0; /* Prevents actions from shrinking and losing structure */
         }
@@ -546,16 +549,26 @@
             transform: translateY(-1px);
         }
 
-        /* Brand new Copy button styling */
-        .btn-copy {
-            background-color: #f0f9ff;
-            color: #0369a1;
-            border: 1px solid #bae6fd;
+        /* Duplicate button (pill, in actions row) - cyan theme */
+        .btn-duplicate {
+            background-color: #ecfeff;
+            color: #0e7490;
+            border: 1px solid #a5f3fc;
         }
 
-        .btn-copy:hover {
-            background-color: #e0f2fe;
+        .btn-duplicate:hover {
+            background-color: #cffafe;
             transform: translateY(-1px);
+        }
+
+        /* Highlight animation for a freshly duplicated post card - flashes color then fades back */
+        @keyframes duplicateHighlightFade {
+            0% { background-color: #cffafe; border-color: #67e8f9; }
+            100% { background-color: var(--card-bg); border-color: var(--border-color); }
+        }
+
+        .post-item-highlight {
+            animation: duplicateHighlightFade 2.2s ease-out forwards;
         }
 
         /* Danger Delete button styling */
@@ -704,13 +717,17 @@
 
         <!-- Social Footer Options -->
         <div class="composer-footer">
-            <!-- Collapse/Uncollapse full screen toggle button placed beautifully on the left side -->
-            <button class="composer-btn-fullscreen" id="fullscreen-toggle" onclick="toggleFullscreen()" title="Toggle Fullscreen">
-                <svg id="fullscreen-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                </svg>
-            </button>
-            
+            <!-- Photo/Video Upload button placed on the left side -->
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button type="button" class="composer-btn-upload" id="media-upload-btn" onclick="triggerMediaUpload()" title="Upload Photo or Video">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </button>
+            </div>
+
             <div class="composer-actions">
                 <!-- Cancel/Clear Button -->
                 <button class="composer-btn composer-btn-cancel" id="cancel-btn" onclick="cancelEdit()">Cancel</button>
@@ -728,7 +745,7 @@
     </div>
 
     <!-- History/Feed Section - Structured with All Posts Header and Dynamic Count -->
-    <div>
+    <div class="post-view-section">
         <div class="history-header-wrapper">
             <h2 class="history-section-title">All Posts</h2>
             <div class="total-posts-badge" id="total-posts-counter">
@@ -799,6 +816,7 @@
     let editingTelegraphUrl = "";
     let postKeyToDelete = null;
     let localPosts = {};
+    let recentlyDuplicatedKey = null; // duplicate হওয়ার পর নতুন কার্ডটি একবার হাইলাইট করে ফেড আউট করার জন্য
     let currentSearchQuery = "";
 
     // ইউটিউব/ভিমিও সাধারণ লিঙ্ককে এমবেডেড লিঙ্কে কনভার্ট করার গ্লোবাল হেল্পার ফাংশন
@@ -816,83 +834,6 @@
         }
         return null;
     }
-
-    // ফুলস্ক্রিন অ্যাক্টিভ করার সুনির্দিষ্ট লজিক
-    function openFullscreenLogic() {
-        const card = document.getElementById('composer-card');
-        const icon = document.getElementById('fullscreen-icon');
-        card.classList.remove('fullscreen-exit');
-        card.classList.add('fullscreen-active');
-        document.documentElement.classList.add('fullscreen-mode');
-        document.body.classList.add('fullscreen-mode');
-        icon.innerHTML = `<path d="M4 14h6v6M20 10h-6V4M14 10l7-7M10 14l-7 7"/>`;
-        document.getElementById('fullscreen-toggle').title = "Exit Fullscreen";
-    }
-
-    // ফুলস্ক্রিন বন্ধ করার সুনির্দিষ্ট লজিক (স্মুথ এনিমেশন ট্রানজিশন সহ)
-    function closeFullscreenLogic() {
-        const card = document.getElementById('composer-card');
-        const icon = document.getElementById('fullscreen-icon');
-        card.classList.add('fullscreen-exit');
-        
-        setTimeout(() => {
-            card.classList.remove('fullscreen-active');
-            card.classList.remove('fullscreen-exit');
-            document.documentElement.classList.remove('fullscreen-mode');
-            document.body.classList.remove('fullscreen-mode');
-            icon.innerHTML = `<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>`;
-            document.getElementById('fullscreen-toggle').title = "Toggle Fullscreen";
-        }, 200);
-    }
-
-    // ফুলস্ক্রিন ভিউ টগল করার ফাংশন (হ্যাশ রাউটিং নিয়ন্ত্রণ সহ)
-    window.toggleFullscreen = function() {
-        const card = document.getElementById('composer-card');
-        const isCurrentlyFullscreen = card.classList.contains('fullscreen-active');
-
-        if (!isCurrentlyFullscreen) {
-            // হ্যাশ যুক্ত করা, যা সরাসরি hashchange ইভেন্ট ফায়ার করবে এবং ফুলস্ক্রিন অন করবে
-            window.location.hash = 'fullscreen';
-        } else {
-            // হ্যাশ উপস্থিত থাকলে হিস্ট্রি ব্যাক করা হবে, যা হ্যাশ রিমুভ করে ফুলস্ক্রিন ক্লোজ করবে
-            if (window.location.hash === '#fullscreen') {
-                history.back();
-            } else {
-                closeFullscreenLogic();
-            }
-        }
-    }
-
-    // ব্রাউজারের হ্যাশ পরিবর্তন ট্র্যাকিং (Android/Device Back button হ্যান্ডলিং)
-    window.addEventListener('hashchange', function() {
-        const card = document.getElementById('composer-card');
-        const isCurrentlyFullscreen = card.classList.contains('fullscreen-active');
-
-        if (window.location.hash === '#fullscreen') {
-            if (!isCurrentlyFullscreen) {
-                openFullscreenLogic();
-            }
-        } else {
-            if (isCurrentlyFullscreen) {
-                closeFullscreenLogic();
-            }
-        }
-    });
-
-    // ইনিশিয়াল লোডিং এ হ্যাশ চেক
-    if (window.location.hash === '#fullscreen') {
-        openFullscreenLogic();
-    }
-
-    // Escape key দিয়ে ফুলস্ক্রিন থেকে বের হওয়ার সুবিধা
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            const card = document.getElementById('composer-card');
-            if (card.classList.contains('fullscreen-active')) {
-                window.toggleFullscreen();
-            }
-        }
-    });
 
     // আইফ্রেম ফ্রেন্ডলি কপি ফাংশনালিটি
     window.copyLink = function(url, btn) {
@@ -925,6 +866,70 @@
             console.error('Could not copy link:', err);
         } finally {
             document.body.removeChild(tempInput);
+        }
+    }
+
+    // একই কন্টেন্ট দিয়ে নতুন Telegraph URL এ ডুপ্লিকেট পোস্ট তৈরি করা
+    window.duplicatePost = async function(key, btn) {
+        const post = localPosts[key];
+        if (!post) return;
+
+        const originalHTML = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner" style="width:16px;height:16px; border-top-color:#0e7490; border-color:rgba(14,116,144,0.25);"></span>`;
+
+        try {
+            const telegraphNodes = convertHtmlToTelegraphNodes(post.contentHtml);
+
+            const formData = new URLSearchParams();
+            formData.append('access_token', TELEGRAPH_ACCESS_TOKEN);
+            formData.append('title', post.title);
+            formData.append('author_name', 'Anonymous');
+            formData.append('content', JSON.stringify(telegraphNodes));
+            formData.append('return_content', 'false');
+
+            const telegraphResponse = await fetch('https://api.telegra.ph/createPage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+
+            const telegraphData = await telegraphResponse.json();
+
+            if (!telegraphData.ok) {
+                throw new Error("Telegraph Create Error: " + telegraphData.error);
+            }
+
+            const liveTelegraphUrl = telegraphData.result.url;
+
+            const newPostRef = push(postsRef);
+
+            // set() কল করার আগেই key মার্ক করা হচ্ছে, কারণ Firebase local write হওয়া মাত্রই
+            // onValue ফায়ার করে render করে ফেলে, await শেষ হওয়ার আগেই
+            recentlyDuplicatedKey = newPostRef.key;
+            setTimeout(() => {
+                if (recentlyDuplicatedKey === newPostRef.key) recentlyDuplicatedKey = null;
+            }, 2300);
+
+            await set(newPostRef, {
+                title: post.title,
+                author: 'Anonymous',
+                contentHtml: post.contentHtml,
+                telegraphUrl: liveTelegraphUrl,
+                createdAt: Date.now()
+            });
+
+            btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>`;
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }, 2000);
+
+        } catch (err) {
+            console.error('Duplicate failed:', err);
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            showUploadError('⚠️ Duplicate failed: ' + (err.message || err));
         }
     }
 
@@ -1005,37 +1010,160 @@
         }
     }
 
-    // Quill Editor Init (Image and Video embedded inside the toolbar)
+    // ===== Cloudinary Upload Config =====
+    const CLOUDINARY_CLOUD_NAME = 'dnzao51g5';
+    const CLOUDINARY_UPLOAD_PRESET = 'telegraph_bot';
+
+    // ছোট্ট আপলোড টোস্ট দেখানোর জন্য (উপরের ডান কোণে)
+    function showUploadToast(text) {
+        let toast = document.getElementById('cloudinary-upload-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'cloudinary-upload-toast';
+            toast.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 9999;
+                background: var(--card-bg); color: var(--text-main);
+                border: 1px solid var(--border-color); box-shadow: var(--shadow);
+                padding: 10px 16px; border-radius: 8px; font-size: 14px;
+                display: flex; align-items: center; gap: 8px;
+            `;
+            document.body.appendChild(toast);
+        }
+        toast.innerHTML = `<span class="spinner" style="width:14px;height:14px;"></span> ${text}`;
+        toast.style.display = 'flex';
+        return toast;
+    }
+    function hideUploadToast() {
+        const toast = document.getElementById('cloudinary-upload-toast');
+        if (toast) toast.style.display = 'none';
+    }
+    function showUploadError(msg) {
+        const toast = showUploadToast('');
+        toast.innerHTML = `⚠️ ${msg}`;
+        setTimeout(hideUploadToast, 3000);
+    }
+
+    // resourceType: 'image' অথবা 'video'
+    function uploadToCloudinary(file, resourceType, onProgress) {
+        return new Promise((resolve, reject) => {
+            const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable && onProgress) {
+                    onProgress(Math.round((e.loaded / e.total) * 100));
+                }
+            };
+            xhr.onload = () => {
+                try {
+                    const res = JSON.parse(xhr.responseText);
+                    if (xhr.status >= 200 && xhr.status < 300 && res.secure_url) {
+                        resolve(res.secure_url);
+                    } else {
+                        reject((res.error && res.error.message) || 'Upload failed');
+                    }
+                } catch (err) {
+                    reject('Invalid response from Cloudinary');
+                }
+            };
+            xhr.onerror = () => reject('Network error during upload');
+            xhr.send(formData);
+        });
+    }
+
+    // ফাইল পিকার খুলে Cloudinary-তে আপলোড করে Quill-এ এমবেড করে (ছবি ও ভিডিও উভয়ের জন্য একটি একক পিকার)
+    function pickAndUploadMedia(quillInstance) {
+        const range = quillInstance.getSelection(true) || { index: quillInstance.getLength() };
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*,video/*';
+        input.onchange = async () => {
+            const file = input.files[0];
+            if (!file) return;
+            const resourceType = file.type.startsWith('video/') ? 'video' : 'image';
+            const toast = showUploadToast(`Uploading ${resourceType}... 0%`);
+            try {
+                const secureUrl = await uploadToCloudinary(file, resourceType, (pct) => {
+                    toast.innerHTML = `<span class="spinner" style="width:14px;height:14px;"></span> Uploading ${resourceType}... ${pct}%`;
+                });
+                quillInstance.insertEmbed(range.index, resourceType, secureUrl, Quill.sources.USER);
+                quillInstance.setSelection(range.index + 1);
+                hideUploadToast();
+            } catch (err) {
+                showUploadError(typeof err === 'string' ? err : 'Upload failed');
+            }
+        };
+        input.click();
+    }
+
+    // Quill Editor Init (Image/Video বাটন টুলবার থেকে সরিয়ে বাইরের আপলোড আইকনে সরানো হয়েছে)
     const quill = new Quill('#editor-container', {
         theme: 'snow',
         placeholder: 'What is on your mind? Style your post using the editor buttons above...',
         modules: {
             toolbar: {
                 container: [
-                    [{ 'header': [1, 2, false] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    ['image', 'video', 'link', 'blockquote', 'code-block'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }]
-                ],
-                handlers: {
-                    image: function() {
-                        const range = this.quill.getSelection(true);
-                        const value = prompt('Enter Direct Image Link (URL):');
-                        if (value) {
-                            this.quill.insertEmbed(range.index, 'image', value, Quill.sources.USER);
-                        }
-                    },
-                    video: function() {
-                        const range = this.quill.getSelection(true);
-                        const value = prompt('Enter YouTube or raw video (.mp4) URL:');
-                        if (value) {
-                            const embedUrl = getEmbedUrl(value) || value;
-                            this.quill.insertEmbed(range.index, 'video', embedUrl, Quill.sources.USER);
-                        }
-                    }
-                }
+                    [{ 'header': 2 }],
+                    ['bold', 'italic', 'underline'],
+                    ['blockquote'],
+                    [{ 'list': 'bullet' }]
+                ]
             }
         }
+    });
+
+    // ফুটারের বাম দিকের আপলোড আইকন থেকে ছবি/ভিডিও আপলোড ট্রিগার করার ফাংশন
+    window.triggerMediaUpload = function() {
+        pickAndUploadMedia(quill);
+    }
+
+    // লেখার সময় স্বয়ংক্রিয়ভাবে URL এবং @username কে লিংকে রূপান্তর করে
+    // (URL -> সরাসরি লিংক, @name -> https://t.me/name)
+    function autoLinkify() {
+        const text = quill.getText();
+
+        // ১) প্লেইন URL ডিটেকশন (http/https)
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        let match;
+        while ((match = urlRegex.exec(text)) !== null) {
+            let url = match[1];
+            // ট্রেইলিং পাংচুয়েশন চিহ্ন লিংক থেকে বাদ দেওয়া হচ্ছে
+            const trailingPunct = url.match(/[).,!?:;]+$/);
+            const trimLen = trailingPunct ? trailingPunct[0].length : 0;
+            url = trimLen ? url.slice(0, -trimLen) : url;
+            const start = match.index;
+            const length = url.length;
+            if (length === 0) continue;
+
+            const currentFormat = quill.getFormat(start, length);
+            if (currentFormat.link !== url) {
+                quill.formatText(start, length, 'link', url, 'silent');
+            }
+        }
+
+        // ২) @username ডিটেকশন -> https://t.me/username
+        const mentionRegex = /(^|[\s(])@(\w{3,32})\b/g;
+        while ((match = mentionRegex.exec(text)) !== null) {
+            const prefixLen = match[1].length;
+            const username = match[2];
+            const start = match.index + prefixLen;
+            const length = username.length + 1; // '@' চিহ্নসহ
+            const telegramUrl = `https://t.me/${username}`;
+
+            const currentFormat = quill.getFormat(start, length);
+            if (currentFormat.link !== telegramUrl) {
+                quill.formatText(start, length, 'link', telegramUrl, 'silent');
+            }
+        }
+    }
+
+    quill.on('text-change', function(delta, oldDelta, source) {
+        if (source !== 'user') return;
+        autoLinkify();
     });
 
     // পোস্ট রেন্ডার করার জন্য ডেডিকেটেড ফাংশন (সার্চ ফিল্টারিং লজিক সহ)
@@ -1072,15 +1200,19 @@
 
             const item = document.createElement('div');
             item.className = 'post-item';
+            if (key === recentlyDuplicatedKey) {
+                item.classList.add('post-item-highlight');
+            }
             item.innerHTML = `
                 <div class="post-info">
-                    <div class="post-item-title" title="${post.title}">${post.title}</div>
                     <div class="post-item-meta">${dateStr}</div>
+                    <div class="post-item-title" title="${post.title}">${post.title}</div>
+                    <div class="post-item-url" onclick="copyLink('${post.telegraphUrl}', this)" title="Click to copy link">${post.telegraphUrl}</div>
                 </div>
                 <div class="post-actions">
-                    <button class="btn-action btn-copy" onclick="copyLink('${post.telegraphUrl}', this)">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Copy
+                    <button class="btn-action btn-duplicate" onclick="duplicatePost('${key}', this)" title="Duplicate this post">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="8" y="8" width="14" height="14" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/><line x1="15" y1="12" x2="15" y2="18"/><line x1="12" y1="15" x2="18" y2="15"/></svg>
+                        Duplicate
                     </button>
                     <button class="btn-action btn-edit" onclick="startEdit('${key}')">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
@@ -1139,16 +1271,6 @@
 
         document.getElementById('submit-btn').innerText = "Post";
         document.getElementById('status-card').style.display = "none";
-
-        // ফুলস্ক্রিন অ্যাক্টিভ থাকলে বন্ধ করুন
-        if (window.location.hash === '#fullscreen') {
-            history.back();
-        } else {
-            const card = document.getElementById('composer-card');
-            if (card.classList.contains('fullscreen-active')) {
-                closeFullscreenLogic();
-            }
-        }
     }
 
     // কাস্টম HTML to Telegraph Node রূপান্তরকারী ফাংশন (র-ভিডিও ও আইফ্রেম সাপোর্ট সহ)
