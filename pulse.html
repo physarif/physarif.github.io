@@ -255,7 +255,7 @@
   .info-line{
     display:flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 12px;
     font-family: 'JetBrains Mono', monospace;
   }
@@ -266,15 +266,16 @@
     letter-spacing: 0.08em;
     color: var(--ink-dim);
     white-space: nowrap;
+    padding-top: 1px;
   }
 
   .info-line .v{
     font-size: 11px;
     color: var(--ink);
     text-align: right;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    line-height: 1.45;
+    max-width: 68%;
   }
 
   /* ---------- Status line + button ---------- */
@@ -390,6 +391,14 @@
             <span class="k">Server</span>
             <span class="v" id="serverInfo">—</span>
           </div>
+          <div class="info-line">
+            <span class="k">Duration</span>
+            <span class="v" id="durationInfo">—</span>
+          </div>
+          <div class="info-line">
+            <span class="k">Device</span>
+            <span class="v" id="deviceInfo">—</span>
+          </div>
         </div>
 
       </div>
@@ -418,6 +427,8 @@
   const clientInfo = document.getElementById('clientInfo');
   const networkInfo = document.getElementById('networkInfo');
   const serverInfo = document.getElementById('serverInfo');
+  const durationInfo = document.getElementById('durationInfo');
+  const deviceInfo = document.getElementById('deviceInfo');
 
   function stampMeta(){
     const now = new Date();
@@ -430,7 +441,34 @@
   }
   stampMeta();
 
-  // ---------- Connection type (Network Information API, where supported) ----------
+  // ---------- Device / browser signature ----------
+  function detectDevice(){
+    const ua = navigator.userAgent;
+    let browser = 'Unknown browser';
+    if (/Edg\//.test(ua)) browser = 'Edge';
+    else if (/OPR\//.test(ua)) browser = 'Opera';
+    else if (/Chrome\//.test(ua) && !/Chromium/.test(ua)) browser = 'Chrome';
+    else if (/Firefox\//.test(ua)) browser = 'Firefox';
+    else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) browser = 'Safari';
+
+    let os = 'Unknown OS';
+    if (/Android/.test(ua)) os = 'Android';
+    else if (/iPhone|iPad|iPod/.test(ua)) os = 'iOS';
+    else if (/Windows/.test(ua)) os = 'Windows';
+    else if (/Mac OS X/.test(ua)) os = 'macOS';
+    else if (/Linux/.test(ua)) os = 'Linux';
+
+    return `${browser} · ${os}`;
+  }
+  deviceInfo.textContent = detectDevice();
+
+  // ---------- Speed grade ----------
+  function gradeFor(mbps){
+    if (mbps >= 100) return 'EXCELLENT';
+    if (mbps >= 40) return 'GOOD';
+    if (mbps >= 10) return 'FAIR';
+    return 'POOR';
+  }
   function getConnectionType(){
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (!conn) return null;
@@ -440,20 +478,48 @@
   }
 
   // ---------- Client IP / ISP / location lookup ----------
-  async function loadClientInfo(){
-    try{
-      const resp = await fetch('https://ipapi.co/json/');
-      const data = await resp.json();
-      const cityCountry = [data.city, data.country_code].filter(Boolean).join(', ');
-      clientInfo.textContent = [cityCountry, data.ip].filter(Boolean).join(' · ') || 'unavailable';
+  function fetchWithTimeout(url, ms = 5000){
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), ms);
+    return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
+  }
 
-      const isp = data.org || 'Unknown ISP';
-      const connType = getConnectionType();
-      networkInfo.textContent = connType ? `${isp} · ${connType}` : isp;
-    }catch(e){
-      clientInfo.textContent = 'unavailable';
-      networkInfo.textContent = 'unavailable';
+  async function loadClientInfo(){
+    const providers = [
+      async () => {
+        const r = await fetchWithTimeout('https://ipwho.is/');
+        const d = await r.json();
+        if (d.success === false) throw new Error('provider failed');
+        return {
+          ip: d.ip,
+          city: d.city,
+          country: d.country_code,
+          isp: (d.connection && (d.connection.isp || d.connection.org)) || null
+        };
+      },
+      async () => {
+        const r = await fetchWithTimeout('https://ipapi.co/json/');
+        const d = await r.json();
+        if (d.error) throw new Error('provider failed');
+        return { ip: d.ip, city: d.city, country: d.country_code, isp: d.org };
+      }
+    ];
+
+    for (const provider of providers){
+      try{
+        const data = await provider();
+        const cityCountry = [data.city, data.country].filter(Boolean).join(', ');
+        clientInfo.textContent = [cityCountry, data.ip].filter(Boolean).join(' · ') || 'unavailable';
+        const isp = data.isp || 'Unknown ISP';
+        const connType = getConnectionType();
+        networkInfo.textContent = connType ? `${isp} · ${connType}` : isp;
+        return;
+      }catch(e){
+        // try next provider
+      }
     }
+    clientInfo.textContent = 'unavailable';
+    networkInfo.textContent = 'unavailable';
   }
   loadClientInfo();
 
@@ -576,13 +642,16 @@
     downloadValue.innerHTML = '—<span class="u">Mbps</span>';
     upSpeed.innerHTML = '—<span class="u">Mbps</span>';
     serverInfo.textContent = 'locating…';
+    durationInfo.textContent = '—';
+
+    const testStart = performance.now();
 
     try{
       const jPing = startJitterPlain(mainValue, 4, 95, 0);
       const ping = await measurePing();
       stopJitter(jPing);
       mainValue.textContent = ping.toFixed(0);
-      serverInfo.textContent = capturedColo ? coloLabel(capturedColo) : 'unknown';
+      serverInfo.textContent = capturedColo ? coloLabel(capturedColo) : 'Cloudflare edge (not exposed by browser)';
 
       statusLine.textContent = 'printing download…';
       const jDown = startJitterUnit(downloadValue, 5, 380, 1, 'Mbps');
@@ -597,7 +666,11 @@
       if (upload != null) setVal(upSpeed, upload, 'Mbps');
       else upSpeed.innerHTML = 'n/a';
 
+      const seconds = (performance.now() - testStart) / 1000;
+      durationInfo.textContent = seconds.toFixed(1) + 's';
+
       statusLine.textContent = 'report complete';
+      stamp.innerHTML = `${gradeFor(download)}<br>RESULT`;
       stamp.classList.add('show');
     }catch(err){
       statusLine.textContent = 'something went wrong — try again';
