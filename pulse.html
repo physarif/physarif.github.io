@@ -37,7 +37,7 @@
   .page{
     max-width: 460px;
     margin: 0 auto;
-    padding: 40px 20px 60px;
+    padding: 16px 20px 100px;
     display:flex;
     flex-direction: column;
     align-items:center;
@@ -187,21 +187,24 @@
 
   .stamp{
     position: absolute;
-    top: -4px;
-    right: -14px;
-    width: 72px;
-    height: 72px;
-    border: 2px solid var(--ink-teal);
+    top: -14px;
+    right: -6px;
+    width: 76px;
+    height: 76px;
     border-radius: 50%;
+    border: 2px solid var(--ink-teal);
+    outline: 1px solid var(--ink-teal);
+    outline-offset: 4px;
     display: none;
+    flex-direction: column;
     align-items:center;
     justify-content:center;
-    transform: rotate(-14deg);
+    transform: rotate(-10deg);
     color: var(--ink-teal);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 9.5px;
+    font-size: 9px;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-align:center;
     line-height: 1.3;
   }
@@ -209,7 +212,7 @@
 
   .stamp .stamp-emoji{
     display: block;
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1;
     margin-bottom: 3px;
   }
@@ -294,6 +297,12 @@
     white-space: normal;
     line-height: 1.45;
     max-width: 68%;
+    transition: opacity .25s ease;
+  }
+
+  .info-line .v.loading{
+    opacity: 0.55;
+    font-style: italic;
   }
 
   /* ---------- Status line + button ---------- */
@@ -316,6 +325,7 @@
     background: var(--stamp-red);
     border: none;
     padding: 15px 40px;
+    margin-top: 20px;
     cursor: pointer;
     border-radius: 2px;
   }
@@ -371,7 +381,17 @@
 </head>
 <body>
   <div class="page">
-    <p class="page-eyebrow">Connection Diagnostics</p>
+    <script>
+  atOptions = {
+    'key' : 'f3119253d94c70f5000329faaa950bdc',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/f3119253d94c70f5000329faaa950bdc/invoke.js"></script>
+    <div style="height:16px;"></div>
 
     <div class="ticket">
       <div class="perf top" id="perfTop"></div>
@@ -400,18 +420,18 @@
         <hr class="rule">
 
         <div class="details">
-          <div class="detail-block latency">
-            <p class="heading">Latency</p>
-            <div class="detail-line">
-              <span class="k">Ping</span>
-              <span class="v" id="pingValue">—<span class="u">ms</span></span>
-            </div>
-          </div>
           <div class="detail-block upload">
             <p class="heading">Upload</p>
             <div class="detail-line">
               <span class="k">Speed</span>
               <span class="v" id="upSpeed">—<span class="u">Mbps</span></span>
+            </div>
+          </div>
+          <div class="detail-block latency">
+            <p class="heading">Latency</p>
+            <div class="detail-line">
+              <span class="k">Ping</span>
+              <span class="v" id="pingValue">—<span class="u">ms</span></span>
             </div>
           </div>
         </div>
@@ -421,11 +441,11 @@
         <div class="client-info">
           <div class="info-line">
             <span class="k">Client</span>
-            <span class="v" id="clientInfo">looking up…</span>
+            <span class="v" id="clientInfo">—</span>
           </div>
           <div class="info-line">
             <span class="k">Network</span>
-            <span class="v" id="networkInfo">looking up…</span>
+            <span class="v" id="networkInfo">—</span>
           </div>
           <div class="info-line">
             <span class="k">Server</span>
@@ -445,7 +465,6 @@
       <div class="perf bottom" id="perfBottom"></div>
     </div>
 
-    <p class="status-line" id="statusLine">tap run to begin</p>
     <button id="runBtn">Run test</button>
     <button id="shareBtn">Share result</button>
 
@@ -526,7 +545,7 @@
 
     return `${browser} · ${os}`;
   }
-  deviceInfo.textContent = detectDevice();
+  const deviceSignature = detectDevice();
 
   // ---------- Speed grade ----------
   function gradeMeta(mbps){
@@ -549,6 +568,9 @@
     const id = setTimeout(() => controller.abort(), ms);
     return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(id));
   }
+
+  let clientText = null;
+  let networkText = null;
 
   async function loadClientInfo(){
     const providers = [
@@ -575,19 +597,33 @@
       try{
         const data = await provider();
         const cityCountry = [data.city, data.country].filter(Boolean).join(', ');
-        clientInfo.textContent = [cityCountry, data.ip].filter(Boolean).join(' · ') || 'unavailable';
+        clientText = [cityCountry, data.ip].filter(Boolean).join(' · ') || 'unavailable';
         const isp = data.isp || 'Unknown ISP';
         const connType = getConnectionType();
-        networkInfo.textContent = connType ? `${isp} · ${connType}` : isp;
+        networkText = connType ? `${isp} · ${connType}` : isp;
         return;
       }catch(e){
         // try next provider
       }
     }
-    clientInfo.textContent = 'unavailable';
-    networkInfo.textContent = 'unavailable';
+    clientText = 'unavailable';
+    networkText = 'unavailable';
   }
+  // client/network data is fetched quietly in the background; only shown once the step is reached
   loadClientInfo();
+
+  function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // shows "Loading…" for a beat, then swaps in the final value
+  async function loadStep(el, finalValue, loadingMs = 500){
+    el.textContent = 'Loading…';
+    el.classList.add('loading');
+    await sleep(loadingMs);
+    el.textContent = finalValue;
+    el.classList.remove('loading');
+  }
 
   // ---------- Test server (Cloudflare colo) lookup ----------
   const COLO_MAP = {
@@ -704,39 +740,56 @@
     shareBtn.classList.remove('show');
     stamp.classList.remove('show');
     stampMeta();
-    statusLine.textContent = 'printing latency…';
+    if (statusLine) statusLine.textContent = 'printing download…';
     mainValue.textContent = '—';
     pingValue.innerHTML = '—<span class="u">ms</span>';
     upSpeed.innerHTML = '—<span class="u">Mbps</span>';
-    serverInfo.textContent = 'locating…';
+    clientInfo.textContent = '—';
+    networkInfo.textContent = '—';
+    serverInfo.textContent = '—';
     durationInfo.textContent = '—';
+    deviceInfo.textContent = '—';
 
     const testStart = performance.now();
 
     try{
-      const jPing = startJitterUnit(pingValue, 4, 95, 0, 'ms');
-      const ping = await measurePing();
-      stopJitter(jPing);
-      setVal(pingValue, ping, 'ms');
-      serverInfo.textContent = capturedColo ? coloLabel(capturedColo) : 'Cloudflare edge (not exposed by browser)';
-
-      statusLine.textContent = 'printing download…';
       const jDown = startJitterPlain(mainValue, 5, 380, 0);
       const download = await measureDownload();
       stopJitter(jDown);
       mainValue.textContent = download.toFixed(0);
 
-      statusLine.textContent = 'printing upload…';
+      if (statusLine) statusLine.textContent = 'printing upload…';
       const jUp = startJitterUnit(upSpeed, 1, 60, 1, 'Mbps');
       const upload = await measureUpload();
       stopJitter(jUp);
       if (upload != null) setVal(upSpeed, upload, 'Mbps');
       else upSpeed.innerHTML = 'n/a';
 
-      const seconds = (performance.now() - testStart) / 1000;
-      durationInfo.textContent = seconds.toFixed(1) + 's';
+      if (statusLine) statusLine.textContent = 'printing latency…';
+      const jPing = startJitterUnit(pingValue, 4, 95, 0, 'ms');
+      const ping = await measurePing();
+      stopJitter(jPing);
+      setVal(pingValue, ping, 'ms');
 
-      statusLine.textContent = 'report complete';
+      const seconds = (performance.now() - testStart) / 1000;
+
+      if (statusLine) statusLine.textContent = 'reading client info…';
+      await loadStep(clientInfo, clientText || 'unavailable');
+
+      if (statusLine) statusLine.textContent = 'reading network info…';
+      await loadStep(networkInfo, networkText || 'unavailable');
+
+      if (statusLine) statusLine.textContent = 'locating server…';
+      const serverText = capturedColo ? coloLabel(capturedColo) : 'Cloudflare edge (not exposed by browser)';
+      await loadStep(serverInfo, serverText);
+
+      if (statusLine) statusLine.textContent = 'calculating duration…';
+      await loadStep(durationInfo, seconds.toFixed(1) + 's');
+
+      if (statusLine) statusLine.textContent = 'reading device info…';
+      await loadStep(deviceInfo, deviceSignature);
+
+      if (statusLine) statusLine.textContent = 'report complete';
       const g = gradeMeta(download);
       stamp.style.borderColor = g.color;
       stamp.style.color = g.color;
@@ -744,7 +797,7 @@
       stamp.classList.add('show');
       shareBtn.classList.add('show');
     }catch(err){
-      statusLine.textContent = 'something went wrong — try again';
+      if (statusLine) statusLine.textContent = 'something went wrong — try again';
       console.error(err);
     }finally{
       stopAllJitters();
