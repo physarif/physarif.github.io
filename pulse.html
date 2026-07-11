@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root{
     --backdrop: #12181c;
@@ -64,13 +65,21 @@
 
   .perf{
     height: 16px;
-    background-image: radial-gradient(circle at 8px 8px, var(--backdrop) 6.5px, transparent 7px);
-    background-size: 22px 16px;
-    background-repeat: repeat-x;
-    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
   }
   .perf.top{ margin-bottom: -1px; }
   .perf.bottom{ margin-top: -1px; }
+
+  .perf-dot{
+    flex: 0 0 auto;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--backdrop);
+  }
 
   .ticket-body{
     padding: 6px 30px 26px;
@@ -99,18 +108,18 @@
   }
 
   .mini-barcode{
-    width: 92px;
-    height: 15px;
-    background-image: repeating-linear-gradient(
-      90deg,
-      var(--ink) 0px, var(--ink) 2px,
-      transparent 2px, transparent 4.5px,
-      var(--ink) 4.5px, var(--ink) 6px,
-      transparent 6px, transparent 9px,
-      var(--ink) 9px, var(--ink) 12px,
-      transparent 12px, transparent 15px
-    );
-    opacity: 0.8;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 1.5px;
+    height: 18px;
+  }
+
+  .mini-barcode span{
+    display: block;
+    height: 100%;
+    background: var(--ink);
+    opacity: 0.85;
   }
 
   .masthead .run-no{
@@ -178,7 +187,7 @@
 
   .stamp{
     position: absolute;
-    top: -22px;
+    top: -4px;
     right: -14px;
     width: 72px;
     height: 72px;
@@ -198,6 +207,13 @@
   }
   .stamp.show{ display:flex; }
 
+  .stamp .stamp-emoji{
+    display: block;
+    font-size: 17px;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+
   /* ---------- Detail table ---------- */
   .details{
     display:grid;
@@ -211,6 +227,8 @@
     font-weight: 700;
     font-size: 14px;
     margin: 0 0 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
   }
 
   .detail-block.latency .heading{ color: var(--ink-teal); }
@@ -311,6 +329,29 @@
     outline-offset: 3px;
   }
 
+  button#shareBtn{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: transparent;
+    border: 1.5px solid #3a4550;
+    padding: 12px 30px;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-top: 12px;
+    display: none;
+  }
+  button#shareBtn.show{ display: inline-block; }
+  button#shareBtn:hover:not(:disabled){ border-color: var(--paper); }
+  button#shareBtn:disabled{ opacity: 0.5; cursor: default; }
+  button#shareBtn:focus-visible{
+    outline: 2px solid var(--paper);
+    outline-offset: 3px;
+  }
+
   .page-footer{
     margin-top: 30px;
     text-align:center;
@@ -333,13 +374,13 @@
     <p class="page-eyebrow">Connection Diagnostics</p>
 
     <div class="ticket">
-      <div class="perf top"></div>
+      <div class="perf top" id="perfTop"></div>
       <div class="ticket-body">
         <div class="masthead">
           <span class="brand">PULSE</span>
           <div class="run-info">
             <span class="run-no" id="runNo">REF · 00000000</span>
-            <div class="mini-barcode"></div>
+            <div class="mini-barcode" id="miniBarcode"></div>
           </div>
         </div>
         <hr class="rule">
@@ -351,20 +392,19 @@
         <div class="reading">
           <div class="number">
             <span class="value" id="mainValue">—</span>
-            <span class="unit">ms</span>
+            <span class="unit">Mbps</span>
           </div>
-          <p class="label">Latency</p>
-          <div class="stamp" id="stamp">VERIFIED<br>RESULT</div>
+          <div class="stamp" id="stamp"><span class="stamp-emoji">✅</span>VERIFIED<br>RESULT</div>
         </div>
 
         <hr class="rule">
 
         <div class="details">
           <div class="detail-block latency">
-            <p class="heading">Download</p>
+            <p class="heading">Latency</p>
             <div class="detail-line">
-              <span class="k">Speed</span>
-              <span class="v" id="downloadValue">—<span class="u">Mbps</span></span>
+              <span class="k">Ping</span>
+              <span class="v" id="pingValue">—<span class="u">ms</span></span>
             </div>
           </div>
           <div class="detail-block upload">
@@ -402,11 +442,12 @@
         </div>
 
       </div>
-      <div class="perf bottom"></div>
+      <div class="perf bottom" id="perfBottom"></div>
     </div>
 
     <p class="status-line" id="statusLine">tap run to begin</p>
     <button id="runBtn">Run test</button>
+    <button id="shareBtn">Share result</button>
 
     <p class="page-footer">
       Measured live against your network path. Wi-Fi, VPNs, and busy networks affect results.
@@ -417,9 +458,11 @@
 <script>
 (function(){
   const runBtn = document.getElementById('runBtn');
+  const shareBtn = document.getElementById('shareBtn');
+  const ticketEl = document.querySelector('.ticket');
   const statusLine = document.getElementById('statusLine');
   const mainValue = document.getElementById('mainValue');
-  const downloadValue = document.getElementById('downloadValue');
+  const pingValue = document.getElementById('pingValue');
   const upSpeed = document.getElementById('upSpeed');
   const runNo = document.getElementById('runNo');
   const metaDate = document.getElementById('metaDate');
@@ -429,6 +472,29 @@
   const serverInfo = document.getElementById('serverInfo');
   const durationInfo = document.getElementById('durationInfo');
   const deviceInfo = document.getElementById('deviceInfo');
+
+  // ---------- Perforation dots & barcode (real DOM nodes so screenshots render them) ----------
+  function renderDots(el, count = 16){
+    el.innerHTML = '';
+    for (let i = 0; i < count; i++){
+      const dot = document.createElement('span');
+      dot.className = 'perf-dot';
+      el.appendChild(dot);
+    }
+  }
+  renderDots(document.getElementById('perfTop'));
+  renderDots(document.getElementById('perfBottom'));
+
+  function renderBarcode(el, count = 26){
+    el.innerHTML = '';
+    const widths = [2, 1, 3, 1, 2, 4, 1, 2, 3, 1];
+    for (let i = 0; i < count; i++){
+      const bar = document.createElement('span');
+      bar.style.width = widths[i % widths.length] + 'px';
+      el.appendChild(bar);
+    }
+  }
+  renderBarcode(document.getElementById('miniBarcode'));
 
   function stampMeta(){
     const now = new Date();
@@ -463,11 +529,11 @@
   deviceInfo.textContent = detectDevice();
 
   // ---------- Speed grade ----------
-  function gradeFor(mbps){
-    if (mbps >= 100) return 'EXCELLENT';
-    if (mbps >= 40) return 'GOOD';
-    if (mbps >= 10) return 'FAIR';
-    return 'POOR';
+  function gradeMeta(mbps){
+    if (mbps >= 100) return { label: 'EXCELLENT', emoji: '🚀', color: '#2f5d50' };
+    if (mbps >= 40)  return { label: 'GOOD',      emoji: '✅', color: '#2f5d50' };
+    if (mbps >= 10)  return { label: 'FAIR',      emoji: '⚠️', color: '#a97a2b' };
+    return              { label: 'POOR',      emoji: '🐢', color: '#b0402a' };
   }
   function getConnectionType(){
     const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -594,7 +660,7 @@
   }
 
   async function measureDownload(){
-    const sizes = [2000000, 8000000, 25000000];
+    const sizes = [1000000, 3000000, 8000000];
     let totalBytes = 0, totalTime = 0;
 
     for (const size of sizes){
@@ -617,7 +683,7 @@
 
   function measureUpload(){
     return new Promise((resolve) => {
-      const size = 12000000;
+      const size = 6000000;
       const data = new Blob([new Uint8Array(size)]);
       const xhr = new XMLHttpRequest();
       const start = performance.now();
@@ -635,11 +701,12 @@
 
   async function runTest(){
     runBtn.disabled = true;
+    shareBtn.classList.remove('show');
     stamp.classList.remove('show');
     stampMeta();
     statusLine.textContent = 'printing latency…';
     mainValue.textContent = '—';
-    downloadValue.innerHTML = '—<span class="u">Mbps</span>';
+    pingValue.innerHTML = '—<span class="u">ms</span>';
     upSpeed.innerHTML = '—<span class="u">Mbps</span>';
     serverInfo.textContent = 'locating…';
     durationInfo.textContent = '—';
@@ -647,17 +714,17 @@
     const testStart = performance.now();
 
     try{
-      const jPing = startJitterPlain(mainValue, 4, 95, 0);
+      const jPing = startJitterUnit(pingValue, 4, 95, 0, 'ms');
       const ping = await measurePing();
       stopJitter(jPing);
-      mainValue.textContent = ping.toFixed(0);
+      setVal(pingValue, ping, 'ms');
       serverInfo.textContent = capturedColo ? coloLabel(capturedColo) : 'Cloudflare edge (not exposed by browser)';
 
       statusLine.textContent = 'printing download…';
-      const jDown = startJitterUnit(downloadValue, 5, 380, 1, 'Mbps');
+      const jDown = startJitterPlain(mainValue, 5, 380, 0);
       const download = await measureDownload();
       stopJitter(jDown);
-      setVal(downloadValue, download, 'Mbps');
+      mainValue.textContent = download.toFixed(0);
 
       statusLine.textContent = 'printing upload…';
       const jUp = startJitterUnit(upSpeed, 1, 60, 1, 'Mbps');
@@ -670,8 +737,12 @@
       durationInfo.textContent = seconds.toFixed(1) + 's';
 
       statusLine.textContent = 'report complete';
-      stamp.innerHTML = `${gradeFor(download)}<br>RESULT`;
+      const g = gradeMeta(download);
+      stamp.style.borderColor = g.color;
+      stamp.style.color = g.color;
+      stamp.innerHTML = `<span class="stamp-emoji">${g.emoji}</span>${g.label}<br>RESULT`;
       stamp.classList.add('show');
+      shareBtn.classList.add('show');
     }catch(err){
       statusLine.textContent = 'something went wrong — try again';
       console.error(err);
@@ -683,6 +754,63 @@
   }
 
   runBtn.addEventListener('click', runTest);
+
+  // ---------- Share result as an image ----------
+  async function shareResult(){
+    if (typeof html2canvas === 'undefined'){
+      alert('Image generator failed to load — check your connection and try again.');
+      return;
+    }
+    shareBtn.disabled = true;
+    const originalText = shareBtn.textContent;
+    shareBtn.textContent = 'Preparing…';
+    try{
+      const canvas = await html2canvas(ticketEl, {
+        backgroundColor: '#f3ecdd',
+        scale: 2,
+        useCORS: true
+      });
+
+      canvas.toBlob(async (blob) => {
+        if (!blob){
+          shareBtn.textContent = originalText;
+          shareBtn.disabled = false;
+          return;
+        }
+        const file = new File([blob], 'pulse-speed-test.png', { type: 'image/png' });
+
+        try{
+          if (navigator.canShare && navigator.canShare({ files: [file] })){
+            await navigator.share({
+              files: [file],
+              title: 'PULSE — Connection Diagnostic Report',
+              text: 'My internet speed test result'
+            });
+          } else {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pulse-speed-test.png';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+          }
+        }catch(shareErr){
+          // user cancelled share sheet or share failed silently — no action needed
+        }finally{
+          shareBtn.textContent = originalText;
+          shareBtn.disabled = false;
+        }
+      }, 'image/png');
+    }catch(err){
+      console.error(err);
+      shareBtn.textContent = originalText;
+      shareBtn.disabled = false;
+    }
+  }
+
+  shareBtn.addEventListener('click', shareResult);
 })();
 </script>
 </body>
