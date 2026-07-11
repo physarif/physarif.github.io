@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PULSE — Diagnostic Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --backdrop: #12181c;
+    --backdrop-2: #0d1215;
+    --paper: #f3ecdd;
+    --paper-edge: #e7ddc6;
+    --ink: #1b1f1a;
+    --ink-dim: #8a8272;
+    --rule: #c9c0a8;
+    --stamp-red: #b0402a;
+    --ink-teal: #2f5d50;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0; padding:0;
+    min-height: 100vh;
+    background: var(--backdrop);
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1.4px);
+    background-size: 22px 22px;
+    color: var(--paper);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .page{
+    max-width: 460px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+  }
+
+  .page-eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #5b6670;
+    margin: 0 0 26px;
+    text-align:center;
+  }
+
+  /* ---------- Ticket card ---------- */
+  .ticket{
+    position: relative;
+    width: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 24px 50px -18px rgba(0,0,0,0.65);
+    border-radius: 3px;
+  }
+
+  .perf{
+    height: 16px;
+    background-image: radial-gradient(circle at 8px 8px, var(--backdrop) 6.5px, transparent 7px);
+    background-size: 22px 16px;
+    background-repeat: repeat-x;
+    background-position: center;
+  }
+  .perf.top{ margin-bottom: -1px; }
+  .perf.bottom{ margin-top: -1px; }
+
+  .ticket-body{
+    padding: 6px 30px 26px;
+  }
+
+  .masthead{
+    display:flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 14px 0 12px;
+  }
+
+  .masthead .brand{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  .run-info{
+    display:flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+  }
+
+  .mini-barcode{
+    width: 92px;
+    height: 15px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--ink) 0px, var(--ink) 2px,
+      transparent 2px, transparent 4.5px,
+      var(--ink) 4.5px, var(--ink) 6px,
+      transparent 6px, transparent 9px,
+      var(--ink) 9px, var(--ink) 12px,
+      transparent 12px, transparent 15px
+    );
+    opacity: 0.8;
+  }
+
+  .masthead .run-no{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--ink-dim);
+    text-align:right;
+  }
+
+  .rule{
+    border: none;
+    border-top: 1.5px dashed var(--rule);
+    margin: 0;
+  }
+
+  .meta-row{
+    display:flex;
+    justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    padding: 10px 0 18px;
+  }
+
+  /* ---------- Main reading ---------- */
+  .reading{
+    text-align:center;
+    padding: 8px 0 22px;
+    position: relative;
+  }
+
+  .reading .label{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin: 12px 0 0;
+  }
+
+  .reading .number{
+    display:flex;
+    align-items: baseline;
+    justify-content:center;
+    gap: 3px;
+  }
+
+  .reading .number .value{
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 76px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--stamp-red);
+  }
+
+  .reading .number .unit{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--ink);
+  }
+
+  .stamp{
+    position: absolute;
+    top: -22px;
+    right: -14px;
+    width: 72px;
+    height: 72px;
+    border: 2px solid var(--ink-teal);
+    border-radius: 50%;
+    display: none;
+    align-items:center;
+    justify-content:center;
+    transform: rotate(-14deg);
+    color: var(--ink-teal);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align:center;
+    line-height: 1.3;
+  }
+  .stamp.show{ display:flex; }
+
+  /* ---------- Detail table ---------- */
+  .details{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 20px;
+    padding: 20px 0 6px;
+  }
+
+  .detail-block .heading{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    margin: 0 0 12px;
+  }
+
+  .detail-block.latency .heading{ color: var(--ink-teal); }
+  .detail-block.upload .heading{ color: var(--stamp-red); }
+
+  .detail-line{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .detail-line .k{
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-dim);
+  }
+
+  .detail-line .v{
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .detail-line .v .u{
+    font-size: 10px;
+    color: var(--ink-dim);
+    font-weight: 400;
+    margin-left: 3px;
+  }
+
+  /* ---------- Client / network / server info ---------- */
+  .client-info{
+    display:flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 18px 0 4px;
+  }
+
+  .info-line{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .info-line .k{
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    white-space: nowrap;
+  }
+
+  .info-line .v{
+    font-size: 11px;
+    color: var(--ink);
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ---------- Status line + button ---------- */
+  .status-line{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #6a7580;
+    text-align:center;
+    min-height: 18px;
+    margin: 20px 0 14px;
+  }
+
+  button#runBtn{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--stamp-red);
+    border: none;
+    padding: 15px 40px;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  button#runBtn:disabled{
+    background: #4a4438;
+    color: #8a8272;
+    cursor: default;
+  }
+  button#runBtn:focus-visible{
+    outline: 2px solid var(--paper);
+    outline-offset: 3px;
+  }
+
+  .page-footer{
+    margin-top: 30px;
+    text-align:center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: #4a545e;
+    line-height: 1.7;
+    max-width: 340px;
+  }
+
+  @media (max-width: 380px){
+    .reading .number .value{ font-size: 58px; }
+    .ticket-body{ padding: 6px 20px 22px; }
+    .details{ gap: 0 12px; }
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+    <p class="page-eyebrow">Connection Diagnostics</p>
+
+    <div class="ticket">
+      <div class="perf top"></div>
+      <div class="ticket-body">
+        <div class="masthead">
+          <span class="brand">PULSE</span>
+          <div class="run-info">
+            <span class="run-no" id="runNo">REF · 00000000</span>
+            <div class="mini-barcode"></div>
+          </div>
+        </div>
+        <hr class="rule">
+        <div class="meta-row">
+          <span id="metaDate">—</span>
+          <span>DIAGNOSTIC REPORT</span>
+        </div>
+
+        <div class="reading">
+          <div class="number">
+            <span class="value" id="mainValue">—</span>
+            <span class="unit">ms</span>
+          </div>
+          <p class="label">Latency</p>
+          <div class="stamp" id="stamp">VERIFIED<br>RESULT</div>
+        </div>
+
+        <hr class="rule">
+
+        <div class="details">
+          <div class="detail-block latency">
+            <p class="heading">Download</p>
+            <div class="detail-line">
+              <span class="k">Speed</span>
+              <span class="v" id="downloadValue">—<span class="u">Mbps</span></span>
+            </div>
+          </div>
+          <div class="detail-block upload">
+            <p class="heading">Upload</p>
+            <div class="detail-line">
+              <span class="k">Speed</span>
+              <span class="v" id="upSpeed">—<span class="u">Mbps</span></span>
+            </div>
+          </div>
+        </div>
+
+        <hr class="rule">
+
+        <div class="client-info">
+          <div class="info-line">
+            <span class="k">Client</span>
+            <span class="v" id="clientInfo">looking up…</span>
+          </div>
+          <div class="info-line">
+            <span class="k">Network</span>
+            <span class="v" id="networkInfo">looking up…</span>
+          </div>
+          <div class="info-line">
+            <span class="k">Server</span>
+            <span class="v" id="serverInfo">—</span>
+          </div>
+        </div>
+
+      </div>
+      <div class="perf bottom"></div>
+    </div>
+
+    <p class="status-line" id="statusLine">tap run to begin</p>
+    <button id="runBtn">Run test</button>
+
+    <p class="page-footer">
+      Measured live against your network path. Wi-Fi, VPNs, and busy networks affect results.
+      Uses Cloudflare's public speed-test endpoints for download/upload sampling.
+    </p>
+  </div>
+
+<script>
+(function(){
+  const runBtn = document.getElementById('runBtn');
+  const statusLine = document.getElementById('statusLine');
+  const mainValue = document.getElementById('mainValue');
+  const downloadValue = document.getElementById('downloadValue');
+  const upSpeed = document.getElementById('upSpeed');
+  const runNo = document.getElementById('runNo');
+  const metaDate = document.getElementById('metaDate');
+  const stamp = document.getElementById('stamp');
+  const clientInfo = document.getElementById('clientInfo');
+  const networkInfo = document.getElementById('networkInfo');
+  const serverInfo = document.getElementById('serverInfo');
+
+  function stampMeta(){
+    const now = new Date();
+    const opts = { day: '2-digit', month: 'short', year: 'numeric' };
+    const dateStr = now.toLocaleDateString('en-GB', opts).toUpperCase();
+    const timeStr = now.toTimeString().slice(0,5);
+    metaDate.textContent = `${dateStr} · ${timeStr}`;
+    const rand8 = () => Math.floor(10000000 + Math.random()*90000000);
+    runNo.textContent = `REF · ${rand8()}`;
+  }
+  stampMeta();
+
+  // ---------- Connection type (Network Information API, where supported) ----------
+  function getConnectionType(){
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (!conn) return null;
+    if (conn.type) return conn.type.replace(/_/g, ' ').toUpperCase();
+    if (conn.effectiveType) return conn.effectiveType.toUpperCase();
+    return null;
+  }
+
+  // ---------- Client IP / ISP / location lookup ----------
+  async function loadClientInfo(){
+    try{
+      const resp = await fetch('https://ipapi.co/json/');
+      const data = await resp.json();
+      const cityCountry = [data.city, data.country_code].filter(Boolean).join(', ');
+      clientInfo.textContent = [cityCountry, data.ip].filter(Boolean).join(' · ') || 'unavailable';
+
+      const isp = data.org || 'Unknown ISP';
+      const connType = getConnectionType();
+      networkInfo.textContent = connType ? `${isp} · ${connType}` : isp;
+    }catch(e){
+      clientInfo.textContent = 'unavailable';
+      networkInfo.textContent = 'unavailable';
+    }
+  }
+  loadClientInfo();
+
+  // ---------- Test server (Cloudflare colo) lookup ----------
+  const COLO_MAP = {
+    SIN: 'Singapore, SG', BOM: 'Mumbai, IN', MAA: 'Chennai, IN', CCU: 'Kolkata, IN',
+    DEL: 'Delhi, IN', DAC: 'Dhaka, BD', HKG: 'Hong Kong, HK', KUL: 'Kuala Lumpur, MY',
+    BKK: 'Bangkok, TH', NRT: 'Tokyo, JP', ICN: 'Seoul, KR', LHR: 'London, UK',
+    FRA: 'Frankfurt, DE', SEA: 'Seattle, US', LAX: 'Los Angeles, US', SJC: 'San Jose, US'
+  };
+  let capturedColo = null;
+
+  function coloLabel(code){
+    return COLO_MAP[code] ? `${COLO_MAP[code]} (${code})` : code;
+  }
+
+  const DOWN_URL = (bytes) => `https://speed.cloudflare.com/__down?bytes=${bytes}&t=${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const UP_URL = () => `https://speed.cloudflare.com/__up?t=${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+  function setVal(el, num, unit){
+    el.innerHTML = num.toFixed(unit === 'ms' ? 0 : 1) + '<span class="u">' + unit + '</span>';
+  }
+
+  // ---------- Live jitter while a value is being measured ----------
+  const activeJitters = new Set();
+
+  function randomBetween(min, max){
+    return min + Math.random() * (max - min);
+  }
+
+  function startJitterPlain(el, min, max, decimals){
+    const id = setInterval(() => {
+      el.textContent = randomBetween(min, max).toFixed(decimals);
+    }, 90);
+    activeJitters.add(id);
+    return id;
+  }
+
+  function startJitterUnit(el, min, max, decimals, unit){
+    const id = setInterval(() => {
+      el.innerHTML = randomBetween(min, max).toFixed(decimals) + '<span class="u">' + unit + '</span>';
+    }, 90);
+    activeJitters.add(id);
+    return id;
+  }
+
+  function stopJitter(id){
+    clearInterval(id);
+    activeJitters.delete(id);
+  }
+
+  function stopAllJitters(){
+    activeJitters.forEach(id => clearInterval(id));
+    activeJitters.clear();
+  }
+
+  async function measurePing(sampleCount = 6){
+    const times = [];
+    for(let i=0;i<sampleCount;i++){
+      const start = performance.now();
+      try{
+        const resp = await fetch(DOWN_URL(0), { cache: 'no-store' });
+        if (!capturedColo){
+          const ray = resp.headers.get('cf-ray');
+          if (ray && ray.includes('-')) capturedColo = ray.split('-').pop();
+        }
+      }catch(e){}
+      const dur = performance.now() - start;
+      if (i > 0) times.push(dur);
+    }
+    return times.reduce((a,b)=>a+b,0) / times.length;
+  }
+
+  async function measureDownload(){
+    const sizes = [2000000, 8000000, 25000000];
+    let totalBytes = 0, totalTime = 0;
+
+    for (const size of sizes){
+      const start = performance.now();
+      let resp;
+      try{ resp = await fetch(DOWN_URL(size), { cache: 'no-store' }); }catch(e){ continue; }
+      const reader = resp.body.getReader();
+      let received = 0;
+      while(true){
+        const { done, value } = await reader.read();
+        if (done) break;
+        received += value.length;
+      }
+      totalBytes += received;
+      totalTime += (performance.now() - start);
+    }
+
+    return (totalBytes * 8) / (totalTime/1000) / 1e6;
+  }
+
+  function measureUpload(){
+    return new Promise((resolve) => {
+      const size = 12000000;
+      const data = new Blob([new Uint8Array(size)]);
+      const xhr = new XMLHttpRequest();
+      const start = performance.now();
+      xhr.open('POST', UP_URL());
+      xhr.onload = () => {
+        const totalTime = (performance.now() - start) / 1000;
+        resolve((size * 8) / totalTime / 1e6);
+      };
+      xhr.onerror = () => resolve(null);
+      xhr.ontimeout = () => resolve(null);
+      xhr.timeout = 20000;
+      xhr.send(data);
+    });
+  }
+
+  async function runTest(){
+    runBtn.disabled = true;
+    stamp.classList.remove('show');
+    stampMeta();
+    statusLine.textContent = 'printing latency…';
+    mainValue.textContent = '—';
+    downloadValue.innerHTML = '—<span class="u">Mbps</span>';
+    upSpeed.innerHTML = '—<span class="u">Mbps</span>';
+    serverInfo.textContent = 'locating…';
+
+    try{
+      const jPing = startJitterPlain(mainValue, 4, 95, 0);
+      const ping = await measurePing();
+      stopJitter(jPing);
+      mainValue.textContent = ping.toFixed(0);
+      serverInfo.textContent = capturedColo ? coloLabel(capturedColo) : 'unknown';
+
+      statusLine.textContent = 'printing download…';
+      const jDown = startJitterUnit(downloadValue, 5, 380, 1, 'Mbps');
+      const download = await measureDownload();
+      stopJitter(jDown);
+      setVal(downloadValue, download, 'Mbps');
+
+      statusLine.textContent = 'printing upload…';
+      const jUp = startJitterUnit(upSpeed, 1, 60, 1, 'Mbps');
+      const upload = await measureUpload();
+      stopJitter(jUp);
+      if (upload != null) setVal(upSpeed, upload, 'Mbps');
+      else upSpeed.innerHTML = 'n/a';
+
+      statusLine.textContent = 'report complete';
+      stamp.classList.add('show');
+    }catch(err){
+      statusLine.textContent = 'something went wrong — try again';
+      console.error(err);
+    }finally{
+      stopAllJitters();
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run again';
+    }
+  }
+
+  runBtn.addEventListener('click', runTest);
+})();
+</script>
+</body>
+</html>
