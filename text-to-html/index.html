@@ -168,6 +168,40 @@
     font-style:normal;
     font-family:'Hind Siliguri',system-ui,sans-serif;
   }
+  .ql-toolbar.ql-snow .ql-math{
+    width:28px;
+    height:24px;
+    padding:0;
+    font-size:13px;
+    line-height:24px;
+    color:#444;
+    background:transparent;
+    border:none;
+    cursor:pointer;
+    border-radius:3px;
+    vertical-align:middle;
+  }
+  .ql-toolbar.ql-snow .ql-math:hover{
+    color:var(--accent);
+  }
+
+  .editor-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:10px;
+    font-size:.78rem;
+    color:#9aa0a6;
+  }
+  .draft-status{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    min-height:1.2em;
+  }
+  .draft-status.saving{color:#9aa0a6;}
+  .draft-status.saved{color:#1e8e3e;}
+  .draft-status.restored{color:var(--accent-dark);}
   .hint{
     font-size:.78rem;
     color:#9aa0a6;
@@ -209,6 +243,15 @@
   .btn-secondary.copied{
     background:#e2f3e5;
     color:#1e8e3e;
+  }
+
+  .btn-outline{
+    background:#fff;
+    border:1px solid var(--line);
+    color:var(--sub);
+  }
+  .btn-outline:hover{
+    background:#f5f5f5;
   }
 
   #outputCard{display:none;}
@@ -293,9 +336,16 @@
       <div id="editor-container">
         <div id="editor"></div>
       </div>
+      <div class="editor-footer">
+        <span id="wordCount">0 words</span>
+        <span id="draftStatus" class="draft-status"></span>
+      </div>
     </div>
 
-    <button class="btn btn-primary" id="generateBtn">Generate HTML</button>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-primary" id="generateBtn" style="flex:1; width:auto;">Generate HTML</button>
+      <button type="button" class="btn btn-outline" id="cancelBtn">Cancel</button>
+    </div>
 
     <div class="card" id="outputCard">
       <div class="output-head">
@@ -330,7 +380,7 @@
         container: [
           [{ header: 2 }],
           ['bold', 'italic', 'underline'],
-          ['blockquote'],
+          ['blockquote', 'code-block'],
           [{ list: 'ordered' }, { list: 'bullet' }],
           ['link', 'image', 'video'],
           ['clean']
@@ -355,6 +405,29 @@
     }
   });
 
+  // --- Word count ---
+  function updateWordCount(){
+    const text = quill.getText().trim();
+    const words = text.length ? text.split(/\s+/).length : 0;
+    document.getElementById('wordCount').textContent = words + (words === 1 ? ' word' : ' words');
+  }
+
+  // --- Draft status indicator ---
+  function setDraftStatus(state){
+    const el = document.getElementById('draftStatus');
+    el.classList.remove('saving', 'saved', 'restored');
+    if(state === 'saving'){
+      el.classList.add('saving');
+      el.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving…';
+    } else if(state === 'saved'){
+      el.classList.add('saved');
+      el.innerHTML = '<i class="fa-solid fa-circle-check"></i> Saved';
+    } else if(state === 'restored'){
+      el.classList.add('restored');
+      el.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> Draft restored';
+    }
+  }
+
   // --- Draft autosave (localStorage) ---
   const DRAFT_KEY = 'blogHtmlGenerator:draft';
 
@@ -366,6 +439,7 @@
         imgAlt: document.getElementById('imgAlt').value
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      setDraftStatus('saved');
     }catch(e){
       // localStorage unavailable (e.g. inside a sandboxed preview) — fail silently
     }
@@ -379,21 +453,46 @@
       if(draft.content) quill.root.innerHTML = draft.content;
       if(draft.imgUrl) document.getElementById('imgUrl').value = draft.imgUrl;
       if(draft.imgAlt) document.getElementById('imgAlt').value = draft.imgAlt;
+      setDraftStatus('restored');
     }catch(e){
       // ignore corrupt or inaccessible drafts
     }
   }
 
   restoreDraft();
+  updateWordCount();
 
   let saveTimer = null;
   function scheduleSave(){
+    setDraftStatus('saving');
     clearTimeout(saveTimer);
     saveTimer = setTimeout(saveDraft, 400);
   }
   quill.on('text-change', scheduleSave);
+  quill.on('text-change', updateWordCount);
   document.getElementById('imgUrl').addEventListener('input', scheduleSave);
   document.getElementById('imgAlt').addEventListener('input', scheduleSave);
+
+  (function addMathToolbarButton(){
+    const codeBtn = document.querySelector('.ql-toolbar .ql-code-block');
+    if(!codeBtn) return;
+    const mathBtn = document.createElement('button');
+    mathBtn.type = 'button';
+    mathBtn.className = 'ql-math';
+    mathBtn.setAttribute('aria-label', 'Insert Math');
+    mathBtn.title = 'Insert Math (LaTeX)';
+    mathBtn.innerHTML = '<i class="fa-solid fa-square-root-variable"></i>';
+    codeBtn.insertAdjacentElement('afterend', mathBtn);
+
+    mathBtn.addEventListener('click', () => {
+      const latex = prompt('Enter LaTeX (e.g. x^2 + y^2 = z^2):');
+      if(!latex) return;
+      const range = quill.getSelection(true) || { index: quill.getLength() };
+      const imgUrl = 'https://latex.codecogs.com/svg.image?' + encodeURIComponent(latex);
+      quill.insertEmbed(range.index, 'image', imgUrl, 'user');
+      quill.setSelection(range.index + 1);
+    });
+  })();
 
   function styleImagesInFragment(container){
     container.querySelectorAll('img').forEach(img => {
@@ -411,6 +510,18 @@
     container.querySelectorAll('h1, h2, h3, h4').forEach(h => {
       h.removeAttribute('class');
       h.setAttribute('style', 'text-align: left;');
+    });
+  }
+
+  function styleCodeBlocksInFragment(container){
+    container.querySelectorAll('pre').forEach(pre => {
+      pre.removeAttribute('class');
+      pre.setAttribute(
+        'style',
+        'background: #23241f; color: #f8f8f2; padding: 14px 16px; border-radius: 8px; ' +
+        'overflow-x: auto; font-family: Consolas, Monaco, monospace; font-size: 14px; ' +
+        'line-height: 1.5; white-space: pre; text-align: left; margin: 20px 0px;'
+      );
     });
   }
 
@@ -446,6 +557,7 @@
     styleImagesInFragment(temp);
     styleHeadingsInFragment(temp);
     styleVideosInFragment(temp);
+    styleCodeBlocksInFragment(temp);
 
     // trim trailing empty paragraph Quill sometimes leaves
     let bodyInner = temp.innerHTML.trim();
@@ -466,6 +578,24 @@ ${featured}  ${bodyInner}
   }
 
   document.getElementById('generateBtn').addEventListener('click', generateHTML);
+
+  document.getElementById('cancelBtn').addEventListener('click', () => {
+    if(!confirm('Clear everything? This cannot be undone.')) return;
+
+    quill.setText('');
+    document.getElementById('imgUrl').value = '';
+    document.getElementById('imgAlt').value = '';
+    document.getElementById('output').value = '';
+    document.getElementById('previewBox').innerHTML = '';
+    document.getElementById('outputCard').style.display = 'none';
+
+    try{ localStorage.removeItem(DRAFT_KEY); }catch(e){}
+
+    updateWordCount();
+    const statusEl = document.getElementById('draftStatus');
+    statusEl.classList.remove('saving', 'saved', 'restored');
+    statusEl.innerHTML = '';
+  });
 
   document.getElementById('copyBtn').addEventListener('click', () => {
     const ta = document.getElementById('output');
