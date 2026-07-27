@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Blog HTML Generator</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#211d17;
+    --sub:#7a7266;
+    --paper:#f3efe7;
+    --surface:#fffdf9;
+    --line:#e5ded1;
+    --accent:#a8571f;
+    --accent-soft:#f3e2d1;
+    --mono-bg:#231f1a;
+    --mono-ink:#e9e3d8;
+    --radius:14px;
+    --gap:20px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top, #faf7f0 0%, var(--paper) 55%);
+    color:var(--ink);
+    font-family:'Hind Siliguri',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:36px 18px 72px;
+  }
+
+  header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding-bottom:28px;
+    margin-bottom:28px;
+    border-bottom:1px solid var(--line);
+  }
+  header .mark{
+    width:38px;
+    height:38px;
+    flex:none;
+    border-radius:10px;
+    background:linear-gradient(155deg, var(--accent) 0%, #7a3d12 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:1.3rem;
+    font-weight:700;
+    box-shadow:0 4px 14px rgba(168,87,31,.25);
+  }
+  header .title-block{flex:1;}
+  header h1{
+    font-size:1.4rem;
+    font-weight:700;
+    margin:0 0 5px;
+    letter-spacing:.1px;
+  }
+  header p{
+    margin:0;
+    color:var(--sub);
+    font-size:.9rem;
+  }
+
+  section{margin-bottom:var(--gap);}
+  section.stack{display:flex; flex-direction:column; gap:var(--gap);}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:22px;
+    box-shadow:0 1px 3px rgba(60,50,30,.04);
+  }
+  .card + .card{margin-top:var(--gap);}
+
+  .card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .card-head h2{
+    font-size:.98rem;
+    font-weight:600;
+    margin:0;
+    color:var(--ink);
+  }
+  .tag{
+    font-size:.68rem;
+    background:var(--accent-soft);
+    color:var(--accent);
+    padding:3px 10px;
+    border-radius:20px;
+    font-weight:600;
+    letter-spacing:.2px;
+  }
+
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:.8rem;
+    color:var(--sub);
+    margin-bottom:6px;
+  }
+  input[type="text"], input[type="url"]{
+    width:100%;
+    padding:11px 13px;
+    border:1px solid var(--line);
+    border-radius:9px;
+    font-size:.92rem;
+    font-family:inherit;
+    background:#fff;
+    color:var(--ink);
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  input::placeholder{color:#b8b0a1;}
+  input:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+
+  #editor-container{
+    display:flex;
+    flex-direction:column;
+  }
+  .ql-toolbar.ql-snow{
+    border-radius:9px 9px 0 0;
+    border-color:var(--line);
+    background:#faf7f1;
+    padding:10px 12px;
+  }
+  .ql-container.ql-snow{
+    border-radius:0 0 9px 9px;
+    border-color:var(--line);
+    font-size:1rem;
+    font-family:'Hind Siliguri',system-ui,sans-serif;
+    height:auto;
+  }
+  .ql-editor{
+    padding:16px;
+    min-height:260px;
+  }
+  .ql-editor.ql-blank::before{
+    color:#b8b0a1;
+    font-style:normal;
+    font-family:'Hind Siliguri',system-ui,sans-serif;
+  }
+  .hint{
+    font-size:.78rem;
+    color:#a49c8c;
+    margin:12px 0 0;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    border:none;
+    border-radius:10px;
+    padding:12px 20px;
+    font-size:.92rem;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+    transition:transform .12s ease, opacity .12s ease, background .15s ease;
+  }
+  .btn:active{transform:scale(.98);}
+
+  .btn-primary{
+    background:var(--ink);
+    color:#fff;
+    width:100%;
+    padding:15px;
+  }
+  .btn-primary:hover{background:#332c22;}
+
+  .btn-secondary{
+    background:var(--accent-soft);
+    color:var(--accent);
+    padding:8px 16px;
+    font-size:.82rem;
+  }
+  .btn-secondary:hover{background:#eed6bd;}
+  .btn-secondary.copied{
+    background:#dcefdf;
+    color:#2a7a3d;
+  }
+
+  #outputCard{display:none;}
+
+  .output-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:16px;
+  }
+
+  .field-label{
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    color:var(--sub);
+    font-weight:600;
+    margin:0 0 8px;
+  }
+
+  textarea#output{
+    width:100%;
+    height:200px;
+    padding:16px;
+    border:1px solid #353026;
+    border-radius:10px;
+    background:var(--mono-bg);
+    color:var(--mono-ink);
+    font-family:'JetBrains Mono','SFMono-Regular',Consolas,monospace;
+    font-size:.78rem;
+    line-height:1.6;
+    resize:vertical;
+    direction:ltr;
+    text-align:left;
+  }
+  textarea#output:focus{outline:none;}
+
+  .preview-wrap{margin-top:22px;}
+  .preview{
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px;
+    background:#fff;
+    max-height:420px;
+    overflow:auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="title-block">
+      <h1>Blog HTML Generator</h1>
+      <p>Generate clean, ready-to-paste HTML</p>
+    </div>
+    <div class="mark"><i class="fa-brands fa-blogger-b"></i></div>
+  </header>
+
+  <section class="stack">
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Featured Image</h2>
+        <span class="tag">Optional</span>
+      </div>
+      <div class="field">
+        <label for="imgUrl">Image URL</label>
+        <input type="url" id="imgUrl" placeholder="https://..." />
+      </div>
+      <div class="field">
+        <label for="imgAlt">Alt / Title text</label>
+        <input type="text" id="imgAlt" placeholder="e.g. Elon Musk" />
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>Content</h2>
+      </div>
+      <div id="editor-container">
+        <div id="editor"></div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="generateBtn">Generate HTML</button>
+
+    <div class="card" id="outputCard">
+      <div class="output-head">
+        <h2 style="font-size:.98rem; font-weight:600; margin:0;">Output HTML</h2>
+        <button class="btn btn-secondary" id="copyBtn">Copy</button>
+      </div>
+      <textarea id="output" readonly spellcheck="false"></textarea>
+      <div class="preview-wrap">
+        <p class="field-label">Preview</p>
+        <div class="preview" id="previewBox"></div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.js"></script>
+<script>
+  function toEmbedUrl(url){
+    // Convert common YouTube watch/share links to an embeddable URL
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([\w-]{11})/);
+    if(ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+    return url;
+  }
+
+  const quill = new Quill('#editor', {
+    theme: 'snow',
+    placeholder: 'Start writing your blog post here...',
+    modules: {
+      toolbar: {
+        container: [
+          [{ header: 2 }],
+          ['bold', 'italic', 'underline'],
+          ['blockquote'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['link', 'image', 'video'],
+          ['clean']
+        ],
+        handlers: {
+          image: function(){
+            const url = prompt('Enter image URL:');
+            if(!url) return;
+            const range = this.quill.getSelection(true);
+            this.quill.insertEmbed(range.index, 'image', url, 'user');
+            this.quill.setSelection(range.index + 1);
+          },
+          video: function(){
+            const url = prompt('Enter video URL (YouTube link works):');
+            if(!url) return;
+            const range = this.quill.getSelection(true);
+            this.quill.insertEmbed(range.index, 'video', toEmbedUrl(url), 'user');
+            this.quill.setSelection(range.index + 1);
+          }
+        }
+      }
+    }
+  });
+
+  function styleImagesInFragment(container){
+    container.querySelectorAll('img').forEach(img => {
+      img.removeAttribute('class');
+      img.removeAttribute('style');
+      img.setAttribute('style', 'border-radius: 8px; height: auto; max-width: 100%;');
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('style', 'text-align: center; margin: 20px 0px;');
+      img.parentNode.insertBefore(wrapper, img);
+      wrapper.appendChild(img);
+    });
+  }
+
+  function styleHeadingsInFragment(container){
+    container.querySelectorAll('h1, h2, h3, h4').forEach(h => {
+      h.removeAttribute('class');
+      h.setAttribute('style', 'text-align: left;');
+    });
+  }
+
+  function styleVideosInFragment(container){
+    container.querySelectorAll('iframe').forEach(iframe => {
+      iframe.removeAttribute('class');
+      iframe.removeAttribute('width');
+      iframe.removeAttribute('height');
+      iframe.setAttribute('style', 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;');
+      iframe.setAttribute('allowfullscreen', 'true');
+      const ratioBox = document.createElement('div');
+      ratioBox.setAttribute('style', 'position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;');
+      const wrapper = document.createElement('div');
+      wrapper.setAttribute('style', 'margin: 20px 0px;');
+      iframe.parentNode.insertBefore(wrapper, iframe);
+      wrapper.appendChild(ratioBox);
+      ratioBox.appendChild(iframe);
+    });
+  }
+
+  function buildFeaturedBlock(){
+    const url = document.getElementById('imgUrl').value.trim();
+    const alt = document.getElementById('imgAlt').value.trim();
+    if(!url) return '';
+    const altAttr = alt ? alt : '';
+    return `  <div style="text-align: center;"><img alt="${altAttr}" src="${url}" style="border-radius: 8px; height: auto; max-width: 100%;" title="${altAttr}" /></div>\n\n`;
+  }
+
+  function generateHTML(){
+    const raw = quill.root.innerHTML;
+    const temp = document.createElement('div');
+    temp.innerHTML = raw;
+    styleImagesInFragment(temp);
+    styleHeadingsInFragment(temp);
+    styleVideosInFragment(temp);
+
+    // trim trailing empty paragraph Quill sometimes leaves
+    let bodyInner = temp.innerHTML.trim();
+
+    const featured = buildFeaturedBlock();
+
+    const output =
+`<div style="font-family: Arial, sans-serif; font-size: 18px; line-height: 1.8; margin: auto; max-width: 800px; padding: 1px; text-align: justify;">
+
+${featured}  ${bodyInner}
+
+</div>`;
+
+    document.getElementById('output').value = output;
+    document.getElementById('previewBox').innerHTML = output;
+    document.getElementById('outputCard').style.display = 'block';
+    document.getElementById('outputCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('generateBtn').addEventListener('click', generateHTML);
+
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const ta = document.getElementById('output');
+    ta.select();
+    navigator.clipboard.writeText(ta.value).then(() => {
+      const btn = document.getElementById('copyBtn');
+      const original = btn.textContent;
+      btn.textContent = 'Copied ✓';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.classList.remove('copied');
+      }, 1500);
+    });
+  });
+</script>
+
+</body>
+</html>
