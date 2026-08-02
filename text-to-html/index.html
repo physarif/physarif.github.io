@@ -507,9 +507,34 @@
   }
 
   function styleHeadingsInFragment(container){
-    container.querySelectorAll('h1, h2, h3, h4').forEach(h => {
+    // h1 headings become h2 (single top-level heading style)
+    container.querySelectorAll('h1').forEach(h1 => {
+      const h2 = document.createElement('h2');
+      h2.innerHTML = h1.innerHTML;
+      h1.parentNode.replaceChild(h2, h1);
+    });
+
+    container.querySelectorAll('h2').forEach(h => {
+      h.removeAttribute('class');
+      h.setAttribute('style', 'text-align: left; margin: 6px 0 2px 0; font-size: 20px; font-weight: 600;');
+    });
+
+    container.querySelectorAll('h3').forEach(h => {
+      h.removeAttribute('class');
+      h.setAttribute('style', 'text-align: left; margin: 4px 0 2px 0; font-size: 17px; font-weight: 600;');
+    });
+
+    container.querySelectorAll('h4').forEach(h => {
       h.removeAttribute('class');
       h.setAttribute('style', 'text-align: left;');
+    });
+  }
+
+  function removeEmptySpacerParagraphs(container){
+    container.querySelectorAll('p').forEach(p => {
+      if(p.innerHTML.trim() === '<br>' || p.innerHTML.trim() === ''){
+        p.remove();
+      }
     });
   }
 
@@ -558,6 +583,7 @@
     styleHeadingsInFragment(temp);
     styleVideosInFragment(temp);
     styleCodeBlocksInFragment(temp);
+    removeEmptySpacerParagraphs(temp);
 
     // trim trailing empty paragraph Quill sometimes leaves
     let bodyInner = temp.innerHTML.trim();
