@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Blog HTML Generator</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/quill-better-table@1.2.10/dist/quill-better-table.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.css" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 <style>
@@ -393,8 +393,8 @@
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/quill-better-table@1.2.10/dist/quill-better-table.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.js"></script>
 <script>
   function toEmbedUrl(url){
     // Convert common YouTube watch/share links to an embeddable URL
@@ -404,7 +404,7 @@
   }
 
   Quill.register({
-    'modules/better-table': QuillBetterTable
+    'modules/table-better': QuillTableBetter
   }, true);
 
   const quill = new Quill('#editor', {
@@ -412,27 +412,13 @@
     placeholder: 'Start writing your blog post here...',
     modules: {
       table: false,
-      'better-table': {
-        operationMenu: {
-          items: {
-            insertColumnRight: { text: 'ডানে কলাম যোগ করুন' },
-            insertColumnLeft: { text: 'বামে কলাম যোগ করুন' },
-            insertRowUp: { text: 'উপরে সারি যোগ করুন' },
-            insertRowDown: { text: 'নিচে সারি যোগ করুন' },
-            mergeCells: { text: 'সেল মার্জ করুন' },
-            unmergeCells: { text: 'মার্জ বাতিল করুন' },
-            deleteColumn: { text: 'কলাম মুছুন' },
-            deleteRow: { text: 'সারি মুছুন' },
-            deleteTable: { text: 'টেবিল মুছুন' }
-          },
-          color: {
-            colors: ['#ffffff', '#fde7de', '#e2f3e5', '#e3e5e8'],
-            text: 'ব্যাকগ্রাউন্ড রং'
-          }
-        }
+      'table-better': {
+        language: 'en_US',
+        menus: ['column', 'row', 'merge', 'table', 'cell', 'wrap', 'copy', 'delete'],
+        toolbarTable: true
       },
       keyboard: {
-        bindings: QuillBetterTable.keyboardBindings
+        bindings: QuillTableBetter.keyboardBindings
       },
       toolbar: {
         container: [
@@ -441,6 +427,7 @@
           ['blockquote', 'code-block'],
           [{ list: 'ordered' }, { list: 'bullet' }],
           ['link', 'image', 'video'],
+          ['table-better'],
           ['clean']
         ],
         handlers: {
@@ -552,33 +539,71 @@
     });
   })();
 
-  (function addTableToolbarButton(){
-    const mathBtn = document.querySelector('.ql-toolbar .ql-math');
-    if(!mathBtn) return;
-    const tableBtn = document.createElement('button');
-    tableBtn.type = 'button';
-    tableBtn.className = 'ql-table-better';
-    tableBtn.setAttribute('aria-label', 'Insert Table');
-    tableBtn.title = 'Insert Table';
-    tableBtn.innerHTML = '<i class="fa-solid fa-table"></i>';
-    mathBtn.insertAdjacentElement('afterend', tableBtn);
+  (function enablePasteAsTable(){
+    function escapeHtml(str){
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
 
-    tableBtn.addEventListener('click', () => {
-      const rowsInput = prompt('কতগুলো সারি (row) চান?', '3');
-      if(rowsInput === null) return;
-      const colsInput = prompt('কতগুলো কলাম (column) চান?', '3');
-      if(colsInput === null) return;
+    function isInsideExistingTable(){
+      try{
+        const tableModule = quill.getModule('table-better');
+        const result = tableModule.getTable();
+        return !!(result && result[0]);
+      }catch(e){
+        return false;
+      }
+    }
 
-      let rows = parseInt(rowsInput, 10);
-      let cols = parseInt(colsInput, 10);
-      if(!Number.isFinite(rows) || rows < 1) rows = 3;
-      if(!Number.isFinite(cols) || cols < 1) cols = 3;
-      rows = Math.min(rows, 20);
-      cols = Math.min(cols, 10);
+    document.addEventListener('paste', function(e){
+      if(!quill.root.contains(e.target)) return;
 
-      const tableModule = quill.getModule('better-table');
-      tableModule.insertTable(rows, cols);
-    });
+      const clipboardData = e.clipboardData || window.clipboardData;
+      if(!clipboardData) return;
+
+      // If the clipboard already carries an HTML table, let the table plugin's
+      // own paste handling deal with it natively.
+      const html = clipboardData.getData('text/html');
+      if(html && /<table/i.test(html)) return;
+
+      const text = clipboardData.getData('text/plain');
+      if(!text) return;
+
+      const lines = text.replace(/\r\n?/g, '\n').split('\n');
+      while(lines.length && lines[lines.length - 1].trim() === '') lines.pop();
+      if(lines.length === 0) return;
+
+      const linesWithTabs = lines.filter(line => line.includes('\t'));
+      if(linesWithTabs.length === 0) return;
+      if(linesWithTabs.length < Math.ceil(lines.length * 0.6)) return;
+
+      const grid = lines.map(line => line.split('\t'));
+      const colCount = Math.max(...grid.map(row => row.length));
+      if(colCount < 2) return;
+
+      // Don't intercept pastes while already inside a table cell — let the
+      // plugin's built-in "paste overwrites cells" behavior handle that.
+      if(isInsideExistingTable()) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      let tableHtml = '<table><tbody>';
+      grid.forEach(row => {
+        tableHtml += '<tr>';
+        for(let i = 0; i < colCount; i++){
+          const val = row[i] !== undefined ? row[i].trim() : '';
+          tableHtml += `<td>${escapeHtml(val)}</td>`;
+        }
+        tableHtml += '</tr>';
+      });
+      tableHtml += '</tbody></table>';
+
+      const range = quill.getSelection(true) || { index: quill.getLength(), length: 0 };
+      quill.clipboard.dangerouslyPasteHTML(range.index, tableHtml, 'user');
+    }, true);
   })();
 
   function styleTablesInFragment(container){
