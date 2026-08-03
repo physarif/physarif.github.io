@@ -4,8 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Blog HTML Generator</title>
-<link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.css" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 <style>
@@ -184,35 +183,6 @@
   }
   .ql-toolbar.ql-snow .ql-math:hover{
     color:var(--accent);
-  }
-  .ql-toolbar.ql-snow .ql-table-better{
-    width:28px;
-    height:24px;
-    padding:0;
-    font-size:13px;
-    line-height:24px;
-    color:#444;
-    background:transparent;
-    border:none;
-    cursor:pointer;
-    border-radius:3px;
-    vertical-align:middle;
-  }
-  .ql-toolbar.ql-snow .ql-table-better:hover{
-    color:var(--accent);
-  }
-  .ql-editor table{
-    border-collapse:collapse;
-    width:100%;
-    margin:14px 0;
-  }
-  .ql-editor table td,
-  .ql-editor table th{
-    border:1px solid var(--line);
-    padding:8px 10px;
-  }
-  .preview table{
-    border-collapse:collapse;
   }
 
   .editor-footer{
@@ -393,8 +363,7 @@
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/quill-table-better@1/dist/quill-table-better.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.js"></script>
 <script>
   function toEmbedUrl(url){
     // Convert common YouTube watch/share links to an embeddable URL
@@ -403,23 +372,10 @@
     return url;
   }
 
-  Quill.register({
-    'modules/table-better': QuillTableBetter
-  }, true);
-
   const quill = new Quill('#editor', {
     theme: 'snow',
     placeholder: 'Start writing your blog post here...',
     modules: {
-      table: false,
-      'table-better': {
-        language: 'en_US',
-        menus: ['column', 'row', 'merge', 'table', 'cell', 'wrap', 'copy', 'delete'],
-        toolbarTable: true
-      },
-      keyboard: {
-        bindings: QuillTableBetter.keyboardBindings
-      },
       toolbar: {
         container: [
           [{ header: 2 }],
@@ -427,7 +383,6 @@
           ['blockquote', 'code-block'],
           [{ list: 'ordered' }, { list: 'bullet' }],
           ['link', 'image', 'video'],
-          ['table-better'],
           ['clean']
         ],
         handlers: {
@@ -539,116 +494,6 @@
     });
   })();
 
-  (function enablePasteAsTable(){
-    function escapeHtml(str){
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-    }
-
-    function isInsideExistingTable(){
-      try{
-        const tableModule = quill.getModule('table-better');
-        const result = tableModule.getTable();
-        return !!(result && result[0]);
-      }catch(e){
-        return false;
-      }
-    }
-
-    document.addEventListener('paste', function(e){
-      if(!quill.root.contains(e.target)) return;
-
-      const clipboardData = e.clipboardData || window.clipboardData;
-      if(!clipboardData) return;
-
-      // If the clipboard already carries an HTML table, let the table plugin's
-      // own paste handling deal with it natively.
-      const html = clipboardData.getData('text/html');
-      if(html && /<table/i.test(html)) return;
-
-      const text = clipboardData.getData('text/plain');
-      if(!text) return;
-
-      const lines = text.replace(/\r\n?/g, '\n').split('\n');
-      while(lines.length && lines[lines.length - 1].trim() === '') lines.pop();
-      if(lines.length === 0) return;
-
-      const linesWithTabs = lines.filter(line => line.includes('\t'));
-      if(linesWithTabs.length === 0) return;
-      if(linesWithTabs.length < Math.ceil(lines.length * 0.6)) return;
-
-      const grid = lines.map(line => line.split('\t'));
-      const colCount = Math.max(...grid.map(row => row.length));
-      if(colCount < 2) return;
-
-      // Don't intercept pastes while already inside a table cell — let the
-      // plugin's built-in "paste overwrites cells" behavior handle that.
-      if(isInsideExistingTable()) return;
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      let tableHtml = '<table><tbody>';
-      grid.forEach(row => {
-        tableHtml += '<tr>';
-        for(let i = 0; i < colCount; i++){
-          const val = row[i] !== undefined ? row[i].trim() : '';
-          tableHtml += `<td>${escapeHtml(val)}</td>`;
-        }
-        tableHtml += '</tr>';
-      });
-      tableHtml += '</tbody></table>';
-
-      const range = quill.getSelection(true) || { index: quill.getLength(), length: 0 };
-      quill.clipboard.dangerouslyPasteHTML(range.index, tableHtml, 'user');
-    }, true);
-  })();
-
-  function styleTablesInFragment(container){
-    const stripAttrs = (el, keep = []) => {
-      [...el.attributes].forEach(attr => {
-        if(!keep.includes(attr.name)) el.removeAttribute(attr.name);
-      });
-    };
-
-    container.querySelectorAll('table').forEach(table => {
-      // column widths from the editor don't translate well to the blog's fixed width
-      table.querySelectorAll('colgroup').forEach(cg => cg.remove());
-
-      stripAttrs(table);
-      table.setAttribute(
-        'style',
-        'border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 16px;'
-      );
-
-      table.querySelectorAll('thead, tbody, tr').forEach(el => stripAttrs(el));
-
-      table.querySelectorAll('td, th').forEach(cell => {
-        const rowspan = cell.getAttribute('rowspan');
-        const colspan = cell.getAttribute('colspan');
-
-        // unwrap quill-better-table's inner line wrapper, keep the actual content
-        cell.querySelectorAll(':scope > div').forEach(div => {
-          while(div.firstChild) cell.insertBefore(div.firstChild, div);
-          div.remove();
-        });
-
-        stripAttrs(cell);
-        if(rowspan && rowspan !== '1') cell.setAttribute('rowspan', rowspan);
-        if(colspan && colspan !== '1') cell.setAttribute('colspan', colspan);
-
-        const isHeaderRow = cell.parentElement && cell.parentElement.rowIndex === 0;
-        cell.setAttribute(
-          'style',
-          'border: 1px solid #d6d8dc; padding: 10px 12px; text-align: left; vertical-align: top;' +
-          (isHeaderRow ? ' background: #f5f5f5; font-weight: 600;' : '')
-        );
-      });
-    });
-  }
-
   function styleImagesInFragment(container){
     container.querySelectorAll('img').forEach(img => {
       img.removeAttribute('class');
@@ -738,7 +583,6 @@
     styleHeadingsInFragment(temp);
     styleVideosInFragment(temp);
     styleCodeBlocksInFragment(temp);
-    styleTablesInFragment(temp);
     removeEmptySpacerParagraphs(temp);
 
     // trim trailing empty paragraph Quill sometimes leaves
