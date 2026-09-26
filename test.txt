@@ -1,3 +1,67 @@
-Generate a flat graphic design of a front book cover, print-ready. no extra text. only title and author. search about the book on internet so that the cover could be real.
-title: জোছনা ও জননীর গল্প 
-author: হুমায়ূন আহমেদ
+/**
+ * RapidBikroy — Order Auto-Export to Google Sheet
+ * =================================================
+ *
+ * সেটআপ করার নিয়ম:
+ * 1) একটা নতুন Google Sheet খোলো (বা পুরোনো একটা ব্যবহার করো)।
+ * 2) মেনু থেকে: Extensions → Apps Script।
+ * 3) খালি এডিটরের সব কোড মুছে এই পুরো ফাইলটা পেস্ট করো, তারপর Save (Ctrl+S) করো।
+ * 4) উপরে ডানপাশে "Deploy" বাটনে ক্লিক করো → "New deployment"।
+ * 5) Gear আইকনে ক্লিক করে টাইপ হিসেবে "Web app" সিলেক্ট করো।
+ * 6) Configure:
+ *      - Execute as: Me
+ *      - Who has access: Anyone
+ * 7) "Deploy" চাপো — প্রথমবার একটা permission popup আসবে, নিজের গুগল
+ *    অ্যাকাউন্ট দিয়ে Authorize করে দাও।
+ * 8) যে "Web app URL" টা দেখাবে (https://script.google.com/macros/s/.../exec)
+ *    সেটা কপি করে RapidBikroy dashboard → Integrations → "Google Sheet
+ *    Auto Export" → Web App URL ফিল্ডে বসিয়ে Save করো।
+ *
+ * এরপর থেকে প্রতিটা নতুন অর্ডার সাথে সাথে এই শিটে একটা নতুন row হিসেবে
+ * যোগ হয়ে যাবে — প্রথম অর্ডারের সময় হেডার রো নিজে থেকেই বসে যাবে।
+ *
+ * !!! পরে যদি এই কোড আবার এডিট করো, তাহলে "Deploy" → "Manage deployments"
+ * → pencil (edit) আইকন → Version: "New version" সিলেক্ট করে আবার Deploy
+ * করতে হবে, নাহলে পুরোনো ভার্সনই চলতে থাকবে।
+ */
+
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+
+  // শিট খালি থাকলে প্রথমে হেডার রো বসানো হচ্ছে
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      'তারিখ/সময়', 'Order ID', 'Order Number', 'কাস্টমার নাম', 'ফোন',
+      'ঠিকানা', 'আইটেম', 'Subtotal', 'ডেলিভারি চার্জ', 'ভাউচার কোড',
+      'ডিসকাউন্ট', 'মোট',
+    ]);
+  }
+
+  sheet.appendRow([
+    data.createdAt ? new Date(data.createdAt) : new Date(),
+    data.orderId || '',
+    data.orderNumber || '',
+    data.customerName || '',
+    data.phone || '',
+    data.address || '',
+    data.itemsText || '',
+    data.subtotal || 0,
+    data.deliveryCharge || 0,
+    data.voucherCode || '',
+    data.discountAmount || 0,
+    data.total || 0,
+  ]);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok: true }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ব্রাউজারে সরাসরি Web App URL খুললে (GET রিকোয়েস্ট) এই ফাংশনটা চলবে —
+// শুধু setup ঠিক আছে কিনা টেস্ট করার জন্য, কোনো ডেটা লেখে না
+function doGet(e) {
+  return ContentService
+    .createTextOutput(JSON.stringify({ ok: true, message: 'RapidBikroy order sheet webhook is live.' }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
