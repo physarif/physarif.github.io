@@ -1,0 +1,3 @@
+Generate a flat graphic design of a front book cover, print-ready. no extra text. only title and author. search about the book on internet so that the cover could be real.
+title: জোছনা ও জননীর গল্প 
+author: হুমায়ূন আহমেদ
