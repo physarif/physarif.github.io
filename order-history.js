@@ -23,7 +23,7 @@ const orderHistory = {
           "division": "চট্টগ্রাম",
           "district": "নোয়াখালী",
           "upazila": "সুবর্ণচর",
-          "location": "House 43, Uttar Pada, Thana Road, next to the madrasa"
+          "location": "Uttar Pada, Thana Road, next to the madrasa"
         }
       },
       "items": [
@@ -50,7 +50,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-৬০, রোড-১৩, ধানমন্ডি"
+          "location": "রোড-১৩, ধানমন্ডি"
         }
       },
       "items": [
@@ -77,7 +77,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-৪, রোড-৯, মুগদা, কলেজ গেটের কাছে"
+          "location": "রোড-৯, মুগদা, কলেজ গেটের কাছে"
         }
       },
       "items": [
@@ -104,7 +104,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "গাজীপুর",
           "upazila": "গাজীপুর সদর",
-          "location": "বাসা-২৮, থানা রোড, কাচারি রোড"
+          "location": "থানা রোড, কাচারি রোড"
         }
       },
       "items": [
@@ -131,7 +131,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "নরসিংদী",
           "upazila": "নরসিংদী সদর",
-          "location": "বাসা-৪০, হাসপাতাল রোড, কলেজ রোড, মসজিদের পাশে"
+          "location": "হাসপাতাল রোড, কলেজ রোড, মসজিদের পাশে"
         }
       },
       "items": [
@@ -158,7 +158,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "সাভার",
-          "location": "House 18, Dakkhin Para, Savar Bazar, next to the madrasa"
+          "location": "Dakkhin Para, Savar Bazar, next to the madrasa"
         }
       },
       "items": [
@@ -185,7 +185,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "কিশোরগঞ্জ",
           "upazila": "কিশোরগঞ্জ সদর",
-          "location": "বাসা-৩১, মসজিদ গলি, বাজার রোড, বাজারের কাছে"
+          "location": "মসজিদ গলি, বাজার রোড, বাজারের কাছে"
         }
       },
       "items": [
@@ -212,7 +212,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 112, Road 7, Mirpur-10"
+          "location": "Road 7, Mirpur-10"
         }
       },
       "items": [
@@ -239,7 +239,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "সাভার",
-          "location": "বাসা-১১১, পূর্ব পাড়া, হেমায়েতপুর"
+          "location": "পূর্ব পাড়া, হেমায়েতপুর"
         }
       },
       "items": [
@@ -266,7 +266,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "গাজীপুর",
           "upazila": "কালীগঞ্জ",
-          "location": "House 46, Purano Bazar, Mosque Lane, near the bazar"
+          "location": "Purano Bazar, Mosque Lane, near the bazar"
         }
       },
       "items": [
@@ -300,7 +300,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "মুন্সিগঞ্জ",
           "upazila": "শ্রীনগর",
-          "location": "House 38, Purano Bazar, Station Road, next to the madrasa"
+          "location": "Purano Bazar, Station Road, next to the madrasa"
         }
       },
       "items": [
@@ -334,7 +334,7 @@ const orderHistory = {
           "division": "সিলেট",
           "district": "সিলেট",
           "upazila": "জৈন্তাপুর",
-          "location": "House 33, College Road, Poschim Para, in front of the school"
+          "location": "College Road, Poschim Para, in front of the school"
         }
       },
       "items": [
@@ -375,7 +375,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ধামরাই",
-          "location": "House 18, College Road, Dhamrai Bazar, next to the madrasa"
+          "location": "College Road, Dhamrai Bazar, next to the madrasa"
         }
       },
       "items": [
@@ -409,7 +409,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-১১২, রোড-১৮, রামপুরা, কলেজ গেটের কাছে"
+          "location": "রোড-১৮, রামপুরা, কলেজ গেটের কাছে"
         }
       },
       "items": [
@@ -436,7 +436,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "নারায়ণগঞ্জ",
           "upazila": "আড়াইহাজার",
-          "location": "বাসা-৫৪, স্টেশন রোড, পশ্চিম পাড়া"
+          "location": "স্টেশন রোড, পশ্চিম পাড়া"
         }
       },
       "items": [
@@ -463,7 +463,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-৬৮, রোড-১১, কল্যাণপুর"
+          "location": "রোড-১১, কল্যাণপুর"
         }
       },
       "items": [
@@ -490,7 +490,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 84, Road 14, Jatrabari"
+          "location": "Road 14, Jatrabari"
         }
       },
       "items": [
@@ -531,7 +531,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "কিশোরগঞ্জ",
           "upazila": "পাকুন্দিয়া",
-          "location": "বাসা-২৪, মাস্টারপাড়া, উত্তর পাড়া"
+          "location": "মাস্টারপাড়া, উত্তর পাড়া"
         }
       },
       "items": [
@@ -565,7 +565,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "টাঙ্গাইল",
           "upazila": "মির্জাপুর",
-          "location": "Hous 43, Notun Bazar, Purbo Para"
+          "location": "Notun Bazar, Purbo Para"
         }
       },
       "items": [
@@ -592,7 +592,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "টাঙ্গাইল",
           "upazila": "টাঙ্গাইল সদর",
-          "location": "House 31, Poschim Para, College Road, next to the madrasa"
+          "location": "Poschim Para, College Road, next to the madrasa"
         }
       },
       "items": [
@@ -619,7 +619,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Flat 2D, House 19, Road 17, Dakshinkhan, near college gate"
+          "location": "Road 17, Dakshinkhan, near college gate"
         }
       },
       "items": [
@@ -646,7 +646,7 @@ const orderHistory = {
           "division": "ময়মনসিংহ",
           "district": "ময়মনসিংহ",
           "upazila": "ময়মনসিংহ সদর",
-          "location": "House 82, Bazar Road, Master Para"
+          "location": "Bazar Road, Master Para"
         }
       },
       "items": [
@@ -673,7 +673,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "ফ্ল্যাট ২বি, বাসা-২২, রোড-১৬, মালিবাগ, স্কুলের সামনে"
+          "location": "রোড-১৬, মালিবাগ, স্কুলের সামনে"
         }
       },
       "items": [
@@ -700,7 +700,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "ফ্ল্যাট ৪ডি, বাসা-৩৮, রোড-৩, কামরাঙ্গীরচর"
+          "location": "রোড-৩, কামরাঙ্গীরচর"
         }
       },
       "items": [
@@ -734,7 +734,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-৫০, রোড-১০, কল্যাণপুর"
+          "location": "রোড-১০, কল্যাণপুর"
         }
       },
       "items": [
@@ -775,7 +775,7 @@ const orderHistory = {
           "division": "বরিশাল",
           "district": "বরিশাল",
           "upazila": "বাবুগঞ্জ",
-          "location": "বাসা-১১৪, কলেজ রোড, দক্ষিণ পাড়া, স্কুলের সামনে"
+          "location": "কলেজ রোড, দক্ষিণ পাড়া, স্কুলের সামনে"
         }
       },
       "items": [
@@ -802,7 +802,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Flat 3C, House 34, Road 9, Mirpur-1"
+          "location": "Road 9, Mirpur-1"
         }
       },
       "items": [
@@ -829,7 +829,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "সাভার",
-          "location": "Hous 38, Purbo Para, Hemayetpur"
+          "location": "Purbo Para, Hemayetpur"
         }
       },
       "items": [
@@ -856,7 +856,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "কেরাণীগঞ্জ",
-          "location": "বাসা-১১৫, মাস্টারপাড়া, জিঞ্জিরা"
+          "location": "মাস্টারপাড়া, জিঞ্জিরা"
         }
       },
       "items": [
@@ -883,7 +883,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 90, Road 18, Banasree"
+          "location": "Road 18, Banasree"
         }
       },
       "items": [
@@ -917,7 +917,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ধামরাই",
-          "location": "বাসা-৬৮, স্টেশন রোড, কালামপুর"
+          "location": "স্টেশন রোড, কালামপুর"
         }
       },
       "items": [
@@ -944,7 +944,7 @@ const orderHistory = {
           "division": "খুলনা",
           "district": "খুলনা",
           "upazila": "দাকোপ",
-          "location": "Hous 47, Dakkhin Para, Mosque Lane"
+          "location": "Dakkhin Para, Mosque Lane"
         }
       },
       "items": [
@@ -971,7 +971,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "গাজীপুর",
           "upazila": "গাজীপুর সদর",
-          "location": "House 24, Purano Bazar, Station Road"
+          "location": "Purano Bazar, Station Road"
         }
       },
       "items": [
@@ -998,7 +998,7 @@ const orderHistory = {
           "division": "সিলেট",
           "district": "সিলেট",
           "upazila": "দক্ষিণ সুরমা",
-          "location": "বাসা-৪৮, মাস্টারপাড়া, পূর্ব পাড়া"
+          "location": "মাস্টারপাড়া, পূর্ব পাড়া"
         }
       },
       "items": [
@@ -1025,7 +1025,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Hous 5, Road 6, Jatrabari, beside the pharmacy"
+          "location": "Road 6, Jatrabari, beside the pharmacy"
         }
       },
       "items": [
@@ -1052,7 +1052,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "নারায়ণগঞ্জ",
           "upazila": "নারায়ণগঞ্জ সদর",
-          "location": "বাসা-৪৬, হাসপাতাল রোড, বাজার রোড, ফার্মেসির পাশে"
+          "location": "হাসপাতাল রোড, বাজার রোড, ফার্মেসির পাশে"
         }
       },
       "items": [
@@ -1079,7 +1079,7 @@ const orderHistory = {
           "division": "চট্টগ্রাম",
           "district": "চট্টগ্রাম",
           "upazila": "রাউজান",
-          "location": "House 16, Uttar Para, Poschim Para, near college gate"
+          "location": "Uttar Para, Poschim Para, near college gate"
         }
       },
       "items": [
@@ -1106,7 +1106,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "নারায়ণগঞ্জ",
           "upazila": "আড়াইহাজার",
-          "location": "House 57, Purano Bazar, Hospital Road"
+          "location": "Purano Bazar, Hospital Road"
         }
       },
       "items": [
@@ -1133,7 +1133,7 @@ const orderHistory = {
           "division": "সিলেট",
           "district": "সিলেট",
           "upazila": "সিলেট সদর",
-          "location": "House 63, Kachari Road, Hospital Road"
+          "location": "Kachari Road, Hospital Road"
         }
       },
       "items": [
@@ -1160,7 +1160,7 @@ const orderHistory = {
           "division": "চট্টগ্রাম",
           "district": "কুমিল্লা",
           "upazila": "মুরাদনগর",
-          "location": "বাসা-৬৮, পূর্ব পাড়া, থানা রোড, মসজিদের পাশে"
+          "location": "পূর্ব পাড়া, থানা রোড, মসজিদের পাশে"
         }
       },
       "items": [
@@ -1194,7 +1194,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "নবাবগঞ্জ",
-          "location": "বাসা-৩৫, কাচারি রোড, বান্দুরা"
+          "location": "কাচারি রোড, বান্দুরা"
         }
       },
       "items": [
@@ -1221,7 +1221,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "নারায়ণগঞ্জ",
           "upazila": "রূপগঞ্জ",
-          "location": "বাসা-৯, থানা রোড, মসজিদ গলি, ফার্মেসির পাশে"
+          "location": "থানা রোড, মসজিদ গলি, ফার্মেসির পাশে"
         }
       },
       "items": [
@@ -1255,7 +1255,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "ফ্ল্যাট ৩ডি, বাসা-১১৩, রোড-৯, তেজগাঁও, ফার্মেসির পাশে"
+          "location": "রোড-৯, তেজগাঁও, ফার্মেসির পাশে"
         }
       },
       "items": [
@@ -1282,7 +1282,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 48, Road 1, Kalyanpur"
+          "location": "Road 1, Kalyanpur"
         }
       },
       "items": [
@@ -1309,7 +1309,7 @@ const orderHistory = {
           "division": "চট্টগ্রাম",
           "district": "কুমিল্লা",
           "upazila": "বুড়িচং",
-          "location": "বাসা-১৩, উত্তর পাড়া, পশ্চিম পাড়া, মসজিদের পাশে"
+          "location": "উত্তর পাড়া, পশ্চিম পাড়া, মসজিদের পাশে"
         }
       },
       "items": [
@@ -1336,7 +1336,7 @@ const orderHistory = {
           "division": "চট্টগ্রাম",
           "district": "চট্টগ্রাম",
           "upazila": "বাঁশখালী",
-          "location": "বাসা-৩২, হাসপাতাল রোড, দক্ষিণ পাড়া, কলেজ গেটের কাছে"
+          "location": "হাসপাতাল রোড, দক্ষিণ পাড়া, কলেজ গেটের কাছে"
         }
       },
       "items": [
@@ -1363,7 +1363,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "টাঙ্গাইল",
           "upazila": "টাঙ্গাইল সদর",
-          "location": "বাসা-৪৭, মসজিদ গলি, মাস্টারপাড়া, মসজিদের পাশে"
+          "location": "মসজিদ গলি, মাস্টারপাড়া, মসজিদের পাশে"
         }
       },
       "items": [
@@ -1397,7 +1397,7 @@ const orderHistory = {
           "division": "সিলেট",
           "district": "সিলেট",
           "upazila": "বালাগঞ্জ",
-          "location": "House 1, Dakkhin Para, Hospital Road"
+          "location": "Dakkhin Para, Hospital Road"
         }
       },
       "items": [
@@ -1431,7 +1431,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 103, Road 12, Malibagh, next to the madrasa"
+          "location": "Road 12, Malibagh, next to the madrasa"
         }
       },
       "items": [
@@ -1465,7 +1465,7 @@ const orderHistory = {
           "division": "সিলেট",
           "district": "সিলেট",
           "upazila": "সিলেট সদর",
-          "location": "বাসা-৬৬, নতুন বাজার, বাজার রোড"
+          "location": "নতুন বাজার, বাজার রোড"
         }
       },
       "items": [
@@ -1492,7 +1492,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 115, Road 4, Shyamoli"
+          "location": "Road 4, Shyamoli"
         }
       },
       "items": [
@@ -1519,7 +1519,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "সাভার",
-          "location": "House 93, Purano Bazar, Jamgora"
+          "location": "Purano Bazar, Jamgora"
         }
       },
       "items": [
@@ -1546,7 +1546,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-১১১, রড-৭, লালবাগ"
+          "location": "রড-৭, লালবাগ"
         }
       },
       "items": [
@@ -1580,7 +1580,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "গাজীপুর",
           "upazila": "কালীগঞ্জ",
-          "location": "House 41, Thana Road, Master Para, beside the pharmacy"
+          "location": "Thana Road, Master Para, beside the pharmacy"
         }
       },
       "items": [
@@ -1607,7 +1607,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "গাজীপুর",
           "upazila": "কালিয়াকৈর",
-          "location": "বাসা-৯৯, বাজার রোড, কলেজ রোড, মাদ্রাসার পাশে"
+          "location": "বাজার রোড, কলেজ রোড, মাদ্রাসার পাশে"
         }
       },
       "items": [
@@ -1634,7 +1634,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-২৮, রোড-২, বাড্ডা"
+          "location": "রোড-২, বাড্ডা"
         }
       },
       "items": [
@@ -1675,7 +1675,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-৬১, রোড-১৬, মুগদা"
+          "location": "রোড-১৬, মুগদা"
         }
       },
       "items": [
@@ -1702,7 +1702,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাশা-২, রোড-৭, মুগদা"
+          "location": "রোড-৭, মুগদা"
         }
       },
       "items": [
@@ -1736,7 +1736,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "মুন্সিগঞ্জ",
           "upazila": "সিরাজদিখান",
-          "location": "বাসা-১০, বাজার রোড, পশ্চিম পাড়া"
+          "location": "বাজার রোড, পশ্চিম পাড়া"
         }
       },
       "items": [
@@ -1763,7 +1763,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "টাঙ্গাইল",
           "upazila": "কালিহাতী",
-          "location": "বাসা-৪৩, পূর্ব পাড়া, পুরান বাজার"
+          "location": "পূর্ব পাড়া, পুরান বাজার"
         }
       },
       "items": [
@@ -1790,7 +1790,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "দোহার",
-          "location": "বাশা-৫৮, বাজার রোড, দোহার বাজার, স্কুলের সামনে"
+          "location": "বাজার রোড, দোহার বাজার, স্কুলের সামনে"
         }
       },
       "items": [
@@ -1817,7 +1817,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "মুন্সিগঞ্জ",
           "upazila": "মুন্সিগঞ্জ সদর",
-          "location": "House 42, Station Road, Mastar Para, beside the mosque"
+          "location": "Station Road, Mastar Para, beside the mosque"
         }
       },
       "items": [
@@ -1844,7 +1844,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 37, Road 14, Jatrabari, near college gate"
+          "location": "Road 14, Jatrabari, near college gate"
         }
       },
       "items": [
@@ -1871,7 +1871,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "গাজীপুর",
           "upazila": "গাজীপুর সদর",
-          "location": "বাসা-৮৮, উত্তর পাড়া, থানা রোড"
+          "location": "উত্তর পাড়া, থানা রোড"
         }
       },
       "items": [
@@ -1905,7 +1905,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "ফ্ল্যাট ৩বি, বাসা-৩, রোড-১৫, মুগদা"
+          "location": "রোড-১৫, মুগদা"
         }
       },
       "items": [
@@ -1932,7 +1932,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "সাভার",
-          "location": "House 45, Uttar Para, Hemayetpur, near college gate"
+          "location": "Uttar Para, Hemayetpur, near college gate"
         }
       },
       "items": [
@@ -1959,7 +1959,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 13, Road 5, Mirpur-12"
+          "location": "Road 5, Mirpur-12"
         }
       },
       "items": [
@@ -1993,7 +1993,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "গাজীপুর",
           "upazila": "কালীগঞ্জ",
-          "location": "বাসা-১৬, মাস্টারপাড়া, বাজার রোড, মাদ্রাসার পাশে"
+          "location": "মাস্টারপাড়া, বাজার রোড, মাদ্রাসার পাশে"
         }
       },
       "items": [
@@ -2020,7 +2020,7 @@ const orderHistory = {
           "division": "চট্টগ্রাম",
           "district": "কুমিল্লা",
           "upazila": "বরুড়া",
-          "location": "House 105, Bazar Road, Purbo Pada"
+          "location": "Bazar Road, Purbo Pada"
         }
       },
       "items": [
@@ -2047,7 +2047,7 @@ const orderHistory = {
           "division": "রাজশাহী",
           "district": "বগুড়া",
           "upazila": "সোনাতলা",
-          "location": "House 69, Mosque Lane, Thana Road, near college gate"
+          "location": "Mosque Lane, Thana Road, near college gate"
         }
       },
       "items": [
@@ -2074,7 +2074,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "কিশোরগঞ্জ",
           "upazila": "কিশোরগঞ্জ সদর",
-          "location": "বাসা-১১, থানা রোড, বাজার রোড, বাজারের কাছে"
+          "location": "থানা রোড, বাজার রোড, বাজারের কাছে"
         }
       },
       "items": [
@@ -2101,7 +2101,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 60, Road 10, Kalyanpur"
+          "location": "Road 10, Kalyanpur"
         }
       },
       "items": [
@@ -2128,7 +2128,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "সাভার",
-          "location": "বাশা-৫২, পূর্ব পাড়া, জামগড়া"
+          "location": "পূর্ব পাড়া, জামগড়া"
         }
       },
       "items": [
@@ -2169,7 +2169,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "House 71, Road 3, Tejgaon"
+          "location": "Road 3, Tejgaon"
         }
       },
       "items": [
@@ -2196,7 +2196,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-৬৩, রোড-৮, তেজগাঁও"
+          "location": "রোড-৮, তেজগাঁও"
         }
       },
       "items": [
@@ -2223,7 +2223,7 @@ const orderHistory = {
           "division": "চট্টগ্রাম",
           "district": "কুমিল্লা",
           "upazila": "কুমিল্লা সদর",
-          "location": "House 11, Uttar Para, Notun Bazar, baside the mosque"
+          "location": "Uttar Para, Notun Bazar, baside the mosque"
         }
       },
       "items": [
@@ -2264,7 +2264,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "ফ্ল্যাট ৭সি, বাসা-২৪, রোড-১৭, দক্ষিণখান"
+          "location": "রোড-১৭, দক্ষিণখান"
         }
       },
       "items": [
@@ -2298,7 +2298,7 @@ const orderHistory = {
           "division": "রাজশাহী",
           "district": "রাজশাহী",
           "upazila": "বাগমারা",
-          "location": "House 68, Poschim Pada, College Road, next to the madrasa"
+          "location": "Poschim Pada, College Road, next to the madrasa"
         }
       },
       "items": [
@@ -2325,7 +2325,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "বাসা-১১৩, রোড-১২, বাড্ডা, বাজারের কাছে"
+          "location": "রোড-১২, বাড্ডা, বাজারের কাছে"
         }
       },
       "items": [
@@ -2352,7 +2352,7 @@ const orderHistory = {
           "division": "চট্টগ্রাম",
           "district": "চট্টগ্রাম",
           "upazila": "সাতকানিয়া",
-          "location": "House 110, Hospital Road, Dakkhin Para"
+          "location": "Hospital Road, Dakkhin Para"
         }
       },
       "items": [
@@ -2379,7 +2379,7 @@ const orderHistory = {
           "division": "বরিশাল",
           "district": "বরিশাল",
           "upazila": "বরিশাল সদর",
-          "location": "বাসা-২৫, পুরান বাজার, কাচারি রোড, বাজারের কাছে"
+          "location": "পুরান বাজার, কাচারি রোড, বাজারের কাছে"
         }
       },
       "items": [
@@ -2406,7 +2406,7 @@ const orderHistory = {
           "division": "ময়মনসিংহ",
           "district": "ময়মনসিংহ",
           "upazila": "তারাকান্দা",
-          "location": "বাসা-৮১, কলেজ রোড, উত্তর পাড়া, স্কুলের সামনে"
+          "location": "কলেজ রোড, উত্তর পাড়া, স্কুলের সামনে"
         }
       },
       "items": [
@@ -2440,7 +2440,7 @@ const orderHistory = {
           "division": "চট্টগ্রাম",
           "district": "নোয়াখালী",
           "upazila": "সোনাইমুড়ী",
-          "location": "বাসা-১১৮, পুরান বাজার, নতুন বাজার"
+          "location": "পুরান বাজার, নতুন বাজার"
         }
       },
       "items": [
@@ -2467,7 +2467,7 @@ const orderHistory = {
           "division": "রাজশাহী",
           "district": "রাজশাহী",
           "upazila": "গোদাগাড়ী",
-          "location": "বাশা-৪৩, পূর্ব পাড়া, নতুন বাজার"
+          "location": "পূর্ব পাড়া, নতুন বাজার"
         }
       },
       "items": [
@@ -2494,7 +2494,7 @@ const orderHistory = {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "ফ্ল্যাট ৬বি, বাসা-৮, রোড-৪, ধানমন্ডি"
+          "location": "রোড-৪, ধানমন্ডি"
         }
       },
       "items": [
