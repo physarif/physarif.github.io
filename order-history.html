@@ -79,11 +79,10 @@
 
   <div class="tw">
     <table class="sheet">
-      <colgroup><col style="width:26px"><col style="width:56px"><col style="width:72px"><col style="width:96px"><col><col style="width:26%"><col style="width:84px"></colgroup>
+      <colgroup><col style="width:56px"><col style="width:72px"><col style="width:96px"><col><col style="width:26%"><col style="width:84px"></colgroup>
       <thead>
-        <tr class="letters"><th class="rn"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
         <tr class="head">
-          <th class="rn">1</th><th>Order ID</th><th>Date</th><th>Customer</th><th>Address</th><th>Items</th>
+          <th>ID</th><th>Date</th><th>Customer</th><th>Address</th><th>Items</th>
           <th class="num">Total</th>
         </tr>
       </thead>
@@ -145,7 +144,7 @@
     metric("Delivery", money(sumDel)) +
     metric("Total", money(sumTot), "total");
 
-  document.getElementById("orders").innerHTML = orders.map(function (o, idx) {
+  document.getElementById("orders").innerHTML = orders.map(function (o) {
     var a = o.customer.address || {};
     var area = [a.upazila, a.district];
     if (a.division && a.division !== a.district) area.push(a.division);
@@ -154,7 +153,6 @@
       return '<div class="item"><span>' + esc(i.name) + q + '</span><span>' + num(i.line_total) + '</span></div>';
     }).join("");
     return '<tr>' +
-      '<td class="rn">' + (idx + 2) + '</td>' +
       '<td class="id">' + esc(o.order_id) + '</td>' +
       '<td>' + esc(fmtDate(o.order_date)) + '<div class="muted">' + esc(fmtTime(o.order_date)) + '</div></td>' +
       '<td><b>' + esc(o.customer.name) + '</b><div class="muted">' + esc(o.customer.phone) + '</div></td>' +
@@ -165,7 +163,7 @@
   }).join("");
 
   document.getElementById("foot").innerHTML =
-    '<tr><td class="rn">' + (orders.length + 2) + '</td>' +
+    '<tr>' +
     '<td colspan="4">Total · ' + orders.length + ' orders</td>' +
     '<td>' + itemCount + ' items</td>' +
     '<td class="num accent">' + num(sumTot) + '<div class="muted">' + num(sumSub) + '+' + num(sumDel) + '</div></td></tr>';
