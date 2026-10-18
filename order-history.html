@@ -8,40 +8,26 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --ink: #1c1c1e;
-    --muted: #6b6b70;
-    --line: #dcdcdf;
-    --soft: #f6f5f3;
-    --accent: #7a1f3d;
-  }
+  :root { --ink:#1c1c1e; --muted:#6b6b70; --line:#cfcfd3; --accent:#7a1f3d; }
   @page { size: A4 portrait; margin: 14mm 12mm 16mm; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
     font-family: "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Nirmala UI", Arial, sans-serif;
-    font-size: 11px;
-    line-height: 1.5;
-    color: var(--ink);
-    background: #fff;
+    font-size: 11px; line-height: 1.5; color: var(--ink); background: #fff;
     -webkit-print-color-adjust: exact; print-color-adjust: exact;
   }
   .page { max-width: 860px; margin: 0 auto; padding: 28px 24px 56px; }
 
   .toolbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
-  .toolbar button {
-    font: inherit; font-size: 13px; padding: 8px 18px; border: 0;
-    background: var(--ink); color: #fff; border-radius: 6px; cursor: pointer;
-  }
+  .toolbar button { font: inherit; font-size: 13px; padding: 8px 18px; border: 0; background: var(--ink); color: #fff; border-radius: 6px; cursor: pointer; }
 
-  /* Masthead */
   .masthead { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 14px; border-bottom: 2px solid var(--accent); }
   .brand { font-family: "Playfair Display", Georgia, serif; font-size: 34px; font-weight: 700; letter-spacing: .02em; color: var(--accent); line-height: 1; }
   .doc-title { text-align: right; }
   .doc-title .t { font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
   .doc-title .p { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
 
-  /* Summary strip */
   .summary { display: grid; grid-template-columns: repeat(5, 1fr); margin: 16px 0 22px; border-bottom: 1px solid var(--line); padding-bottom: 16px; }
   .summary .m { padding: 0 14px; border-left: 1px solid var(--line); }
   .summary .m:first-child { padding-left: 0; border-left: 0; }
@@ -49,32 +35,28 @@
   .summary .v { font-size: 17px; font-weight: 700; margin-top: 3px; }
   .summary .m.total .v { color: var(--accent); }
 
-  /* Orders */
+  /* Receipt cards */
   .orders { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .order { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; break-inside: avoid; page-break-inside: avoid; background: #fff; }
-  .o-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--soft); border-bottom: 1px solid var(--line); }
-  .o-id { font-family: "Courier New", monospace; font-weight: 700; font-size: 12.5px; letter-spacing: .08em; }
-  .o-id small { font-family: inherit; font-weight: 500; letter-spacing: 0; color: var(--muted); font-size: 10px; margin-right: 4px; }
-  .o-date { text-align: right; font-size: 10.5px; color: var(--muted); line-height: 1.35; }
-  .o-date b { color: var(--ink); font-weight: 600; }
-
-  .o-body { padding: 10px 12px 4px; }
-  .sec { margin-bottom: 9px; }
-  .sec .k { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 1px; }
-  .sec .cname { font-size: 12.5px; font-weight: 600; }
-  .sec .muted { color: var(--muted); }
-  .sec .loc { font-weight: 500; }
-
-  .items { border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 2px; }
-  .item { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; }
-  .item .n { flex: 1; }
-  .item .n small { color: var(--muted); }
-  .item .p { white-space: nowrap; font-variant-numeric: tabular-nums; }
-
-  .o-foot { padding: 8px 12px 10px; }
-  .row { display: flex; justify-content: space-between; color: var(--muted); font-size: 10.5px; padding: 1px 0; font-variant-numeric: tabular-nums; }
-  .row.grand { color: var(--ink); font-size: 13px; font-weight: 700; border-top: 1px solid var(--ink); margin-top: 5px; padding-top: 5px; }
-  .pay { margin-top: 6px; font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .order {
+    border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px 12px; background: #fff;
+    break-inside: avoid; page-break-inside: avoid;
+    font-family: "Courier New", "Noto Sans Bengali", monospace; font-size: 11px;
+  }
+  .sans { font-family: "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Nirmala UI", Arial, sans-serif; }
+  .o-top { text-align: center; }
+  .o-id { font-size: 14px; font-weight: 700; letter-spacing: .12em; }
+  .o-date { color: var(--muted); font-size: 10.5px; }
+  .dash { border-top: 1px dashed #999; margin: 9px 0; }
+  .cname { font-weight: 600; font-size: 12px; }
+  .muted { color: var(--muted); }
+  .row { display: flex; justify-content: space-between; align-items: flex-end; gap: 6px; }
+  .row .lead { flex: 1; border-bottom: 1px dotted #999; margin: 0 2px 4px; min-width: 10px; }
+  .row .n { max-width: 70%; }
+  .row .n small { color: var(--muted); }
+  .row.sub { color: var(--muted); }
+  .row.sub .lead { display: none; }
+  .row.grand { font-size: 14px; font-weight: 700; margin-top: 4px; }
+  .row.grand .lead { display: none; }
 
   .running { position: fixed; left: 0; right: 0; bottom: 0; display: none; justify-content: space-between; font-size: 9px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 4px; }
 
@@ -122,7 +104,8 @@
       .replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
-  function money(n) { return "৳" + Number(n).toLocaleString("en-US"); }
+  function num(n) { return Number(n).toLocaleString("en-US"); }
+  function money(n) { return "৳" + num(n); }
   function pad(n) { return n < 10 ? "0" + n : "" + n; }
   function parts(iso) {
     var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(iso);
@@ -162,26 +145,24 @@
 
   document.getElementById("orders").innerHTML = orders.map(function (o) {
     var a = o.customer.address || {};
+    var area = [a.upazila, a.district];
+    if (a.division && a.division !== a.district) area.push(a.division);
     var items = o.items.map(function (i) {
-      var detail = i.quantity > 1 ? ' <small>(' + i.quantity + ' × ' + money(i.unit_price) + ')</small>' : "";
-      return '<div class="item"><span class="n">' + esc(i.name) + detail + '</span><span class="p">' + money(i.line_total) + '</span></div>';
+      var detail = i.quantity > 1 ? ' <small>(' + i.quantity + ' × ' + num(i.unit_price) + ')</small>' : "";
+      return '<div class="row"><span class="n sans">' + esc(i.name) + detail + '</span><span class="lead"></span><span>' + num(i.line_total) + '</span></div>';
     }).join("");
     return '<article class="order">' +
-      '<div class="o-head">' +
-        '<div class="o-id"><small>#</small>' + esc(o.order_id) + '</div>' +
-        '<div class="o-date"><b>' + esc(fmtDate(o.order_date)) + '</b><br>' + esc(fmtTime(o.order_date)) + '</div>' +
-      '</div>' +
-      '<div class="o-body">' +
-        '<div class="sec"><div class="k">Customer</div><div class="cname">' + esc(o.customer.name) + '</div><div class="muted">' + esc(o.customer.phone) + '</div></div>' +
-        '<div class="sec"><div class="k">Deliver to</div><div class="loc">' + esc(a.location) + '</div><div class="muted">' + esc(a.upazila) + ', ' + esc(a.district) + ', ' + esc(a.division) + '</div></div>' +
-        '<div class="items">' + items + '</div>' +
-      '</div>' +
-      '<div class="o-foot">' +
-        '<div class="row"><span>Subtotal</span><span>' + money(o.subtotal) + '</span></div>' +
-        '<div class="row"><span>Delivery</span><span>' + money(o.delivery_charge) + '</span></div>' +
-        '<div class="row grand"><span>Total</span><span>' + money(o.total) + '</span></div>' +
-        '<div class="pay">' + esc(o.payment_method) + '</div>' +
-      '</div>' +
+      '<div class="o-top"><div class="o-id">' + esc(o.order_id) + '</div>' +
+        '<div class="o-date">' + esc(fmtDate(o.order_date)) + ' · ' + esc(fmtTime(o.order_date)) + '</div></div>' +
+      '<div class="dash"></div>' +
+      '<div class="sans"><span class="cname">' + esc(o.customer.name) + '</span> <span class="muted">· ' + esc(o.customer.phone) + '</span></div>' +
+      '<div class="sans muted">' + esc(a.location) + '. ' + esc(area.join(", ")) + '</div>' +
+      '<div class="dash"></div>' +
+      items +
+      '<div class="dash"></div>' +
+      '<div class="row sub"><span>Subtotal</span><span class="lead"></span><span>' + num(o.subtotal) + '</span></div>' +
+      '<div class="row sub"><span>Delivery</span><span class="lead"></span><span>' + num(o.delivery_charge) + '</span></div>' +
+      '<div class="row grand"><span>TOTAL BDT</span><span class="lead"></span><span>' + num(o.total) + '</span></div>' +
     '</article>';
   }).join("");
 })();
