@@ -8,16 +8,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#1f1f1f; --muted:#5f6368; --grid:#c4c7c5; --head:#f1f3f4; --accent:#7a1f3d; }
-  @page { size: A4 landscape; margin: 10mm 10mm 12mm; }
+  :root { --ink:#202124; --muted:#5f6368; --line:#bdc1c6; --head:#e8eaed; --letter:#f1f3f4; --zebra:#f8f9fa; --accent:#7a1f3d; }
+  @page { size: A4 portrait; margin: 10mm 9mm 12mm; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
     font-family: "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Nirmala UI", Arial, sans-serif;
-    font-size: 11px; line-height: 1.4; color: var(--ink); background: #fff;
+    font-size: 11px; line-height: 1.35; color: var(--ink); background: #fff;
     -webkit-print-color-adjust: exact; print-color-adjust: exact;
   }
-  .page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 48px; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 24px 20px 56px; }
 
   .toolbar { display: flex; justify-content: flex-end; margin-bottom: 14px; }
   .toolbar button { font: inherit; font-size: 13px; padding: 8px 18px; border: 0; background: var(--ink); color: #fff; border-radius: 6px; cursor: pointer; }
@@ -28,35 +28,38 @@
   .doc-title .t { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
   .doc-title .p { color: var(--muted); font-size: 11px; margin-top: 2px; }
 
-  .summary { display: flex; gap: 28px; margin: 10px 0 14px; font-size: 11px; color: var(--muted); }
-  .summary b { color: var(--ink); font-weight: 600; font-size: 13px; margin-left: 4px; }
+  .summary { display: flex; flex-wrap: wrap; gap: 4px 28px; margin: 10px 0 12px; font-size: 11px; color: var(--muted); }
+  .summary b { color: var(--ink); font-size: 13px; margin-left: 4px; }
+  .summary .total b { color: var(--accent); }
 
   /* Sheet */
-  .sheet { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10.5px; }
-  .sheet th, .sheet td { border: 1px solid var(--grid); padding: 3px 6px; vertical-align: top; text-align: left; font-weight: 400; overflow-wrap: anywhere; }
+  .sheet { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 9.5px; border: 1px solid var(--line); }
+  .sheet th, .sheet td { border: 1px solid var(--line); padding: 3px 6px; vertical-align: top; }
   .sheet thead { display: table-header-group; }
+  .sheet tfoot { display: table-row-group; }
   .sheet tr { break-inside: avoid; page-break-inside: avoid; }
-  .sheet .L { background: var(--head); color: var(--muted); text-align: center; font-size: 10px; padding: 1px 4px; }
-  .sheet .rn { background: var(--head); color: var(--muted); text-align: center; padding: 3px 2px; font-size: 10px; }
-  .sheet th.h { background: var(--head); font-weight: 600; }
-  .sheet .id { font-family: "Courier New", monospace; font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
-  .sheet .num { text-align: right; white-space: nowrap; }
-  .sheet .it + .it { margin-top: 1px; }
-  .sheet .it small { color: var(--muted); }
-  .sheet tfoot td { background: var(--head); font-weight: 600; }
+  .sheet tr.letters th { background: var(--letter); color: var(--muted); font-weight: 400; font-size: 9px; text-align: center; padding: 1px 0; }
+  .sheet tr.head th { background: var(--head); font-weight: 700; text-align: left; font-size: 10px; }
+  .sheet tbody tr:nth-child(even) td { background: var(--zebra); }
+  .rn { width: 28px; background: var(--letter) !important; color: var(--muted); text-align: center; font-size: 9px; padding-left: 0 !important; padding-right: 0 !important; }
+  .sheet td:nth-child(3) { white-space: nowrap; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .id { font-family: "Courier New", monospace; font-weight: 700; letter-spacing: .04em; }
+  .muted { color: var(--muted); }
+  .item { display: flex; justify-content: space-between; gap: 6px; }
+  .item span:last-child { white-space: nowrap; color: var(--muted); }
+  .sheet tfoot td { background: var(--head) !important; font-weight: 700; border-top: 2px solid var(--ink); }
+  .sheet tfoot .accent { color: var(--accent); }
 
-  .c-rn { width: 3.2%; } .c-id { width: 8%; } .c-date { width: 11.5%; } .c-name { width: 12%; }
-  .c-ph { width: 10%; } .c-addr { width: 25%; } .c-items { width: 17.5%; } .c-tot { width: 13%; }
+  .running { position: fixed; left: 0; right: 0; bottom: -11mm; display: none; justify-content: space-between; font-size: 9px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 3px; }
 
-  .running { position: fixed; left: 0; right: 0; bottom: 0; display: none; justify-content: space-between; font-size: 9px; color: var(--muted); border-top: 1px solid var(--grid); padding-top: 3px; }
-
-  @media (max-width: 900px) { .tablewrap { overflow-x: auto; } .sheet { min-width: 900px; } .summary { flex-wrap: wrap; gap: 10px 22px; } }
+  @media (max-width: 900px) { .tw { overflow-x: auto; } .sheet { min-width: 760px; } }
   @media print {
     .toolbar { display: none; }
     .page { max-width: none; padding: 0; }
-    .running { display: flex; }
-    .tablewrap { overflow: visible; }
+    .tw { overflow: visible; }
     .sheet { min-width: 0; }
+    body { font-size: 10px; }
   }
 </style>
 </head>
@@ -74,17 +77,17 @@
 
   <section class="summary" id="summary"></section>
 
-  <div class="tablewrap">
+  <div class="tw">
     <table class="sheet">
-      <colgroup>
-        <col class="c-rn"><col class="c-id"><col class="c-date"><col class="c-name">
-        <col class="c-ph"><col class="c-addr"><col class="c-items"><col class="c-tot">
-      </colgroup>
+      <colgroup><col style="width:26px"><col style="width:56px"><col style="width:72px"><col style="width:96px"><col><col style="width:26%"><col style="width:84px"></colgroup>
       <thead>
-        <tr><th class="L"></th><th class="L">A</th><th class="L">B</th><th class="L">C</th><th class="L">D</th><th class="L">E</th><th class="L">F</th><th class="L">G</th></tr>
-        <tr><th class="rn">1</th><th class="h">Order</th><th class="h">Date</th><th class="h">Name</th><th class="h">Phone</th><th class="h">Address</th><th class="h">Items</th><th class="h">Total</th></tr>
+        <tr class="letters"><th class="rn"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+        <tr class="head">
+          <th class="rn">1</th><th>Order ID</th><th>Date</th><th>Customer</th><th>Address</th><th>Items</th>
+          <th class="num">Total</th>
+        </tr>
       </thead>
-      <tbody id="rows"></tbody>
+      <tbody id="orders"></tbody>
       <tfoot id="foot"></tfoot>
     </table>
   </div>
@@ -132,34 +135,40 @@
     sumSub += o.subtotal; sumDel += o.delivery_charge; sumTot += o.total;
     o.items.forEach(function (i) { itemCount += i.quantity; });
   });
-
-  function stat(label, value) { return '<div>' + esc(label) + '<b>' + esc(value) + '</b></div>'; }
+  function metric(label, value, cls) {
+    return '<span class="' + (cls || "") + '">' + esc(label) + '<b>' + esc(value) + '</b></span>';
+  }
   document.getElementById("summary").innerHTML =
-    stat("Orders", orders.length) + stat("Items sold", itemCount) +
-    stat("Products", money(sumSub)) + stat("Delivery", money(sumDel)) + stat("Total", money(sumTot));
+    metric("Orders", orders.length) +
+    metric("Items sold", itemCount) +
+    metric("Products", money(sumSub)) +
+    metric("Delivery", money(sumDel)) +
+    metric("Total", money(sumTot), "total");
 
-  document.getElementById("rows").innerHTML = orders.map(function (o, idx) {
+  document.getElementById("orders").innerHTML = orders.map(function (o, idx) {
     var a = o.customer.address || {};
     var area = [a.upazila, a.district];
     if (a.division && a.division !== a.district) area.push(a.division);
     var items = o.items.map(function (i) {
-      return '<div class="it">' + esc(i.name) + (i.quantity > 1 ? ' <small>×' + i.quantity + '</small>' : '') + '</div>';
+      var q = i.quantity > 1 ? ' × ' + i.quantity : '';
+      return '<div class="item"><span>' + esc(i.name) + q + '</span><span>' + num(i.line_total) + '</span></div>';
     }).join("");
     return '<tr>' +
       '<td class="rn">' + (idx + 2) + '</td>' +
-      '<td class="id">#' + esc(o.order_id) + '</td>' +
-      '<td>' + esc(fmtDate(o.order_date)) + ', ' + esc(fmtTime(o.order_date)) + '</td>' +
-      '<td>' + esc(o.customer.name) + '</td>' +
-      '<td>' + esc(o.customer.phone) + '</td>' +
-      '<td>' + esc(a.location) + '. ' + esc(area.join(", ")) + '</td>' +
+      '<td class="id">' + esc(o.order_id) + '</td>' +
+      '<td>' + esc(fmtDate(o.order_date)) + '<div class="muted">' + esc(fmtTime(o.order_date)) + '</div></td>' +
+      '<td><b>' + esc(o.customer.name) + '</b><div class="muted">' + esc(o.customer.phone) + '</div></td>' +
+      '<td>' + esc(a.location) + '<div class="muted">' + esc(area.join(", ")) + '</div></td>' +
       '<td>' + items + '</td>' +
-      '<td class="num">' + num(o.subtotal) + '+' + num(o.delivery_charge) + '=' + num(o.total) + '</td>' +
+      '<td class="num"><b>' + num(o.total) + '</b><div class="muted">' + num(o.subtotal) + '+' + num(o.delivery_charge) + '</div></td>' +
     '</tr>';
   }).join("");
 
   document.getElementById("foot").innerHTML =
-    '<tr><td class="rn">' + (orders.length + 2) + '</td><td colspan="6" style="text-align:right">Total (' + orders.length + ' orders)</td>' +
-    '<td class="num">' + num(sumSub) + '+' + num(sumDel) + '=' + num(sumTot) + '</td></tr>';
+    '<tr><td class="rn">' + (orders.length + 2) + '</td>' +
+    '<td colspan="4">Total · ' + orders.length + ' orders</td>' +
+    '<td>' + itemCount + ' items</td>' +
+    '<td class="num accent">' + num(sumTot) + '<div class="muted">' + num(sumSub) + '+' + num(sumDel) + '</div></td></tr>';
 })();
 </script>
 </body>
