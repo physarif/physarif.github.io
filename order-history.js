@@ -1,6 +1,6 @@
 const orderHistory = {
   "store": {
-    "name": "Demo Store",
+    "name": "Orongona",
     "currency": "BDT"
   },
   "period": {
