@@ -1,4 +1,4 @@
-{
+const orderHistory = {
   "store": {
     "name": "Demo Store",
     "currency": "BDT"
@@ -2511,4 +2511,4 @@
       "total": 660
     }
   ]
-}
+};
