@@ -43,9 +43,11 @@
     font-family: "Courier New", "Noto Sans Bengali", monospace; font-size: 11px;
   }
   .sans { font-family: "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Nirmala UI", Arial, sans-serif; }
-  .o-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .o-info { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 10px; }
+  .o-meta { text-align: right; }
+  .o-addr { margin-top: 4px; }
   .o-id { font-size: 14px; font-weight: 700; letter-spacing: .12em; }
-  .o-date { color: var(--muted); font-size: 10.5px; text-align: right; white-space: nowrap; }
+  .o-date { color: var(--muted); font-size: 10.5px; line-height: 1.4; }
   .dash { border-top: 1px dashed #999; margin: 9px 0; }
   .cname { font-weight: 600; font-size: 12px; }
   .muted { color: var(--muted); }
@@ -152,11 +154,12 @@
       return '<div class="row"><span class="n sans">' + esc(i.name) + detail + '</span><span class="lead"></span><span>' + num(i.line_total) + '</span></div>';
     }).join("");
     return '<article class="order">' +
-      '<div class="o-top"><div class="o-id">#' + esc(o.order_id) + '</div>' +
-        '<div class="o-date">' + esc(fmtDate(o.order_date)) + ' · ' + esc(fmtTime(o.order_date)) + '</div></div>' +
-      '<div class="dash"></div>' +
-      '<div class="sans"><span class="cname">' + esc(o.customer.name) + '</span> <span class="muted">· ' + esc(o.customer.phone) + '</span></div>' +
-      '<div class="sans muted">' + esc(a.location) + '. ' + esc(area.join(", ")) + '</div>' +
+      '<div class="o-info">' +
+        '<div class="sans"><div class="cname">' + esc(o.customer.name) + '</div><div class="muted">' + esc(o.customer.phone) + '</div>' +
+          '<div class="o-addr">' + esc(a.location) + '. ' + esc(area.join(", ")) + '</div></div>' +
+        '<div class="o-meta"><div class="o-id">#' + esc(o.order_id) + '</div>' +
+          '<div class="o-date">' + esc(fmtDate(o.order_date)) + '<br>' + esc(fmtTime(o.order_date)) + '</div></div>' +
+      '</div>' +
       '<div class="dash"></div>' +
       items +
       '<div class="dash"></div>' +
