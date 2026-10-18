@@ -28,9 +28,7 @@
   .doc-title .t { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
   .doc-title .p { color: var(--muted); font-size: 11px; margin-top: 2px; }
 
-  .summary { display: flex; flex-wrap: wrap; gap: 4px 28px; margin: 10px 0 12px; font-size: 11px; color: var(--muted); }
-  .summary b { color: var(--ink); font-size: 13px; margin-left: 4px; }
-  .summary .total b { color: var(--accent); }
+
 
   /* Sheet */
   .sheet { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 9.5px; border: 1px solid var(--line); }
@@ -75,7 +73,6 @@
     </div>
   </header>
 
-  <section class="summary" id="summary"></section>
 
   <div class="tw">
     <table class="sheet">
@@ -134,15 +131,6 @@
     sumSub += o.subtotal; sumDel += o.delivery_charge; sumTot += o.total;
     o.items.forEach(function (i) { itemCount += i.quantity; });
   });
-  function metric(label, value, cls) {
-    return '<span class="' + (cls || "") + '">' + esc(label) + '<b>' + esc(value) + '</b></span>';
-  }
-  document.getElementById("summary").innerHTML =
-    metric("Orders", orders.length) +
-    metric("Items sold", itemCount) +
-    metric("Products", money(sumSub)) +
-    metric("Delivery", money(sumDel)) +
-    metric("Total", money(sumTot), "total");
 
   document.getElementById("orders").innerHTML = orders.map(function (o) {
     var a = o.customer.address || {};
