@@ -55,7 +55,7 @@
   .row .n small { color: var(--muted); }
   .row.sub { color: var(--muted); }
   .row.sub .lead { display: none; }
-  .row.grand { font-size: 14px; font-weight: 700; margin-top: 4px; }
+  .row.grand { font-size: 13px; font-weight: 700; }
   .row.grand .lead { display: none; }
 
   .running { position: fixed; left: 0; right: 0; bottom: 0; display: none; justify-content: space-between; font-size: 9px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 4px; }
@@ -160,9 +160,7 @@
       '<div class="dash"></div>' +
       items +
       '<div class="dash"></div>' +
-      '<div class="row sub"><span>Subtotal</span><span class="lead"></span><span>' + num(o.subtotal) + '</span></div>' +
-      '<div class="row sub"><span>Delivery</span><span class="lead"></span><span>' + num(o.delivery_charge) + '</span></div>' +
-      '<div class="row grand"><span>TOTAL BDT</span><span class="lead"></span><span>' + num(o.total) + '</span></div>' +
+      '<div class="row grand"><span>Total</span><span class="lead"></span><span>' + num(o.subtotal) + '+' + num(o.delivery_charge) + '=' + num(o.total) + '</span></div>' +
     '</article>';
   }).join("");
 })();
