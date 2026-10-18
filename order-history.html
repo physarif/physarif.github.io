@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4 landscape; margin: 10mm; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Nirmala UI", Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #111;
+    background: #fff;
+  }
+  .page { max-width: 1100px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  .toolbar { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+  .toolbar button {
+    font: inherit; font-size: 13px; padding: 7px 16px; border: 1px solid #111;
+    background: #111; color: #fff; border-radius: 4px; cursor: pointer;
+  }
+
+  header.report { border-bottom: 2px solid #111; padding-bottom: 10px; margin-bottom: 12px; }
+  header.report h1 { margin: 0 0 2px; font-size: 20px; }
+  header.report .sub { color: #444; font-size: 12px; }
+
+  .summary { display: flex; gap: 10px; margin: 12px 0 16px; }
+  .summary .box { flex: 1; border: 1px solid #bbb; border-radius: 4px; padding: 8px 10px; }
+  .summary .label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: .04em; }
+  .summary .value { font-size: 16px; font-weight: 700; margin-top: 2px; }
+
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  thead { display: table-header-group; }
+  th, td { border: 1px solid #bbb; padding: 5px 6px; vertical-align: top; text-align: left; }
+  th { background: #efefef; font-size: 10.5px; font-weight: 600; }
+  tr { page-break-inside: avoid; break-inside: avoid; }
+  tbody tr:nth-child(even) { background: #fafafa; }
+
+  .c-no { width: 3%; text-align: center; }
+  .c-id { width: 8%; }
+  .c-date { width: 11%; }
+  .c-cust { width: 14%; }
+  .c-addr { width: 25%; }
+  .c-items { width: 22%; }
+  .c-num { width: 5.5%; text-align: right; }
+  th.c-no { text-align: center; }
+  th.c-num, td.c-num { text-align: right; white-space: nowrap; }
+
+  .mono { font-family: "Courier New", monospace; font-weight: 700; letter-spacing: .04em; }
+  .muted { color: #555; }
+  .name { font-weight: 600; }
+  .item { display: flex; justify-content: space-between; gap: 6px; }
+  .item + .item { margin-top: 2px; }
+  .item .n { flex: 1; }
+  .item .p { white-space: nowrap; color: #333; }
+
+  tfoot td { font-weight: 700; background: #efefef; }
+
+  footer.note { margin-top: 12px; font-size: 10px; color: #666; }
+
+  @media print {
+    .toolbar { display: none; }
+    .page { max-width: none; padding: 0; }
+    body { font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="toolbar"><button onclick="window.print()">Print / Save as PDF</button></div>
+
+  <header class="report">
+    <h1 id="store-name">Order History</h1>
+    <div class="sub" id="period"></div>
+  </header>
+
+  <section class="summary" id="summary"></section>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="c-no">#</th>
+        <th class="c-id">Order ID</th>
+        <th class="c-date">Date &amp; Time</th>
+        <th class="c-cust">Customer</th>
+        <th class="c-addr">Delivery Address</th>
+        <th class="c-items">Items</th>
+        <th class="c-num">Subtotal</th>
+        <th class="c-num">Delivery</th>
+        <th class="c-num">Total</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+    <tfoot id="foot"></tfoot>
+  </table>
+
+  <footer class="note">Payment method: Cash on Delivery &middot; All amounts in BDT (৳)</footer>
+</div>
+
+<script src="order-history.js"></script>
+<script>
+(function () {
+  var data = orderHistory;
+  var orders = data.orders;
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function money(n) { return "৳" + Number(n).toLocaleString("en-US"); }
+
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  // Read date/time straight from the ISO string so the browser's timezone never shifts it
+  function parts(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(iso);
+    return { y: +m[1], mo: +m[2], d: +m[3], h: +m[4], mi: +m[5] };
+  }
+  function fmtDate(iso) {
+    var p = parts(iso);
+    return p.d + " " + MONTHS[p.mo - 1] + " " + p.y;
+  }
+  function fmtTime(iso) {
+    var p = parts(iso);
+    var ap = p.h >= 12 ? "PM" : "AM";
+    var h12 = p.h % 12 === 0 ? 12 : p.h % 12;
+    return pad(h12) + ":" + pad(p.mi) + " " + ap;
+  }
+
+  // Header
+  if (data.store && data.store.name) {
+    document.getElementById("store-name").textContent = data.store.name + " — Order History";
+    document.title = data.store.name + " — Order History";
+  }
+  if (data.period) {
+    var f = data.period.from.split("-"), t = data.period.to.split("-");
+    document.getElementById("period").textContent =
+      (+f[2]) + " " + MONTHS[+f[1] - 1] + " " + f[0] + " – " + (+t[2]) + " " + MONTHS[+t[1] - 1] + " " + t[0];
+  }
+
+  // Totals (computed from the orders)
+  var sumSub = 0, sumDel = 0, sumTot = 0, itemCount = 0;
+  orders.forEach(function (o) {
+    sumSub += o.subtotal; sumDel += o.delivery_charge; sumTot += o.total;
+    o.items.forEach(function (i) { itemCount += i.quantity; });
+  });
+
+  document.getElementById("summary").innerHTML =
+    box("Total Orders", orders.length) +
+    box("Items Sold", itemCount) +
+    box("Product Amount", money(sumSub)) +
+    box("Delivery Charge", money(sumDel)) +
+    box("Grand Total", money(sumTot));
+  function box(label, value) {
+    return '<div class="box"><div class="label">' + esc(label) + '</div><div class="value">' + esc(value) + '</div></div>';
+  }
+
+  // Rows
+  var html = orders.map(function (o, idx) {
+    var a = o.customer.address || {};
+    var items = o.items.map(function (i) {
+      var q = i.quantity > 1 ? " × " + i.quantity : "";
+      return '<div class="item"><span class="n">' + esc(i.name) + esc(q) + '</span><span class="p">' + money(i.line_total) + '</span></div>';
+    }).join("");
+    return '<tr>' +
+      '<td class="c-no">' + (idx + 1) + '</td>' +
+      '<td class="c-id mono">' + esc(o.order_id) + '</td>' +
+      '<td class="c-date">' + esc(fmtDate(o.order_date)) + '<br><span class="muted">' + esc(fmtTime(o.order_date)) + '</span></td>' +
+      '<td class="c-cust"><div class="name">' + esc(o.customer.name) + '</div><div class="muted">' + esc(o.customer.phone) + '</div></td>' +
+      '<td class="c-addr">' + esc(a.location) + '<br><span class="muted">' + esc(a.upazila) + ', ' + esc(a.district) + ', ' + esc(a.division) + '</span></td>' +
+      '<td class="c-items">' + items + '</td>' +
+      '<td class="c-num">' + money(o.subtotal) + '</td>' +
+      '<td class="c-num">' + money(o.delivery_charge) + '</td>' +
+      '<td class="c-num"><strong>' + money(o.total) + '</strong></td>' +
+    '</tr>';
+  }).join("");
+  document.getElementById("rows").innerHTML = html;
+
+  document.getElementById("foot").innerHTML =
+    '<tr><td colspan="6" style="text-align:right">Total (' + orders.length + ' orders)</td>' +
+    '<td class="c-num">' + money(sumSub) + '</td>' +
+    '<td class="c-num">' + money(sumDel) + '</td>' +
+    '<td class="c-num">' + money(sumTot) + '</td></tr>';
+})();
+</script>
+</body>
+</html>
