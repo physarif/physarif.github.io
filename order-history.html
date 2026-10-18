@@ -8,72 +8,55 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#1c1c1e; --muted:#6b6b70; --line:#cfcfd3; --accent:#7a1f3d; }
-  @page { size: A4 portrait; margin: 14mm 12mm 16mm; }
+  :root { --ink:#1f1f1f; --muted:#5f6368; --grid:#c4c7c5; --head:#f1f3f4; --accent:#7a1f3d; }
+  @page { size: A4 landscape; margin: 10mm 10mm 12mm; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
     font-family: "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Nirmala UI", Arial, sans-serif;
-    font-size: 11px; line-height: 1.5; color: var(--ink); background: #fff;
+    font-size: 11px; line-height: 1.4; color: var(--ink); background: #fff;
     -webkit-print-color-adjust: exact; print-color-adjust: exact;
   }
-  .page { max-width: 860px; margin: 0 auto; padding: 28px 24px 56px; }
+  .page { max-width: 1180px; margin: 0 auto; padding: 24px 20px 48px; }
 
-  .toolbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+  .toolbar { display: flex; justify-content: flex-end; margin-bottom: 14px; }
   .toolbar button { font: inherit; font-size: 13px; padding: 8px 18px; border: 0; background: var(--ink); color: #fff; border-radius: 6px; cursor: pointer; }
 
-  .masthead { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 14px; border-bottom: 2px solid var(--accent); }
-  .brand { font-family: "Playfair Display", Georgia, serif; font-size: 34px; font-weight: 700; letter-spacing: .02em; color: var(--accent); line-height: 1; }
+  .masthead { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 10px; border-bottom: 2px solid var(--accent); }
+  .brand { font-family: "Playfair Display", Georgia, serif; font-size: 30px; font-weight: 700; letter-spacing: .02em; color: var(--accent); line-height: 1; }
   .doc-title { text-align: right; }
-  .doc-title .t { font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
-  .doc-title .p { color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  .doc-title .t { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+  .doc-title .p { color: var(--muted); font-size: 11px; margin-top: 2px; }
 
-  .summary { display: grid; grid-template-columns: repeat(5, 1fr); margin: 16px 0 22px; border-bottom: 1px solid var(--line); padding-bottom: 16px; }
-  .summary .m { padding: 0 14px; border-left: 1px solid var(--line); }
-  .summary .m:first-child { padding-left: 0; border-left: 0; }
-  .summary .l { font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-  .summary .v { font-size: 17px; font-weight: 700; margin-top: 3px; }
-  .summary .m.total .v { color: var(--accent); }
+  .summary { display: flex; gap: 28px; margin: 10px 0 14px; font-size: 11px; color: var(--muted); }
+  .summary b { color: var(--ink); font-weight: 600; font-size: 13px; margin-left: 4px; }
 
-  /* Receipt cards */
-  .orders { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .order {
-    border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px 12px; background: #fff;
-    break-inside: avoid; page-break-inside: avoid;
-    font-family: "Courier New", "Noto Sans Bengali", monospace; font-size: 11px;
-  }
-  .sans { font-family: "Noto Sans Bengali", "Kalpurush", "SolaimanLipi", "Nirmala UI", Arial, sans-serif; }
-  .o-info { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 10px; }
-  .o-meta { text-align: right; }
-  .o-addr { margin-top: 4px; }
-  .o-id { font-size: 14px; font-weight: 700; letter-spacing: .12em; }
-  .o-date { color: var(--muted); font-size: 10.5px; line-height: 1.4; }
-  .dash { border-top: 1px dashed #999; margin: 9px 0; }
-  .cname { font-weight: 600; font-size: 12px; }
-  .muted { color: var(--muted); }
-  .row { display: flex; justify-content: space-between; align-items: flex-end; gap: 6px; }
-  .row .lead { flex: 1; border-bottom: 1px dotted #999; margin: 0 2px 4px; min-width: 10px; }
-  .row .n { max-width: 70%; }
-  .row .n small { color: var(--muted); }
-  .row.sub { color: var(--muted); }
-  .row.sub .lead { display: none; }
-  .row.grand { font-size: 13px; font-weight: 700; }
-  .row.grand .lead { display: none; }
+  /* Sheet */
+  .sheet { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10.5px; }
+  .sheet th, .sheet td { border: 1px solid var(--grid); padding: 3px 6px; vertical-align: top; text-align: left; font-weight: 400; overflow-wrap: anywhere; }
+  .sheet thead { display: table-header-group; }
+  .sheet tr { break-inside: avoid; page-break-inside: avoid; }
+  .sheet .L { background: var(--head); color: var(--muted); text-align: center; font-size: 10px; padding: 1px 4px; }
+  .sheet .rn { background: var(--head); color: var(--muted); text-align: center; padding: 3px 2px; font-size: 10px; }
+  .sheet th.h { background: var(--head); font-weight: 600; }
+  .sheet .id { font-family: "Courier New", monospace; font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
+  .sheet .num { text-align: right; white-space: nowrap; }
+  .sheet .it + .it { margin-top: 1px; }
+  .sheet .it small { color: var(--muted); }
+  .sheet tfoot td { background: var(--head); font-weight: 600; }
 
-  .running { position: fixed; left: 0; right: 0; bottom: 0; display: none; justify-content: space-between; font-size: 9px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 4px; }
+  .c-rn { width: 3.2%; } .c-id { width: 8%; } .c-date { width: 11.5%; } .c-name { width: 12%; }
+  .c-ph { width: 10%; } .c-addr { width: 25%; } .c-items { width: 17.5%; } .c-tot { width: 13%; }
 
-  @media (max-width: 640px) {
-    .orders { grid-template-columns: 1fr; }
-    .summary { grid-template-columns: repeat(2, 1fr); row-gap: 12px; }
-    .summary .m:nth-child(odd) { padding-left: 0; border-left: 0; }
-  }
+  .running { position: fixed; left: 0; right: 0; bottom: 0; display: none; justify-content: space-between; font-size: 9px; color: var(--muted); border-top: 1px solid var(--grid); padding-top: 3px; }
+
+  @media (max-width: 900px) { .tablewrap { overflow-x: auto; } .sheet { min-width: 900px; } .summary { flex-wrap: wrap; gap: 10px 22px; } }
   @media print {
     .toolbar { display: none; }
     .page { max-width: none; padding: 0; }
     .running { display: flex; }
-    .orders { grid-template-columns: 1fr 1fr; }
-    .summary { grid-template-columns: repeat(5, 1fr); }
-    body { font-size: 10.5px; }
+    .tablewrap { overflow: visible; }
+    .sheet { min-width: 0; }
   }
 </style>
 </head>
@@ -90,7 +73,21 @@
   </header>
 
   <section class="summary" id="summary"></section>
-  <main class="orders" id="orders"></main>
+
+  <div class="tablewrap">
+    <table class="sheet">
+      <colgroup>
+        <col class="c-rn"><col class="c-id"><col class="c-date"><col class="c-name">
+        <col class="c-ph"><col class="c-addr"><col class="c-items"><col class="c-tot">
+      </colgroup>
+      <thead>
+        <tr><th class="L"></th><th class="L">A</th><th class="L">B</th><th class="L">C</th><th class="L">D</th><th class="L">E</th><th class="L">F</th><th class="L">G</th></tr>
+        <tr><th class="rn">1</th><th class="h">Order</th><th class="h">Date</th><th class="h">Name</th><th class="h">Phone</th><th class="h">Address</th><th class="h">Items</th><th class="h">Total</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+      <tfoot id="foot"></tfoot>
+    </table>
+  </div>
 </div>
 <div class="running"><span id="run-brand">Orongona</span><span>Order History</span></div>
 
@@ -135,37 +132,34 @@
     sumSub += o.subtotal; sumDel += o.delivery_charge; sumTot += o.total;
     o.items.forEach(function (i) { itemCount += i.quantity; });
   });
-  function metric(label, value, cls) {
-    return '<div class="m ' + (cls || "") + '"><div class="l">' + esc(label) + '</div><div class="v">' + esc(value) + '</div></div>';
-  }
-  document.getElementById("summary").innerHTML =
-    metric("Orders", orders.length) +
-    metric("Items sold", itemCount) +
-    metric("Products", money(sumSub)) +
-    metric("Delivery", money(sumDel)) +
-    metric("Total", money(sumTot), "total");
 
-  document.getElementById("orders").innerHTML = orders.map(function (o) {
+  function stat(label, value) { return '<div>' + esc(label) + '<b>' + esc(value) + '</b></div>'; }
+  document.getElementById("summary").innerHTML =
+    stat("Orders", orders.length) + stat("Items sold", itemCount) +
+    stat("Products", money(sumSub)) + stat("Delivery", money(sumDel)) + stat("Total", money(sumTot));
+
+  document.getElementById("rows").innerHTML = orders.map(function (o, idx) {
     var a = o.customer.address || {};
     var area = [a.upazila, a.district];
     if (a.division && a.division !== a.district) area.push(a.division);
     var items = o.items.map(function (i) {
-      var detail = i.quantity > 1 ? ' <small>(' + i.quantity + ' × ' + num(i.unit_price) + ')</small>' : "";
-      return '<div class="row"><span class="n sans">' + esc(i.name) + detail + '</span><span class="lead"></span><span>' + num(i.line_total) + '</span></div>';
+      return '<div class="it">' + esc(i.name) + (i.quantity > 1 ? ' <small>×' + i.quantity + '</small>' : '') + '</div>';
     }).join("");
-    return '<article class="order">' +
-      '<div class="o-info">' +
-        '<div class="sans"><div class="cname">' + esc(o.customer.name) + '</div><div class="muted">' + esc(o.customer.phone) + '</div>' +
-          '<div class="o-addr">' + esc(a.location) + '. ' + esc(area.join(", ")) + '</div></div>' +
-        '<div class="o-meta"><div class="o-id">#' + esc(o.order_id) + '</div>' +
-          '<div class="o-date">' + esc(fmtDate(o.order_date)) + '<br>' + esc(fmtTime(o.order_date)) + '</div></div>' +
-      '</div>' +
-      '<div class="dash"></div>' +
-      items +
-      '<div class="dash"></div>' +
-      '<div class="row grand"><span>Total</span><span class="lead"></span><span>' + num(o.subtotal) + '+' + num(o.delivery_charge) + '=' + num(o.total) + '</span></div>' +
-    '</article>';
+    return '<tr>' +
+      '<td class="rn">' + (idx + 2) + '</td>' +
+      '<td class="id">#' + esc(o.order_id) + '</td>' +
+      '<td>' + esc(fmtDate(o.order_date)) + ', ' + esc(fmtTime(o.order_date)) + '</td>' +
+      '<td>' + esc(o.customer.name) + '</td>' +
+      '<td>' + esc(o.customer.phone) + '</td>' +
+      '<td>' + esc(a.location) + '. ' + esc(area.join(", ")) + '</td>' +
+      '<td>' + items + '</td>' +
+      '<td class="num">' + num(o.subtotal) + '+' + num(o.delivery_charge) + '=' + num(o.total) + '</td>' +
+    '</tr>';
   }).join("");
+
+  document.getElementById("foot").innerHTML =
+    '<tr><td class="rn">' + (orders.length + 2) + '</td><td colspan="6" style="text-align:right">Total (' + orders.length + ' orders)</td>' +
+    '<td class="num">' + num(sumSub) + '+' + num(sumDel) + '=' + num(sumTot) + '</td></tr>';
 })();
 </script>
 </body>
