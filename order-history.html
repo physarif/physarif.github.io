@@ -24,6 +24,7 @@
 
   .masthead { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 10px; border-bottom: 2px solid var(--accent); }
   .brand { font-family: "Playfair Display", Georgia, serif; font-size: 30px; font-weight: 700; letter-spacing: .02em; color: var(--accent); line-height: 1; }
+  .site { font-size: 10.5px; color: var(--muted); margin-top: 4px; letter-spacing: .02em; }
   .doc-title { text-align: right; }
   .doc-title .t { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
   .doc-title .p { color: var(--muted); font-size: 11px; margin-top: 2px; }
@@ -49,6 +50,7 @@
   .sheet tfoot td { background: var(--head) !important; font-weight: 700; border-top: 2px solid var(--ink); }
   .sheet tfoot .accent { color: var(--accent); }
 
+  .auto-note { margin-top: 10px; font-size: 9.5px; color: var(--muted); overflow-wrap: anywhere; break-inside: avoid; }
   .running { position: fixed; left: 0; right: 0; bottom: -11mm; display: none; justify-content: space-between; font-size: 9px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 3px; }
 
   @media (max-width: 900px) { .tw { overflow-x: auto; } .sheet { min-width: 760px; } }
@@ -66,7 +68,10 @@
   <div class="toolbar"><button onclick="window.print()">Print / Save as PDF</button></div>
 
   <header class="masthead">
-    <div class="brand" id="brand">Orongona</div>
+    <div>
+      <div class="brand" id="brand">Orongona</div>
+      <div class="site">https://orongona.shop</div>
+    </div>
     <div class="doc-title">
       <div class="t">Order History</div>
       <div class="p" id="period"></div>
@@ -87,6 +92,7 @@
       <tfoot id="foot"></tfoot>
     </table>
   </div>
+  <div class="auto-note">এই স্টেটমেন্ট Rapid Bikroy সিস্টেমে থাকা অর্ডার ডেটা থেকে স্বয়ংক্রিয়ভাবে তৈরি। সত্যতা যাচাই: https://rapidbikroy.shop/verify/RB-ORD-20261019-ORONGONA</div>
 </div>
 <div class="running"><span id="run-brand">Orongona</span><span>Order History</span></div>
 
