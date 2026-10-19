@@ -4,26 +4,26 @@ const orderHistory = {
     "currency": "BDT"
   },
   "period": {
-    "from": "2026-08-15",
-    "to": "2026-09-15"
+    "from": "2026-09-15",
+    "to": "2026-10-15"
   },
   "summary": {
-    "total_orders": 94,
-    "total_amount": 139890
+    "total_orders": 85,
+    "total_amount": 130320
   },
   "orders": [
     {
-      "order_id": "U2UH2U",
-      "order_date": "2026-08-15T10:48:50+06:00",
+      "order_id": "T5D7A4",
+      "order_date": "2026-09-15T13:56:54+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "সাবরিনা ইসলাম",
-        "phone": "01854138***",
+        "name": "জেসমিন",
+        "phone": "01366683***",
         "address": {
-          "division": "ঢাকা",
-          "district": "টাঙ্গাইল",
-          "upazila": "টাঙ্গাইল সদর",
-          "location": "মধ্যপাড়া, থানা রোড, ফার্মেসির পাশে"
+          "division": "চট্টগ্রাম",
+          "district": "নোয়াখালী",
+          "upazila": "সুবর্ণচর",
+          "location": "বাংলাবাজার, ওয়ার্ড-৩, মাদ্রাসার পাশে"
         }
       },
       "items": [
@@ -40,20 +40,277 @@ const orderHistory = {
       "total": 750
     },
     {
-      "order_id": "N657ZR",
-      "order_date": "2026-08-15T18:49:59+06:00",
+      "order_id": "T4L24F",
+      "order_date": "2026-09-15T21:47:05+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "তামান্না",
-        "phone": "01889715***",
+        "name": "Shamima Nasrin",
+        "phone": "01679381***",
         "address": {
-          "division": "খুলনা",
-          "district": "খুলনা",
-          "upazila": "দাকোপ",
-          "location": "Dakshin Para, Kachari Road, next to the madrasa"
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-২৩, রোড-১৩, ধানমন্ডি"
         }
       },
       "items": [
+        {
+          "product_id": "P102",
+          "name": "Georgette Party Dress",
+          "unit_price": 1450,
+          "quantity": 1,
+          "line_total": 1450
+        }
+      ],
+      "subtotal": 1450,
+      "delivery_charge": 60,
+      "total": 1510
+    },
+    {
+      "order_id": "G889MF",
+      "order_date": "2026-09-15T22:47:02+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Sraboni",
+        "phone": "01675112***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১৪/এ, রোড-৯, মুগদা, মেডিকেল কলেজের কাছে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 60,
+      "total": 960
+    },
+    {
+      "order_id": "S59E6S",
+      "order_date": "2026-09-16T13:05:36+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "রহিমা বেগম",
+        "phone": "01495486***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "গাজীপুর",
+          "upazila": "গাজীপুর সদর",
+          "location": "বাসা-৩২, বোর্ডবাজার, ইসলামী বিশ্ববিদ্যালয় রোড"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "4H7S8X",
+      "order_date": "2026-09-16T14:24:27+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Sadia Islam",
+        "phone": "01419128***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "নরসিংদী",
+          "upazila": "নরসিংদী সদর",
+          "location": "মাধবদী বাজার, ওয়ার্ড-৫, হাসপাতাল রোড"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "8LW24B",
+      "order_date": "2026-09-16T17:37:50+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Rony",
+        "phone": "01332711***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "সাভার",
+          "location": "সাভার বাজার, বাসস্ট্যান্ডের পাশে, মাদ্রাসা গলি"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 80,
+      "total": 980
+    },
+    {
+      "order_id": "Z5TU66",
+      "order_date": "2026-09-17T11:52:40+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Maliha Khan",
+        "phone": "01831002***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "কিশোরগঞ্জ",
+          "upazila": "কিশোরগঞ্জ সদর",
+          "location": "গাইটাল, মসজিদ গলি, বাজারের কাছে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 2,
+          "line_total": 1800
+        }
+      ],
+      "subtotal": 1800,
+      "delivery_charge": 150,
+      "total": 1950
+    },
+    {
+      "order_id": "K544GM",
+      "order_date": "2026-09-18T13:39:35+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Farhana Yasmin",
+        "phone": "01326859***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-৪৫, রোড-৭, ব্লক-সি, মিরপুর-১০"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 60,
+      "total": 960
+    },
+    {
+      "order_id": "2N8G9Z",
+      "order_date": "2026-09-18T18:49:03+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Joty",
+        "phone": "01676426***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "সাভার",
+          "location": "হেমায়েতপুর, বাসা-৮, ওয়ার্ড-৩"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P102",
+          "name": "Georgette Party Dress",
+          "unit_price": 1450,
+          "quantity": 1,
+          "line_total": 1450
+        }
+      ],
+      "subtotal": 1450,
+      "delivery_charge": 80,
+      "total": 1530
+    },
+    {
+      "order_id": "5ZYE49",
+      "order_date": "2026-09-18T19:04:29+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Kaniz Fatema",
+        "phone": "01804844***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "গাজীপুর",
+          "upazila": "কালীগঞ্জ",
+          "location": "তুমুলিয়া বাজার, মসজিদ গলি"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P110",
+          "name": "Georgette Two Piece Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 1800,
+      "delivery_charge": 150,
+      "total": 1950
+    },
+    {
+      "order_id": "RE3R59",
+      "order_date": "2026-09-18T23:37:10+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "সুবর্ণা দাস",
+        "phone": "01538831***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "মুন্সিগঞ্জ",
+          "upazila": "শ্রীনগর",
+          "location": "হাঁসাড়া বাজার, মাদ্রাসার পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
         {
           "product_id": "P105",
           "name": "Hand Print Saari",
@@ -62,22 +319,151 @@ const orderHistory = {
           "line_total": 1000
         }
       ],
-      "subtotal": 1000,
+      "subtotal": 1900,
       "delivery_charge": 150,
-      "total": 1150
+      "total": 2050
     },
     {
-      "order_id": "J7E2V0",
-      "order_date": "2026-08-15T21:12:41+06:00",
+      "order_id": "6L7X8G",
+      "order_date": "2026-09-19T13:09:30+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "নাজমা জাহান",
-        "phone": "01688154***",
+        "name": "Jannatul Ferdaus",
+        "phone": "01626516***",
+        "address": {
+          "division": "সিলেট",
+          "district": "সিলেট",
+          "upazila": "জৈন্তাপুর",
+          "location": "চারিকাটা বাজার, স্কুলের সামনে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P106",
+          "name": "Readymade Three Piece",
+          "unit_price": 1200,
+          "quantity": 1,
+          "line_total": 1200
+        },
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        }
+      ],
+      "subtotal": 2700,
+      "delivery_charge": 150,
+      "total": 2850
+    },
+    {
+      "order_id": "V53R5T",
+      "order_date": "2026-09-19T13:32:21+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "শান্ত",
+        "phone": "01555640***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ধামরাই",
+          "location": "ধামরাই বাজার, রথখোলা মোড়, মাদ্রাসার পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P102",
+          "name": "Georgette Party Dress",
+          "unit_price": 1450,
+          "quantity": 1,
+          "line_total": 1450
+        },
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 2350,
+      "delivery_charge": 80,
+      "total": 2430
+    },
+    {
+      "order_id": "3P25AJ",
+      "order_date": "2026-09-20T15:54:46+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "সাবিনা ইয়াসমীন",
+        "phone": "01449208***",
         "address": {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 12, Uttara Sector 7, near the bazar"
+          "location": "বাসা-২১, রোড-১৮, রামপুরা, ব্রিজের কাছে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P110",
+          "name": "Georgette Two Piece Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 60,
+      "total": 960
+    },
+    {
+      "order_id": "6BX44J",
+      "order_date": "2026-09-20T18:10:39+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Bithi",
+        "phone": "01650961***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "নারায়ণগঞ্জ",
+          "upazila": "আড়াইহাজার",
+          "location": "গোপালদী বাজার, ওয়ার্ড-৪"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "J3VN76",
+      "order_date": "2026-09-20T19:42:06+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Arif Hossain",
+        "phone": "01888181***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১৮, রোড-১১, কল্যাণপুর"
         }
       },
       "items": [
@@ -94,22 +480,97 @@ const orderHistory = {
       "total": 660
     },
     {
-      "order_id": "S4U5I3",
-      "order_date": "2026-08-15T23:23:36+06:00",
+      "order_id": "V7R9C7",
+      "order_date": "2026-09-20T19:55:31+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "Tanvir Ahmed",
-        "phone": "01746624***",
+        "name": "Ayesha Sidddika",
+        "phone": "01846288***",
         "address": {
-          "division": "বরিশাল",
-          "district": "বরিশাল",
-          "upazila": "বরিশাল সদর",
-          "location": "Bazar Road, Thana Road"
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-৩৩, রোড-১৪, যাত্রাবাড়ী"
         }
       },
       "items": [
         {
-          "product_id": "P108",
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P110",
+          "name": "Georgette Two Piece Gown",
+          "unit_price": 900,
+          "quantity": 2,
+          "line_total": 1800
+        },
+        {
+          "product_id": "P102",
+          "name": "Georgette Party Dress",
+          "unit_price": 1450,
+          "quantity": 1,
+          "line_total": 1450
+        }
+      ],
+      "subtotal": 4150,
+      "delivery_charge": 60,
+      "total": 4210
+    },
+    {
+      "order_id": "9PQ83M",
+      "order_date": "2026-09-21T12:39:18+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "মোঃ জুবায়ের",
+        "phone": "01413228***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "কিশোরগঞ্জ",
+          "upazila": "পাকুন্দিয়া",
+          "location": "এগারসিন্দুর, মাদ্রাসা গলি"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P110",
+          "name": "Georgette Two Piece Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 1800,
+      "delivery_charge": 150,
+      "total": 1950
+    },
+    {
+      "order_id": "R7X77X",
+      "order_date": "2026-09-21T14:13:47+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "সুমাইয়া ইসলাম",
+        "phone": "01649118***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "টাঙ্গাইল",
+          "upazila": "মির্জাপুর",
+          "location": "গোড়াই বাজার, মসজিদের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
           "name": "Hand Print Half Silk Sharee",
           "unit_price": 900,
           "quantity": 1,
@@ -121,125 +582,44 @@ const orderHistory = {
       "total": 1050
     },
     {
-      "order_id": "P3YY5L",
-      "order_date": "2026-08-17T06:29:57+06:00",
+      "order_id": "2TJF32",
+      "order_date": "2026-09-21T22:34:38+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "Mou",
-        "phone": "01716734***",
+        "name": "Shila",
+        "phone": "01706044***",
         "address": {
           "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "নবাবগঞ্জ",
-          "location": "কাচারি রোড, মধ্যপাড়া"
+          "district": "টাঙ্গাইল",
+          "upazila": "টাঙ্গাইল সদর",
+          "location": "আকুরটাকুর পাড়া, মাদ্রাসার পাশে"
         }
       },
       "items": [
         {
-          "product_id": "P105",
-          "name": "Hand Print Saari",
-          "unit_price": 1000,
-          "quantity": 1,
-          "line_total": 1000
-        }
-      ],
-      "subtotal": 1000,
-      "delivery_charge": 150,
-      "total": 1150
-    },
-    {
-      "order_id": "SF77L5",
-      "order_date": "2026-08-17T13:52:43+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "দিশা ইয়াসমিন",
-        "phone": "01313619***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "সাভার",
-          "location": "থানা রোড, দক্ষিণ পাড়া"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
+          "product_id": "P104",
+          "name": "Sequence Gown",
           "unit_price": 900,
           "quantity": 1,
           "line_total": 900
         }
       ],
       "subtotal": 900,
-      "delivery_charge": 80,
-      "total": 980
-    },
-    {
-      "order_id": "B6VU1L",
-      "order_date": "2026-08-17T14:23:55+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "নুরজাহান ইসলাম",
-        "phone": "01925873***",
-        "address": {
-          "division": "রাজশাহী",
-          "district": "বগুড়া",
-          "upazila": "বগুড়া সদর",
-          "location": "কলেজ রোড, নয়াপাড়া"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
-          "quantity": 1,
-          "line_total": 2200
-        }
-      ],
-      "subtotal": 2200,
       "delivery_charge": 150,
-      "total": 2350
+      "total": 1050
     },
     {
-      "order_id": "W9Q5R5",
-      "order_date": "2026-08-18T19:24:49+06:00",
+      "order_id": "9MF9F6",
+      "order_date": "2026-09-22T13:22:17+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "Sumaiya Yasmin",
-        "phone": "01583568***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "কেরাণীগঞ্জ",
-          "location": "Noya Para, Poschim Para, near the bazar"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 80,
-      "total": 980
-    },
-    {
-      "order_id": "W5B2X9",
-      "order_date": "2026-08-19T10:25:44+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "প্রিয়া",
-        "phone": "01801953***",
+        "name": "Mim",
+        "phone": "01850752***",
         "address": {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-১৯, দক্ষিণখান"
+          "location": "বাসা-৯, রোড-১৭, দক্ষিণখান, কলেজ গেটের কাছে"
         }
       },
       "items": [
@@ -256,153 +636,17 @@ const orderHistory = {
       "total": 960
     },
     {
-      "order_id": "PT27R8",
-      "order_date": "2026-08-19T19:58:16+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Israt",
-        "phone": "01472047***",
-        "address": {
-          "division": "রংপুর",
-          "district": "দিনাজপুর",
-          "upazila": "দিনাজপুর সদর",
-          "location": "Bazar Road, Uttar Para, next to the mosque"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P106",
-          "name": "Readymade Three Piece",
-          "unit_price": 1200,
-          "quantity": 1,
-          "line_total": 1200
-        },
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        },
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 3550,
-      "delivery_charge": 150,
-      "total": 3700
-    },
-    {
-      "order_id": "1R1H9F",
-      "order_date": "2026-08-19T21:27:34+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Shahnaz",
-        "phone": "01821619***",
-        "address": {
-          "division": "রংপুর",
-          "district": "রংপুর",
-          "upazila": "রংপুর সদর",
-          "location": "Purbo Para, Noya Para"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P106",
-          "name": "Readymade Three Piece",
-          "unit_price": 1200,
-          "quantity": 1,
-          "line_total": 1200
-        }
-      ],
-      "subtotal": 1200,
-      "delivery_charge": 150,
-      "total": 1350
-    },
-    {
-      "order_id": "K5H6K6",
-      "order_date": "2026-08-20T18:52:42+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Tanjila",
-        "phone": "01356150***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "সাভার",
-          "location": "Kachari Road, Thana Road"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 2,
-          "line_total": 1800
-        }
-      ],
-      "subtotal": 1800,
-      "delivery_charge": 80,
-      "total": 1880
-    },
-    {
-      "order_id": "C037PC",
-      "order_date": "2026-08-21T13:31:02+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Tanjila Yasmin",
-        "phone": "01426056***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "নরসিংদী",
-          "upazila": "নরসিংদী সদর",
-          "location": "Bazar Road, Uttar Para, near college gate"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
-          "quantity": 1,
-          "line_total": 2200
-        },
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        },
-        {
-          "product_id": "P101",
-          "name": "Premium Stylish Skirt Set",
-          "unit_price": 1300,
-          "quantity": 1,
-          "line_total": 1300
-        }
-      ],
-      "subtotal": 4400,
-      "delivery_charge": 150,
-      "total": 4550
-    },
-    {
-      "order_id": "Y9Z1X6",
-      "order_date": "2026-08-21T20:22:27+06:00",
+      "order_id": "YE3Z25",
+      "order_date": "2026-09-22T14:59:18+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
         "name": "Jui",
-        "phone": "01769865***",
+        "phone": "01610788***",
         "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 19, Mohammadpur"
+          "division": "ময়মনসিংহ",
+          "district": "ময়মনসিংহ",
+          "upazila": "ময়মনসিংহ সদর",
+          "location": "চরপাড়া, বাসা-২২, বাজার রোড"
         }
       },
       "items": [
@@ -415,21 +659,21 @@ const orderHistory = {
         }
       ],
       "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
+      "delivery_charge": 150,
+      "total": 1050
     },
     {
-      "order_id": "6Y2I9U",
-      "order_date": "2026-08-21T20:33:29+06:00",
+      "order_id": "N33T4N",
+      "order_date": "2026-09-22T16:21:33+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "রিয়া",
-        "phone": "01734614***",
+        "name": "Mahmuda Begum",
+        "phone": "01343667***",
         "address": {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-৩, হাজারীবাগ, মাদ্রাসার পাশে"
+          "location": "বাসা-১২, মালিবাগ চৌধুরীপাড়া, স্কুলের সামনে"
         }
       },
       "items": [
@@ -446,17 +690,450 @@ const orderHistory = {
       "total": 1060
     },
     {
-      "order_id": "WP71R1",
-      "order_date": "2026-08-22T09:42:33+06:00",
+      "order_id": "9QGW24",
+      "order_date": "2026-09-23T15:22:11+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "Nurjahan Chowdhury",
-        "phone": "01482739***",
+        "name": "সাকিব",
+        "phone": "01672720***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১৫, রোড-৩, কামরাঙ্গীরচর"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P110",
+          "name": "Georgette Two Piece Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P101",
+          "name": "Premium Stylish Skirt Set",
+          "unit_price": 1300,
+          "quantity": 1,
+          "line_total": 1300
+        }
+      ],
+      "subtotal": 2200,
+      "delivery_charge": 60,
+      "total": 2260
+    },
+    {
+      "order_id": "5TZ4V4",
+      "order_date": "2026-09-24T11:16:31+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Mehjabin Chowdhury",
+        "phone": "01405652***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-৭, রোড-১০, কল্যাণপুর"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P102",
+          "name": "Georgette Party Dress",
+          "unit_price": 1450,
+          "quantity": 1,
+          "line_total": 1450
+        },
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        },
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 2950,
+      "delivery_charge": 60,
+      "total": 3010
+    },
+    {
+      "order_id": "2LJ4B9",
+      "order_date": "2026-09-24T12:03:16+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Imran Khan",
+        "phone": "01427654***",
+        "address": {
+          "division": "বরিশাল",
+          "district": "বরিশাল",
+          "upazila": "বাবুগঞ্জ",
+          "location": "রহমতপুর বাজার, স্কুলের সামনে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "K9ZM82",
+      "order_date": "2026-09-24T14:20:20+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Dola",
+        "phone": "01670066***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-২৯, রোড-৯, মিরপুর-১"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 60,
+      "total": 960
+    },
+    {
+      "order_id": "7U6J4C",
+      "order_date": "2026-09-25T12:14:21+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "মৌসুমী আক্তার",
+        "phone": "01715516***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "সাভার",
+          "location": "বাইপাইল বাজার, আশুলিয়া"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        }
+      ],
+      "subtotal": 600,
+      "delivery_charge": 80,
+      "total": 680
+    },
+    {
+      "order_id": "Q9M96M",
+      "order_date": "2026-09-25T13:55:28+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Samia",
+        "phone": "01735503***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "কেরাণীগঞ্জ",
+          "location": "শুভাঢ্যা, জিঞ্জিরা"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 80,
+      "total": 980
+    },
+    {
+      "order_id": "92S2BY",
+      "order_date": "2026-09-25T20:20:31+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "শারমিন আক্তার",
+        "phone": "01456068***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-৮, রোড-১৮, ব্লক-ডি, বনশ্রী"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P101",
+          "name": "Premium Stylish Skirt Set",
+          "unit_price": 1300,
+          "quantity": 1,
+          "line_total": 1300
+        }
+      ],
+      "subtotal": 2200,
+      "delivery_charge": 60,
+      "total": 2260
+    },
+    {
+      "order_id": "Y529QM",
+      "order_date": "2026-09-26T17:19:38+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Sohan",
+        "phone": "01731417***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ধামরাই",
+          "location": "কালামপুর বাজার, বাসস্ট্যান্ডের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P106",
+          "name": "Readymade Three Piece",
+          "unit_price": 1200,
+          "quantity": 1,
+          "line_total": 1200
+        }
+      ],
+      "subtotal": 1200,
+      "delivery_charge": 80,
+      "total": 1280
+    },
+    {
+      "order_id": "V68WW2",
+      "order_date": "2026-09-27T11:54:13+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Shakil",
+        "phone": "01859797***",
         "address": {
           "division": "খুলনা",
-          "district": "যশোর",
-          "upazila": "যশোর সদর",
-          "location": "Thana Road, Noya Para"
+          "district": "খুলনা",
+          "upazila": "দাকোপ",
+          "location": "বাজুয়া বাজার, মসজিদের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "9CXJ79",
+      "order_date": "2026-09-27T12:49:08+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "ফাতেমা খাতুন",
+        "phone": "01590139***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "গাজীপুর",
+          "upazila": "গাজীপুর সদর",
+          "location": "জয়দেবপুর, রাজবাড়ী রোড"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P102",
+          "name": "Georgette Party Dress",
+          "unit_price": 1450,
+          "quantity": 1,
+          "line_total": 1450
+        }
+      ],
+      "subtotal": 1450,
+      "delivery_charge": 150,
+      "total": 1600
+    },
+    {
+      "order_id": "VL72Q8",
+      "order_date": "2026-09-27T14:33:40+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Riya Moni",
+        "phone": "01773200***",
+        "address": {
+          "division": "সিলেট",
+          "district": "সিলেট",
+          "upazila": "দক্ষিণ সুরমা",
+          "location": "কুচাই, বাজারের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "5KB64Z",
+      "order_date": "2026-09-27T16:08:21+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "মামুন",
+        "phone": "01628990***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১৭, কাজলা, যাত্রাবাড়ী, ফার্মেসির পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 60,
+      "total": 960
+    },
+    {
+      "order_id": "525PND",
+      "order_date": "2026-09-27T20:04:31+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "তানভীর আহমেদ",
+        "phone": "01404352***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "নারায়ণগঞ্জ",
+          "upazila": "নারায়ণগঞ্জ সদর",
+          "location": "চাষাঢ়া, বাসা-১১, ফার্মেসির পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P103",
+          "name": "Luxury Party Lehenga – Red",
+          "unit_price": 2200,
+          "quantity": 1,
+          "line_total": 2200
+        }
+      ],
+      "subtotal": 2200,
+      "delivery_charge": 150,
+      "total": 2350
+    },
+    {
+      "order_id": "32FDP7",
+      "order_date": "2026-09-28T13:51:23+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Nowshin Tabassum",
+        "phone": "01978375***",
+        "address": {
+          "division": "চট্টগ্রাম",
+          "district": "চট্টগ্রাম",
+          "upazila": "রাউজান",
+          "location": "গহিরা, কলেজ গেটের কাছে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "8HM78Y",
+      "order_date": "2026-09-29T12:27:17+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Nayeem",
+        "phone": "01397923***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "নারায়ণগঞ্জ",
+          "upazila": "আড়াইহাজার",
+          "location": "আড়াইহাজার বাজার, হাসপাতালের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "3F6QP9",
+      "order_date": "2026-09-29T12:29:38+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Afrin Jhan",
+        "phone": "01630626***",
+        "address": {
+          "division": "সিলেট",
+          "district": "সিলেট",
+          "upazila": "সিলেট সদর",
+          "location": "বাসা-৫, আম্বরখানা"
         }
       },
       "items": [
@@ -473,50 +1150,226 @@ const orderHistory = {
       "total": 1350
     },
     {
-      "order_id": "S5E5G3",
-      "order_date": "2026-08-22T15:03:37+06:00",
+      "order_id": "FFY442",
+      "order_date": "2026-09-29T16:10:02+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "Ruma",
-        "phone": "01747575***",
+        "name": "Mou",
+        "phone": "01929022***",
         "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 7, Mirpur-10, next to the madrasa"
+          "division": "চট্টগ্রাম",
+          "district": "কুমিল্লা",
+          "upazila": "মুরাদনগর",
+          "location": "বাবুটিপাড়া বাজার, মসজিদের পাশে"
         }
       },
       "items": [
         {
-          "product_id": "P110",
-          "name": "Georgette Two Piece Gown",
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        },
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 1500,
+      "delivery_charge": 150,
+      "total": 1650
+    },
+    {
+      "order_id": "EX688F",
+      "order_date": "2026-09-29T16:51:27+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "হাসিব",
+        "phone": "01453412***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "নবাবগঞ্জ",
+          "location": "বান্দুরা বাজার, হলিক্রস স্কুলের কাছে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
           "unit_price": 900,
           "quantity": 1,
           "line_total": 900
         }
       ],
       "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
+      "delivery_charge": 150,
+      "total": 1050
     },
     {
-      "order_id": "8Z6Y1S",
-      "order_date": "2026-08-22T20:10:54+06:00",
+      "order_id": "43BT3G",
+      "order_date": "2026-09-29T17:41:28+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "Nila Ahmed",
-        "phone": "01993350***",
+        "name": "রাকিব হাসান",
+        "phone": "01724628***",
         "address": {
           "division": "ঢাকা",
           "district": "নারায়ণগঞ্জ",
-          "upazila": "সোনারগাঁও",
-          "location": "Dakshin Para, Master Para"
+          "upazila": "রূপগঞ্জ",
+          "location": "ভুলতা বাজার, ফার্মেসির পাশে"
         }
       },
       "items": [
         {
-          "product_id": "P110",
-          "name": "Georgette Two Piece Gown",
+          "product_id": "P102",
+          "name": "Georgette Party Dress",
+          "unit_price": 1450,
+          "quantity": 1,
+          "line_total": 1450
+        },
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 2350,
+      "delivery_charge": 150,
+      "total": 2500
+    },
+    {
+      "order_id": "US37D5",
+      "order_date": "2026-09-30T15:14:36+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "নাজমা",
+        "phone": "01323308***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১৩, রোড-৯, তেজগাঁও, ফার্মেসির পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P106",
+          "name": "Readymade Three Piece",
+          "unit_price": 1200,
+          "quantity": 1,
+          "line_total": 1200
+        }
+      ],
+      "subtotal": 1200,
+      "delivery_charge": 60,
+      "total": 1260
+    },
+    {
+      "order_id": "4M82SA",
+      "order_date": "2026-09-30T15:24:24+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "রাসেল",
+        "phone": "01418024***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-২, রোড-১, কল্যাণপুর"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P106",
+          "name": "Readymade Three Piece",
+          "unit_price": 1200,
+          "quantity": 1,
+          "line_total": 1200
+        }
+      ],
+      "subtotal": 1200,
+      "delivery_charge": 60,
+      "total": 1260
+    },
+    {
+      "order_id": "DLS385",
+      "order_date": "2026-10-01T13:32:22+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Tithi",
+        "phone": "01545166***",
+        "address": {
+          "division": "চট্টগ্রাম",
+          "district": "কুমিল্লা",
+          "upazila": "বুড়িচং",
+          "location": "বুড়িচং বাজার, মসজিদের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P105",
+          "name": "Hand Print Saari",
+          "unit_price": 1000,
+          "quantity": 1,
+          "line_total": 1000
+        }
+      ],
+      "subtotal": 1000,
+      "delivery_charge": 150,
+      "total": 1150
+    },
+    {
+      "order_id": "6TX7P2",
+      "order_date": "2026-10-01T17:58:29+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Fahmida Rahman",
+        "phone": "01314156***",
+        "address": {
+          "division": "চট্টগ্রাম",
+          "district": "চট্টগ্রাম",
+          "upazila": "বাঁশখালী",
+          "location": "গণ্ডামারা, বাজারের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P105",
+          "name": "Hand Print Saari",
+          "unit_price": 1000,
+          "quantity": 1,
+          "line_total": 1000
+        }
+      ],
+      "subtotal": 1000,
+      "delivery_charge": 150,
+      "total": 1150
+    },
+    {
+      "order_id": "9UU2R8",
+      "order_date": "2026-10-03T10:54:14+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Rumana Afrin",
+        "phone": "01393192***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "টাঙ্গাইল",
+          "upazila": "টাঙ্গাইল সদর",
+          "location": "বিশ্বাস বেতকা, মসজিদের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
           "unit_price": 900,
           "quantity": 1,
           "line_total": 900
@@ -534,1781 +1387,17 @@ const orderHistory = {
       "total": 1950
     },
     {
-      "order_id": "F4MH4K",
-      "order_date": "2026-08-22T21:38:41+06:00",
+      "order_id": "TL7Y83",
+      "order_date": "2026-10-03T14:20:23+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "নাজমা রহমান",
-        "phone": "01678106***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "মুন্সিগঞ্জ",
-          "upazila": "শ্রীনগর",
-          "location": "নয়াপাড়া, মাস্টারপাড়া"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "M111HP",
-      "order_date": "2026-08-22T21:58:27+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "পারভীন",
-        "phone": "01889030***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "নবাবগঞ্জ",
-          "location": "নয়াপাড়া, উত্তর পাড়া"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        }
-      ],
-      "subtotal": 1450,
-      "delivery_charge": 150,
-      "total": 1600
-    },
-    {
-      "order_id": "8W4Q4W",
-      "order_date": "2026-08-22T23:46:20+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "কামরুন সুলতানা",
-        "phone": "01988189***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "টাঙ্গাইল",
-          "upazila": "টাঙ্গাইল সদর",
-          "location": "কাচারি রোড, দক্ষিণ পাড়া, স্কুলের সামনে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        }
-      ],
-      "subtotal": 1450,
-      "delivery_charge": 150,
-      "total": 1600
-    },
-    {
-      "order_id": "9E6O3R",
-      "order_date": "2026-08-23T10:06:16+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Meherun Hossain",
-        "phone": "01993365***",
-        "address": {
-          "division": "বরিশাল",
-          "district": "বরিশাল",
-          "upazila": "বাবুগঞ্জ",
-          "location": "মধ্যপাড়া, নয়াপাড়া, স্কুলের সামনে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P107",
-          "name": "Printed Cotton Three Piece",
-          "unit_price": 600,
-          "quantity": 1,
-          "line_total": 600
-        }
-      ],
-      "subtotal": 600,
-      "delivery_charge": 150,
-      "total": 750
-    },
-    {
-      "order_id": "5U6M2N",
-      "order_date": "2026-08-23T14:55:04+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Rumana Parvin",
-        "phone": "01627493***",
-        "address": {
-          "division": "ময়মনসিংহ",
-          "district": "জামালপুর",
-          "upazila": "জামালপুর সদর",
-          "location": "Master Para, Kachari Road"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P104",
-          "name": "Sequence Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "7H2M2G",
-      "order_date": "2026-08-23T16:31:07+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "মোঃ সাকিব",
-        "phone": "01770837***",
-        "address": {
-          "division": "চট্টগ্রাম",
-          "district": "চট্টগ্রাম",
-          "upazila": "রাউজান",
-          "location": "নয়াপাড়া, থানা রোড"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P105",
-          "name": "Hand Print Saari",
-          "unit_price": 1000,
-          "quantity": 1,
-          "line_total": 1000
-        }
-      ],
-      "subtotal": 1000,
-      "delivery_charge": 150,
-      "total": 1150
-    },
-    {
-      "order_id": "V901KT",
-      "order_date": "2026-08-24T11:53:27+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Jui",
-        "phone": "01964272***",
-        "address": {
-          "division": "চট্টগ্রাম",
-          "district": "কক্সবাজার",
-          "upazila": "কক্সবাজার সদর",
-          "location": "College Road, Dakshin Para"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P107",
-          "name": "Printed Cotton Three Piece",
-          "unit_price": 600,
-          "quantity": 1,
-          "line_total": 600
-        }
-      ],
-      "subtotal": 600,
-      "delivery_charge": 150,
-      "total": 750
-    },
-    {
-      "order_id": "T602YM",
-      "order_date": "2026-08-24T16:42:45+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "নুসরাত জাহান",
-        "phone": "01626416***",
-        "address": {
-          "division": "চট্টগ্রাম",
-          "district": "চট্টগ্রাম",
-          "upazila": "হাটহাজারী",
-          "location": "মধ্যপাড়া, দক্ষিণ পাড়া, মাদ্রাসার পাশে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P101",
-          "name": "Premium Stylish Skirt Set",
-          "unit_price": 1300,
-          "quantity": 1,
-          "line_total": 1300
-        }
-      ],
-      "subtotal": 1300,
-      "delivery_charge": 150,
-      "total": 1450
-    },
-    {
-      "order_id": "Q7W4D5",
-      "order_date": "2026-08-24T21:59:05+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Halima",
-        "phone": "01897532***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 2, Moghbazar"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
-    },
-    {
-      "order_id": "O9U3F1",
-      "order_date": "2026-08-25T09:26:46+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Israt Mia",
-        "phone": "01891868***",
-        "address": {
-          "division": "সিলেট",
-          "district": "মৌলভীবাজার",
-          "upazila": "মৌলভীবাজার সদর",
-          "location": "মাস্টারপাড়া, পূর্ব পাড়া"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P107",
-          "name": "Printed Cotton Three Piece",
-          "unit_price": 600,
-          "quantity": 1,
-          "line_total": 600
-        }
-      ],
-      "subtotal": 600,
-      "delivery_charge": 150,
-      "total": 750
-    },
-    {
-      "order_id": "I086JD",
-      "order_date": "2026-08-25T13:30:02+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "জান্নাত",
-        "phone": "01777852***",
-        "address": {
-          "division": "চট্টগ্রাম",
-          "district": "কুমিল্লা",
-          "upazila": "কুমিল্লা সদর",
-          "location": "Dakshin Para, Kachari Road"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P110",
-          "name": "Georgette Two Piece Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "Y0GQ1J",
-      "order_date": "2026-08-25T21:17:27+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Jui",
-        "phone": "01758444***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ধামরাই",
-          "location": "পুরাতন বাজার, স্টেশন রোড"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P104",
-          "name": "Sequence Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 80,
-      "total": 980
-    },
-    {
-      "order_id": "4H6Y3J",
-      "order_date": "2026-08-25T21:40:26+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Mitu",
-        "phone": "01855821***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 13, Shyamoli"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P101",
-          "name": "Premium Stylish Skirt Set",
-          "unit_price": 1300,
-          "quantity": 1,
-          "line_total": 1300
-        }
-      ],
-      "subtotal": 1300,
-      "delivery_charge": 60,
-      "total": 1360
-    },
-    {
-      "order_id": "G241TO",
-      "order_date": "2026-08-26T12:57:11+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "আয়েশা সরকার",
-        "phone": "01929525***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 14, Malibagh"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P107",
-          "name": "Printed Cotton Three Piece",
-          "unit_price": 600,
-          "quantity": 2,
-          "line_total": 1200
-        }
-      ],
-      "subtotal": 1200,
-      "delivery_charge": 60,
-      "total": 1260
-    },
-    {
-      "order_id": "D0S7G5",
-      "order_date": "2026-08-28T11:26:41+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "হালিমা ইয়াসমিন",
-        "phone": "01729812***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "কেরাণীগঞ্জ",
-          "location": "থানা রোড, পুরাতন বাজার, মসজিদের পাশে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P105",
-          "name": "Hand Print Saari",
-          "unit_price": 1000,
-          "quantity": 1,
-          "line_total": 1000
-        }
-      ],
-      "subtotal": 1000,
-      "delivery_charge": 80,
-      "total": 1080
-    },
-    {
-      "order_id": "0E2K8U",
-      "order_date": "2026-08-28T15:06:57+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Shila",
-        "phone": "01643602***",
-        "address": {
-          "division": "ময়মনসিংহ",
-          "district": "জামালপুর",
-          "upazila": "জামালপুর সদর",
-          "location": "Purbo Para, Moddho Para, beside the pharmacy"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        }
-      ],
-      "subtotal": 1450,
-      "delivery_charge": 150,
-      "total": 1600
-    },
-    {
-      "order_id": "Z1O8I9",
-      "order_date": "2026-08-28T17:06:27+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Poly",
-        "phone": "01375688***",
-        "address": {
-          "division": "বরিশাল",
-          "district": "বরিশাল",
-          "upazila": "বরিশাল সদর",
-          "location": "Poschim Para, Notun Bazar"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P105",
-          "name": "Hand Print Saari",
-          "unit_price": 1000,
-          "quantity": 1,
-          "line_total": 1000
-        }
-      ],
-      "subtotal": 1000,
-      "delivery_charge": 150,
-      "total": 1150
-    },
-    {
-      "order_id": "A124RC",
-      "order_date": "2026-08-28T18:05:44+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Rumana",
-        "phone": "01862762***",
-        "address": {
-          "division": "রংপুর",
-          "district": "রংপুর",
-          "upazila": "রংপুর সদর",
-          "location": "Kachari Road, Purbo Para, next to the madrasa"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "M0RU3V",
-      "order_date": "2026-08-28T18:34:59+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Dola",
-        "phone": "01623076***",
+        "name": "শাওন",
+        "phone": "01882254***",
         "address": {
           "division": "সিলেট",
           "district": "সিলেট",
-          "upazila": "বিয়ানীবাজার",
-          "location": "Bazar Road, Noya Para"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
-          "quantity": 1,
-          "line_total": 2200
-        }
-      ],
-      "subtotal": 2200,
-      "delivery_charge": 150,
-      "total": 2350
-    },
-    {
-      "order_id": "A3P4Q6",
-      "order_date": "2026-08-28T21:21:07+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Halima Haque",
-        "phone": "01990270***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ফরিদপুর",
-          "upazila": "ফরিদপুর সদর",
-          "location": "Poschim Para, Thana Road, next to the madrasa"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P106",
-          "name": "Readymade Three Piece",
-          "unit_price": 1200,
-          "quantity": 1,
-          "line_total": 1200
-        },
-        {
-          "product_id": "P110",
-          "name": "Georgette Two Piece Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 2100,
-      "delivery_charge": 150,
-      "total": 2250
-    },
-    {
-      "order_id": "O637TR",
-      "order_date": "2026-08-29T08:42:22+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Sultana Sarker",
-        "phone": "01775428***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 7, Shyamoli"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P104",
-          "name": "Sequence Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
-    },
-    {
-      "order_id": "Y8L1A2",
-      "order_date": "2026-08-29T18:07:45+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Sharmin Siddika",
-        "phone": "01772311***",
-        "address": {
-          "division": "বরিশাল",
-          "district": "বরিশাল",
-          "upazila": "বাবুগঞ্জ",
-          "location": "স্টেশন রোড, নতুন বাজার"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
-          "quantity": 1,
-          "line_total": 2200
-        }
-      ],
-      "subtotal": 2200,
-      "delivery_charge": 150,
-      "total": 2350
-    },
-    {
-      "order_id": "8P6Y6S",
-      "order_date": "2026-08-29T22:10:16+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "রুমানা সিদ্দিকা",
-        "phone": "01797369***",
-        "address": {
-          "division": "বরিশাল",
-          "district": "বরিশাল",
-          "upazila": "বরিশাল সদর",
-          "location": "Station Road, Poschim Para"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "4Y8J2I",
-      "order_date": "2026-08-30T14:22:01+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Israt",
-        "phone": "01391538***",
-        "address": {
-          "division": "চট্টগ্রাম",
-          "district": "কুমিল্লা",
-          "upazila": "কুমিল্লা সদর",
-          "location": "Purbo Para, Uttar Para"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P106",
-          "name": "Readymade Three Piece",
-          "unit_price": 1200,
-          "quantity": 1,
-          "line_total": 1200
-        }
-      ],
-      "subtotal": 1200,
-      "delivery_charge": 150,
-      "total": 1350
-    },
-    {
-      "order_id": "IB17U4",
-      "order_date": "2026-08-30T16:19:43+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "মোঃ রনি",
-        "phone": "01796207***",
-        "address": {
-          "division": "চট্টগ্রাম",
-          "district": "চট্টগ্রাম",
-          "upazila": "হাটহাজারী",
-          "location": "নতুন বাজার, থানা রোড"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P107",
-          "name": "Printed Cotton Three Piece",
-          "unit_price": 600,
-          "quantity": 1,
-          "line_total": 600
-        }
-      ],
-      "subtotal": 600,
-      "delivery_charge": 150,
-      "total": 750
-    },
-    {
-      "order_id": "A3ZF1L",
-      "order_date": "2026-08-30T18:02:36+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "মেহেরুন নাহার",
-        "phone": "01786324***",
-        "address": {
-          "division": "সিলেট",
-          "district": "সিলেট",
-          "upazila": "জৈন্তাপুর",
-          "location": "পূর্ব পাড়া, থানা রোড"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P105",
-          "name": "Hand Print Saari",
-          "unit_price": 1000,
-          "quantity": 1,
-          "line_total": 1000
-        },
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 2,
-          "line_total": 1800
-        }
-      ],
-      "subtotal": 2800,
-      "delivery_charge": 150,
-      "total": 2950
-    },
-    {
-      "order_id": "D8QQ9C",
-      "order_date": "2026-08-30T20:15:59+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "শিউলি",
-        "phone": "01438859***",
-        "address": {
-          "division": "সিলেট",
-          "district": "মৌলভীবাজার",
-          "upazila": "মৌলভীবাজার সদর",
-          "location": "উত্তর পাড়া, নতুন বাজার, কলেজ গেটের কাছে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        },
-        {
-          "product_id": "P107",
-          "name": "Printed Cotton Three Piece",
-          "unit_price": 600,
-          "quantity": 2,
-          "line_total": 1200
-        }
-      ],
-      "subtotal": 2650,
-      "delivery_charge": 150,
-      "total": 2800
-    },
-    {
-      "order_id": "MS35C8",
-      "order_date": "2026-08-30T21:37:58+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Ruma",
-        "phone": "01747575***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 7, Mirpur-10, next to the madrasa"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P104",
-          "name": "Sequence Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
-    },
-    {
-      "order_id": "M2RI4K",
-      "order_date": "2026-08-31T21:37:52+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Puja Hossain",
-        "phone": "01531806***",
-        "address": {
-          "division": "খুলনা",
-          "district": "খুলনা",
-          "upazila": "দাকোপ",
-          "location": "Purbo Para, Thana Road"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P101",
-          "name": "Premium Stylish Skirt Set",
-          "unit_price": 1300,
-          "quantity": 1,
-          "line_total": 1300
-        }
-      ],
-      "subtotal": 1300,
-      "delivery_charge": 150,
-      "total": 1450
-    },
-    {
-      "order_id": "H1AQ0J",
-      "order_date": "2026-09-01T17:09:18+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Maryam Hossain",
-        "phone": "01719105***",
-        "address": {
-          "division": "চট্টগ্রাম",
-          "district": "চট্টগ্রাম",
-          "upazila": "সাতকানিয়া",
-          "location": "Master Para, Dakshin Para, next to the mosque"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        }
-      ],
-      "subtotal": 1450,
-      "delivery_charge": 150,
-      "total": 1600
-    },
-    {
-      "order_id": "E2YG1F",
-      "order_date": "2026-09-01T18:25:41+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "রাকিব",
-        "phone": "01961369***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-১৪, শ্যামলী, মাদ্রাসার পাশে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
-          "quantity": 1,
-          "line_total": 2200
-        }
-      ],
-      "subtotal": 2200,
-      "delivery_charge": 60,
-      "total": 2260
-    },
-    {
-      "order_id": "X9AW2R",
-      "order_date": "2026-09-01T21:20:21+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Mim",
-        "phone": "01490128***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 9, Malibagh"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P101",
-          "name": "Premium Stylish Skirt Set",
-          "unit_price": 1300,
-          "quantity": 1,
-          "line_total": 1300
-        }
-      ],
-      "subtotal": 1300,
-      "delivery_charge": 60,
-      "total": 1360
-    },
-    {
-      "order_id": "L297FN",
-      "order_date": "2026-09-01T21:27:19+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Rashida Mia",
-        "phone": "01871164***",
-        "address": {
-          "division": "ময়মনসিংহ",
-          "district": "ময়মনসিংহ",
-          "upazila": "ময়মনসিংহ সদর",
-          "location": "Thana Road, Moddho Para"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P104",
-          "name": "Sequence Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "TD44C3",
-      "order_date": "2026-09-03T16:02:57+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Tuli",
-        "phone": "01763268***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "কিশোরগঞ্জ",
-          "upazila": "ভৈরব",
-          "location": "Master Para, Purbo Para"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "F9G0H8",
-      "order_date": "2026-09-04T12:21:06+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "সুমাইয়া পারভীন",
-        "phone": "01959052***",
-        "address": {
-          "division": "বরিশাল",
-          "district": "বরিশাল",
-          "upazila": "বাবুগঞ্জ",
-          "location": "Moddho Para, Bazar Road"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P101",
-          "name": "Premium Stylish Skirt Set",
-          "unit_price": 1300,
-          "quantity": 1,
-          "line_total": 1300
-        }
-      ],
-      "subtotal": 1300,
-      "delivery_charge": 150,
-      "total": 1450
-    },
-    {
-      "order_id": "H0R1T0",
-      "order_date": "2026-09-04T16:40:15+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Rashida Akter",
-        "phone": "01706587***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 1, Wari, next to the mosque"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        }
-      ],
-      "subtotal": 1450,
-      "delivery_charge": 60,
-      "total": 1510
-    },
-    {
-      "order_id": "G4UV5N",
-      "order_date": "2026-09-04T17:29:53+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "নুরজাহান বেগম",
-        "phone": "01592167***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "টাঙ্গাইল",
-          "upazila": "টাঙ্গাইল সদর",
-          "location": "বাজার রোড, মধ্যপাড়া"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "W6L2G7",
-      "order_date": "2026-09-04T18:26:32+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "তাসনিম পারভীন",
-        "phone": "01641930***",
-        "address": {
-          "division": "সিলেট",
-          "district": "সিলেট",
-          "upazila": "বিয়ানীবাজার",
-          "location": "Station Road, Purbo Para, near the bazar"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "7Y5A7J",
-      "order_date": "2026-09-04T20:26:13+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "রিয়া",
-        "phone": "01734614***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-৩, হাজারীবাগ, মাদ্রাসার পাশে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
-    },
-    {
-      "order_id": "TL68I9",
-      "order_date": "2026-09-04T21:15:40+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Disha Rahman",
-        "phone": "01688361***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "মুন্সিগঞ্জ",
-          "upazila": "শ্রীনগর",
-          "location": "Dakshin Para, Bazar Road"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P104",
-          "name": "Sequence Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "H7B1M4",
-      "order_date": "2026-09-05T10:57:39+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "মৌমিতা",
-        "phone": "01785543***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "কেরাণীগঞ্জ",
-          "location": "Purano Bazar, Kachari Road"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P106",
-          "name": "Readymade Three Piece",
-          "unit_price": 1200,
-          "quantity": 1,
-          "line_total": 1200
-        }
-      ],
-      "subtotal": 1200,
-      "delivery_charge": 80,
-      "total": 1280
-    },
-    {
-      "order_id": "0T6U7G",
-      "order_date": "2026-09-05T20:32:24+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Afsana Ahmed",
-        "phone": "01595848***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-৪, খিলক্ষেত"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
-    },
-    {
-      "order_id": "M920GK",
-      "order_date": "2026-09-06T07:18:46+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "সুমি রহমান",
-        "phone": "01775457***",
-        "address": {
-          "division": "বরিশাল",
-          "district": "বরিশাল",
-          "upazila": "বরিশাল সদর",
-          "location": "Purano Bazar, Notun Bazar"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P104",
-          "name": "Sequence Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "F795ER",
-      "order_date": "2026-09-06T17:17:49+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Bobita Chowdhury",
-        "phone": "01673308***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 5, Wari"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P106",
-          "name": "Readymade Three Piece",
-          "unit_price": 1200,
-          "quantity": 1,
-          "line_total": 1200
-        }
-      ],
-      "subtotal": 1200,
-      "delivery_charge": 60,
-      "total": 1260
-    },
-    {
-      "order_id": "Q501LX",
-      "order_date": "2026-09-06T18:19:42+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Bobita Talukder",
-        "phone": "01450995***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "সাভার",
-          "location": "Bazar Road, Purano Bazar"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        },
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        }
-      ],
-      "subtotal": 2350,
-      "delivery_charge": 80,
-      "total": 2430
-    },
-    {
-      "order_id": "J430IY",
-      "order_date": "2026-09-07T01:36:01+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "তানজিলা",
-        "phone": "01439913***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-১১, মগবাজার"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        }
-      ],
-      "subtotal": 1450,
-      "delivery_charge": 60,
-      "total": 1510
-    },
-    {
-      "order_id": "N8PT9R",
-      "order_date": "2026-09-07T19:23:19+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "সাবরিনা সিদ্দিকা",
-        "phone": "01360998***",
-        "address": {
-          "division": "রাজশাহী",
-          "district": "রাজশাহী",
-          "upazila": "পবা",
-          "location": "পশ্চিম পাড়া, কাচারি রোড, ফার্মেসির পাশে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
-          "quantity": 1,
-          "line_total": 2200
-        }
-      ],
-      "subtotal": 2200,
-      "delivery_charge": 150,
-      "total": 2350
-    },
-    {
-      "order_id": "EW02W3",
-      "order_date": "2026-09-08T13:04:13+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "নুরজাহান সুলতানা",
-        "phone": "01662618***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-১৩, তেজগাঁও, ফার্মেসির পাশে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
-    },
-    {
-      "order_id": "B959DK",
-      "order_date": "2026-09-08T20:17:45+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "নুরজাহান খাতুন",
-        "phone": "01540225***",
-        "address": {
-          "division": "বরিশাল",
-          "district": "বরিশাল",
-          "upazila": "বাবুগঞ্জ",
-          "location": "দক্ষিণ পাড়া, স্টেশন রোড"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P107",
-          "name": "Printed Cotton Three Piece",
-          "unit_price": 600,
-          "quantity": 2,
-          "line_total": 1200
-        }
-      ],
-      "subtotal": 1200,
-      "delivery_charge": 150,
-      "total": 1350
-    },
-    {
-      "order_id": "8V7S5Q",
-      "order_date": "2026-09-08T22:09:02+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "নাজমা জাহান",
-        "phone": "01720782***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "টাঙ্গাইল",
-          "upazila": "মির্জাপুর",
-          "location": "স্টেশন রোড, পশ্চিম পাড়া"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P107",
-          "name": "Printed Cotton Three Piece",
-          "unit_price": 600,
-          "quantity": 1,
-          "line_total": 600
-        }
-      ],
-      "subtotal": 600,
-      "delivery_charge": 150,
-      "total": 750
-    },
-    {
-      "order_id": "C1N7L6",
-      "order_date": "2026-09-09T16:45:42+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Rashida Akter",
-        "phone": "01706587***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 1, Wari, next to the mosque"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
-    },
-    {
-      "order_id": "I0PG0C",
-      "order_date": "2026-09-09T20:54:44+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "আফসানা আহমেদ",
-        "phone": "01750358***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "কেরাণীগঞ্জ",
-          "location": "কলেজ রোড, বাজার রোড, মসজিদের পাশে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 80,
-      "total": 980
-    },
-    {
-      "order_id": "V135LN",
-      "order_date": "2026-09-09T21:38:30+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "রুমানা পারভীন",
-        "phone": "01786161***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "কিশোরগঞ্জ",
-          "upazila": "ভৈরব",
-          "location": "কলেজ রোড, পুরাতন বাজার, ফার্মেসির পাশে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        },
-        {
-          "product_id": "P106",
-          "name": "Readymade Three Piece",
-          "unit_price": 1200,
-          "quantity": 1,
-          "line_total": 1200
-        }
-      ],
-      "subtotal": 2100,
-      "delivery_charge": 150,
-      "total": 2250
-    },
-    {
-      "order_id": "T734EC",
-      "order_date": "2026-09-09T21:51:39+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "নাঈম",
-        "phone": "01739657***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-৭, বসুন্ধরা, কলেজ গেটের কাছে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P107",
-          "name": "Printed Cotton Three Piece",
-          "unit_price": 600,
-          "quantity": 1,
-          "line_total": 600
-        }
-      ],
-      "subtotal": 600,
-      "delivery_charge": 60,
-      "total": 660
-    },
-    {
-      "order_id": "4R6H0U",
-      "order_date": "2026-09-10T18:15:32+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "জান্নাত আক্তার",
-        "phone": "01959697***",
-        "address": {
-          "division": "সিলেট",
-          "district": "সিলেট",
-          "upazila": "বিয়ানীবাজার",
-          "location": "কাচারি রোড, মধ্যপাড়া"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P105",
-          "name": "Hand Print Saari",
-          "unit_price": 1000,
-          "quantity": 1,
-          "line_total": 1000
-        },
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        },
-        {
-          "product_id": "P104",
-          "name": "Sequence Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 2800,
-      "delivery_charge": 150,
-      "total": 2950
-    },
-    {
-      "order_id": "H313BN",
-      "order_date": "2026-09-10T20:14:29+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Eti",
-        "phone": "01381610***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 11, Badda, near college gate"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P105",
-          "name": "Hand Print Saari",
-          "unit_price": 1000,
-          "quantity": 1,
-          "line_total": 1000
-        }
-      ],
-      "subtotal": 1000,
-      "delivery_charge": 60,
-      "total": 1060
-    },
-    {
-      "order_id": "T114YN",
-      "order_date": "2026-09-10T20:28:50+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Nupur",
-        "phone": "01799196***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 14, Wari, in front of the school"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
-    },
-    {
-      "order_id": "2Z7I8S",
-      "order_date": "2026-09-11T05:45:41+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Anamika Hossain",
-        "phone": "01485428***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 7, Hazaribagh"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 2,
-          "line_total": 1800
-        }
-      ],
-      "subtotal": 1800,
-      "delivery_charge": 60,
-      "total": 1860
-    },
-    {
-      "order_id": "N0P0D5",
-      "order_date": "2026-09-11T14:10:10+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "ববিতা সিদ্দিকা",
-        "phone": "01756173***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "কেরাণীগঞ্জ",
-          "location": "নতুন বাজার, পুরাতন বাজার"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P106",
-          "name": "Readymade Three Piece",
-          "unit_price": 1200,
-          "quantity": 1,
-          "line_total": 1200
-        }
-      ],
-      "subtotal": 1200,
-      "delivery_charge": 80,
-      "total": 1280
-    },
-    {
-      "order_id": "B5EW6S",
-      "order_date": "2026-09-11T14:55:47+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "রাকিব",
-        "phone": "01300005***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "মুন্সিগঞ্জ",
-          "upazila": "শ্রীনগর",
-          "location": "পূর্ব পাড়া, পুরাতন বাজার, কলেজ গেটের কাছে"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 2,
-          "line_total": 2900
-        }
-      ],
-      "subtotal": 2900,
-      "delivery_charge": 150,
-      "total": 3050
-    },
-    {
-      "order_id": "R514AB",
-      "order_date": "2026-09-11T19:32:32+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "সাদিয়া",
-        "phone": "01813974***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "সাভার",
-          "location": "উত্তর পাড়া, মধ্যপাড়া"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
-          "quantity": 1,
-          "line_total": 2200
-        },
-        {
-          "product_id": "P105",
-          "name": "Hand Print Saari",
-          "unit_price": 1000,
-          "quantity": 1,
-          "line_total": 1000
-        }
-      ],
-      "subtotal": 3200,
-      "delivery_charge": 80,
-      "total": 3280
-    },
-    {
-      "order_id": "H1B7H7",
-      "order_date": "2026-09-12T00:17:22+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Fatema",
-        "phone": "01979245***",
-        "address": {
-          "division": "বরিশাল",
-          "district": "পটুয়াখালী",
-          "upazila": "পটুয়াখালী সদর",
-          "location": "Kachari Road, Moddho Para"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P106",
-          "name": "Readymade Three Piece",
-          "unit_price": 1200,
-          "quantity": 1,
-          "line_total": 1200
-        },
-        {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 2100,
-      "delivery_charge": 150,
-      "total": 2250
-    },
-    {
-      "order_id": "X1W8L1",
-      "order_date": "2026-09-12T12:22:43+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Farzana Akter",
-        "phone": "01310950***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-৮, বনানী"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P110",
-          "name": "Georgette Two Piece Gown",
-          "unit_price": 900,
-          "quantity": 1,
-          "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 60,
-      "total": 960
-    },
-    {
-      "order_id": "8D9X7A",
-      "order_date": "2026-09-12T13:00:46+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "মোঃ রনি",
-        "phone": "01559251***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "গাজীপুর",
-          "upazila": "গাজীপুর সদর",
-          "location": "মাস্টারপাড়া, দক্ষিণ পাড়া"
+          "upazila": "বালাগঞ্জ",
+          "location": "বালাগঞ্জ বাজার, হাসপাতালের পাশে"
         }
       },
       "items": [
@@ -2332,105 +1421,261 @@ const orderHistory = {
       "total": 2900
     },
     {
-      "order_id": "P437YG",
-      "order_date": "2026-09-12T13:28:33+06:00",
+      "order_id": "6M86XS",
+      "order_date": "2026-10-04T16:25:59+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "Eti",
-        "phone": "01765502***",
+        "name": "শিউলি",
+        "phone": "01551313***",
         "address": {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 11, Mirpur-10"
+          "location": "বাসা-৬, মালিবাগ রেলগেট, মাদ্রাসার পাশে"
         }
       },
       "items": [
+        {
+          "product_id": "P110",
+          "name": "Georgette Two Piece Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 1800,
+      "delivery_charge": 60,
+      "total": 1860
+    },
+    {
+      "order_id": "SK3H79",
+      "order_date": "2026-10-06T09:43:29+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Sabbir Ahmed",
+        "phone": "01688002***",
+        "address": {
+          "division": "সিলেট",
+          "district": "সিলেট",
+          "upazila": "সিলেট সদর",
+          "location": "জিন্দাবাজার, বাসা-৯"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P106",
+          "name": "Readymade Three Piece",
+          "unit_price": 1200,
+          "quantity": 1,
+          "line_total": 1200
+        }
+      ],
+      "subtotal": 1200,
+      "delivery_charge": 150,
+      "total": 1350
+    },
+    {
+      "order_id": "P4H5N4",
+      "order_date": "2026-10-06T16:28:34+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "কান্তা",
+        "phone": "01798692***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১৪, রোড-৪, শ্যামলী"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 2,
+          "line_total": 1800
+        }
+      ],
+      "subtotal": 1800,
+      "delivery_charge": 60,
+      "total": 1860
+    },
+    {
+      "order_id": "T274VR",
+      "order_date": "2026-10-06T16:55:30+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "রোকসানা আক্তার",
+        "phone": "01400020***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "সাভার",
+          "location": "জামগড়া বাজার, আশুলিয়া"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P103",
+          "name": "Luxury Party Lehenga – Red",
+          "unit_price": 2200,
+          "quantity": 2,
+          "line_total": 4400
+        }
+      ],
+      "subtotal": 4400,
+      "delivery_charge": 80,
+      "total": 4480
+    },
+    {
+      "order_id": "QD949L",
+      "order_date": "2026-10-06T18:33:44+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Nishat Tasnim",
+        "phone": "01431430***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-২৭, ইসলামবাগ রোড, লালবাগ"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 2,
+          "line_total": 1800
+        },
         {
           "product_id": "P107",
           "name": "Printed Cotton Three Piece",
           "unit_price": 600,
           "quantity": 1,
           "line_total": 600
+        }
+      ],
+      "subtotal": 2400,
+      "delivery_charge": 60,
+      "total": 2460
+    },
+    {
+      "order_id": "6H9A8A",
+      "order_date": "2026-10-07T11:57:55+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "মাহফুজা",
+        "phone": "01616786***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "গাজীপুর",
+          "upazila": "কালীগঞ্জ",
+          "location": "জাঙ্গালিয়া, ফার্মেসির পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P101",
+          "name": "Premium Stylish Skirt Set",
+          "unit_price": 1300,
+          "quantity": 1,
+          "line_total": 1300
+        }
+      ],
+      "subtotal": 1300,
+      "delivery_charge": 150,
+      "total": 1450
+    },
+    {
+      "order_id": "5PS2L9",
+      "order_date": "2026-10-07T15:10:42+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Tasnim Mahmud",
+        "phone": "01925242***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "গাজীপুর",
+          "upazila": "কালিয়াকৈর",
+          "location": "চন্দ্রা মোড়, মাদ্রাসার পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P101",
+          "name": "Premium Stylish Skirt Set",
+          "unit_price": 1300,
+          "quantity": 1,
+          "line_total": 1300
+        }
+      ],
+      "subtotal": 1300,
+      "delivery_charge": 150,
+      "total": 1450
+    },
+    {
+      "order_id": "69CT6T",
+      "order_date": "2026-10-07T16:41:12+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Tanvir Ahmed",
+        "phone": "01785393***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-৩৪, রোড-২, উত্তর বাড্ডা"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
         },
         {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
           "quantity": 1,
-          "line_total": 2200
+          "line_total": 900
+        },
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
         }
       ],
-      "subtotal": 2800,
+      "subtotal": 2400,
       "delivery_charge": 60,
-      "total": 2860
+      "total": 2460
     },
     {
-      "order_id": "PI24L8",
-      "order_date": "2026-09-12T20:04:51+06:00",
+      "order_id": "9CU2B3",
+      "order_date": "2026-10-07T20:39:00+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "প্রিয়া",
-        "phone": "01801953***",
+        "name": "রুবি",
+        "phone": "01884777***",
         "address": {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-১৯, দক্ষিণখান"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P102",
-          "name": "Georgette Party Dress",
-          "unit_price": 1450,
-          "quantity": 1,
-          "line_total": 1450
-        }
-      ],
-      "subtotal": 1450,
-      "delivery_charge": 60,
-      "total": 1510
-    },
-    {
-      "order_id": "P4RN3Y",
-      "order_date": "2026-09-13T09:32:22+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Shapla",
-        "phone": "01504532***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "কিশোরগঞ্জ",
-          "upazila": "ভৈরব",
-          "location": "Uttar Para, Dakshin Para"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
-          "quantity": 1,
-          "line_total": 2200
-        }
-      ],
-      "subtotal": 2200,
-      "delivery_charge": 150,
-      "total": 2350
-    },
-    {
-      "order_id": "T1PU5H",
-      "order_date": "2026-09-13T16:38:51+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "রাকিব",
-        "phone": "01961369***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "রোড-১৪, শ্যামলী, মাদ্রাসার পাশে"
+          "location": "বাসা-৮, রোড-১৬, মান্ডা"
         }
       },
       "items": [
@@ -2447,17 +1692,17 @@ const orderHistory = {
       "total": 1260
     },
     {
-      "order_id": "3M9T9T",
-      "order_date": "2026-09-13T18:32:54+06:00",
+      "order_id": "G3F88S",
+      "order_date": "2026-10-08T11:29:53+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "রোকসানা সুলতানা",
-        "phone": "01362441***",
+        "name": "Anika Tahsin",
+        "phone": "01811148***",
         "address": {
           "division": "ঢাকা",
           "district": "ঢাকা",
-          "upazila": "ধামরাই",
-          "location": "মধ্যপাড়া, বাজার রোড, বাজারের কাছে"
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১৯, রোড-৭, বাসাবো"
         }
       },
       "items": [
@@ -2467,105 +1712,31 @@ const orderHistory = {
           "unit_price": 900,
           "quantity": 1,
           "line_total": 900
-        }
-      ],
-      "subtotal": 900,
-      "delivery_charge": 80,
-      "total": 980
-    },
-    {
-      "order_id": "F6AA7R",
-      "order_date": "2026-09-14T14:43:20+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Shila",
-        "phone": "01643602***",
-        "address": {
-          "division": "ময়মনসিংহ",
-          "district": "জামালপুর",
-          "upazila": "জামালপুর সদর",
-          "location": "Purbo Para, Moddho Para, beside the pharmacy"
-        }
-      },
-      "items": [
+        },
         {
-          "product_id": "P108",
-          "name": "Hand Print Half Silk Sharee",
+          "product_id": "P110",
+          "name": "Georgette Two Piece Gown",
           "unit_price": 900,
           "quantity": 1,
           "line_total": 900
         }
       ],
-      "subtotal": 900,
-      "delivery_charge": 150,
-      "total": 1050
-    },
-    {
-      "order_id": "E753QN",
-      "order_date": "2026-09-14T14:46:17+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "Shiuli Sultana",
-        "phone": "01901690***",
-        "address": {
-          "division": "ঢাকা",
-          "district": "ঢাকা",
-          "upazila": "সাভার",
-          "location": "Noya Para, Station Road"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P109",
-          "name": "Hand Print Half Silk Sharee",
-          "unit_price": 900,
-          "quantity": 2,
-          "line_total": 1800
-        }
-      ],
       "subtotal": 1800,
-      "delivery_charge": 80,
-      "total": 1880
+      "delivery_charge": 60,
+      "total": 1860
     },
     {
-      "order_id": "J745JO",
-      "order_date": "2026-09-14T16:25:16+06:00",
+      "order_id": "W989UV",
+      "order_date": "2026-10-08T19:25:59+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "Nasrin Sarker",
-        "phone": "01707314***",
+        "name": "ইভা",
+        "phone": "01800009***",
         "address": {
           "division": "ঢাকা",
-          "district": "টাঙ্গাইল",
-          "upazila": "মির্জাপুর",
-          "location": "Poschim Para, Uttar Para, in front of the school"
-        }
-      },
-      "items": [
-        {
-          "product_id": "P105",
-          "name": "Hand Print Saari",
-          "unit_price": 1000,
-          "quantity": 1,
-          "line_total": 1000
-        }
-      ],
-      "subtotal": 1000,
-      "delivery_charge": 150,
-      "total": 1150
-    },
-    {
-      "order_id": "B274BA",
-      "order_date": "2026-09-14T22:32:59+06:00",
-      "payment_method": "Cash on Delivery",
-      "customer": {
-        "name": "নাসরিন",
-        "phone": "01671378***",
-        "address": {
-          "division": "চট্টগ্রাম",
-          "district": "চট্টগ্রাম",
-          "upazila": "সাতকানিয়া",
-          "location": "পশ্চিম পাড়া, পুরাতন বাজার"
+          "district": "মুন্সিগঞ্জ",
+          "upazila": "সিরাজদিখান",
+          "location": "ইছাপুরা বাজার, স্কুলের পাশে"
         }
       },
       "items": [
@@ -2582,44 +1753,44 @@ const orderHistory = {
       "total": 750
     },
     {
-      "order_id": "M064FZ",
-      "order_date": "2026-09-15T09:44:49+06:00",
+      "order_id": "SJ58M6",
+      "order_date": "2026-10-08T19:36:09+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "সুমাইয়া",
-        "phone": "01876463***",
+        "name": "আরিফুল ইসলাম",
+        "phone": "01957889***",
         "address": {
           "division": "ঢাকা",
-          "district": "নরসিংদী",
-          "upazila": "নরসিংদী সদর",
-          "location": "পশ্চিম পাড়া, মাস্টারপাড়া, মাদ্রাসার পাশে"
+          "district": "টাঙ্গাইল",
+          "upazila": "কালিহাতী",
+          "location": "এলেঙ্গা বাজার, বাসস্ট্যান্ডের কাছে"
         }
       },
       "items": [
         {
-          "product_id": "P103",
-          "name": "Luxury Party Lehenga – Red",
-          "unit_price": 2200,
+          "product_id": "P105",
+          "name": "Hand Print Saari",
+          "unit_price": 1000,
           "quantity": 1,
-          "line_total": 2200
+          "line_total": 1000
         }
       ],
-      "subtotal": 2200,
+      "subtotal": 1000,
       "delivery_charge": 150,
-      "total": 2350
+      "total": 1150
     },
     {
-      "order_id": "9Z5R3L",
-      "order_date": "2026-09-15T12:11:54+06:00",
+      "order_id": "24W7PL",
+      "order_date": "2026-10-08T23:46:36+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "রুমানা সিদ্দিকা",
-        "phone": "01797369***",
+        "name": "Mahmudul Hassan",
+        "phone": "01861333***",
         "address": {
-          "division": "বরিশাল",
-          "district": "বরিশাল",
-          "upazila": "বরিশাল সদর",
-          "location": "Station Road, Poschim Para"
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "দোহার",
+          "location": "জয়পাড়া বাজার, স্কুলের সামনে"
         }
       },
       "items": [
@@ -2636,17 +1807,579 @@ const orderHistory = {
       "total": 1050
     },
     {
-      "order_id": "P0K6J8",
-      "order_date": "2026-09-15T15:36:30+06:00",
+      "order_id": "B76T7F",
+      "order_date": "2026-10-09T15:22:21+06:00",
       "payment_method": "Cash on Delivery",
       "customer": {
-        "name": "Ruma",
-        "phone": "01827207***",
+        "name": "তানজিলা হক",
+        "phone": "01778384***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "মুন্সিগঞ্জ",
+          "upazila": "মুন্সিগঞ্জ সদর",
+          "location": "হরগঙ্গা কলেজের কাছে, মসজিদের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        }
+      ],
+      "subtotal": 600,
+      "delivery_charge": 150,
+      "total": 750
+    },
+    {
+      "order_id": "672VHD",
+      "order_date": "2026-10-09T17:21:39+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Mehedi Hasan",
+        "phone": "01434018***",
         "address": {
           "division": "ঢাকা",
           "district": "ঢাকা",
           "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
-          "location": "Road 4, Motijheel"
+          "location": "বাসা-৩, রোড-৫, দনিয়া, কলেজ গেটের কাছে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        }
+      ],
+      "subtotal": 600,
+      "delivery_charge": 60,
+      "total": 660
+    },
+    {
+      "order_id": "8FXF86",
+      "order_date": "2026-10-10T10:54:09+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Sumi Akhter",
+        "phone": "01980063***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "গাজীপুর",
+          "upazila": "গাজীপুর সদর",
+          "location": "কোনাবাড়ী, বাসা-১৬, থানা রোড"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P105",
+          "name": "Hand Print Saari",
+          "unit_price": 1000,
+          "quantity": 1,
+          "line_total": 1000
+        },
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 1900,
+      "delivery_charge": 150,
+      "total": 2050
+    },
+    {
+      "order_id": "33XQ7M",
+      "order_date": "2026-10-10T13:28:25+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Rafia Islam",
+        "phone": "01354728***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-২৫, রোড-১৫, মুগদা"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P102",
+          "name": "Georgette Party Dress",
+          "unit_price": 1450,
+          "quantity": 1,
+          "line_total": 1450
+        }
+      ],
+      "subtotal": 1450,
+      "delivery_charge": 60,
+      "total": 1510
+    },
+    {
+      "order_id": "KY5E97",
+      "order_date": "2026-10-10T16:50:17+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Nusrat Jahan",
+        "phone": "01383016***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "সাভার",
+          "location": "নবীনগর, বাসা-৭, কলেজ গেটের কাছে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P103",
+          "name": "Luxury Party Lehenga – Red",
+          "unit_price": 2200,
+          "quantity": 1,
+          "line_total": 2200
+        }
+      ],
+      "subtotal": 2200,
+      "delivery_charge": 80,
+      "total": 2280
+    },
+    {
+      "order_id": "EHL636",
+      "order_date": "2026-10-11T14:41:40+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Tahmina Sultna",
+        "phone": "01400977***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-২০, রোড-৫, ব্লক-এ, মিরপুর-১২"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        }
+      ],
+      "subtotal": 1500,
+      "delivery_charge": 60,
+      "total": 1560
+    },
+    {
+      "order_id": "2UR45P",
+      "order_date": "2026-10-11T20:21:29+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Fahim Rahman",
+        "phone": "01793158***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "গাজীপুর",
+          "upazila": "কালীগঞ্জ",
+          "location": "বক্তারপুর বাজার, মাদ্রাসার পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P106",
+          "name": "Readymade Three Piece",
+          "unit_price": 1200,
+          "quantity": 1,
+          "line_total": 1200
+        }
+      ],
+      "subtotal": 1200,
+      "delivery_charge": 150,
+      "total": 1350
+    },
+    {
+      "order_id": "Q3AE92",
+      "order_date": "2026-10-12T10:55:17+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Sharmin Sultanna",
+        "phone": "01652882***",
+        "address": {
+          "division": "চট্টগ্রাম",
+          "district": "কুমিল্লা",
+          "upazila": "বরুড়া",
+          "location": "বরুড়া বাজার, ওয়ার্ড-২"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P103",
+          "name": "Luxury Party Lehenga – Red",
+          "unit_price": 2200,
+          "quantity": 1,
+          "line_total": 2200
+        }
+      ],
+      "subtotal": 2200,
+      "delivery_charge": 150,
+      "total": 2350
+    },
+    {
+      "order_id": "89X8TK",
+      "order_date": "2026-10-12T11:19:59+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Shanta",
+        "phone": "01766661***",
+        "address": {
+          "division": "রাজশাহী",
+          "district": "বগুড়া",
+          "upazila": "সোনাতলা",
+          "location": "সোনাতলা বাজার, মসজিদের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "7CN27D",
+      "order_date": "2026-10-12T11:51:31+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Orpita Saha",
+        "phone": "01559045***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "কিশোরগঞ্জ",
+          "upazila": "কিশোরগঞ্জ সদর",
+          "location": "পুরান থানা মোড়, বাজারের কাছে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P110",
+          "name": "Georgette Two Piece Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "83HQ2V",
+      "order_date": "2026-10-12T14:26:01+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "মিতু",
+        "phone": "01635570***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১০, রোড-১০, আদাবর"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 60,
+      "total": 960
+    },
+    {
+      "order_id": "U23C4P",
+      "order_date": "2026-10-12T19:14:26+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "ইমু",
+        "phone": "01777065***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "সাভার",
+          "location": "ভাকুর্তা বাজার, মসজিদের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P102",
+          "name": "Georgette Party Dress",
+          "unit_price": 1450,
+          "quantity": 1,
+          "line_total": 1450
+        },
+        {
+          "product_id": "P106",
+          "name": "Readymade Three Piece",
+          "unit_price": 1200,
+          "quantity": 1,
+          "line_total": 1200
+        }
+      ],
+      "subtotal": 3550,
+      "delivery_charge": 80,
+      "total": 3630
+    },
+    {
+      "order_id": "Q63S3R",
+      "order_date": "2026-10-13T11:44:44+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "লায়লা পারভীন",
+        "phone": "01356563***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-৪১, তেজকুনিপাড়া, রোড-৩"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P106",
+          "name": "Readymade Three Piece",
+          "unit_price": 1200,
+          "quantity": 1,
+          "line_total": 1200
+        }
+      ],
+      "subtotal": 1200,
+      "delivery_charge": 60,
+      "total": 1260
+    },
+    {
+      "order_id": "E979VW",
+      "order_date": "2026-10-13T18:44:23+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "রুমানা আকতার",
+        "phone": "01742684***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১২, নাখালপাড়া, রোড-৮"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P104",
+          "name": "Sequence Gown",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 60,
+      "total": 960
+    },
+    {
+      "order_id": "J4CM25",
+      "order_date": "2026-10-13T19:57:42+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "তাসলিমা",
+        "phone": "01608931***",
+        "address": {
+          "division": "চট্টগ্রাম",
+          "district": "কুমিল্লা",
+          "upazila": "কুমিল্লা সদর",
+          "location": "কান্দিরপাড়, মসজিদের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        },
+        {
+          "product_id": "P105",
+          "name": "Hand Print Saari",
+          "unit_price": 1000,
+          "quantity": 1,
+          "line_total": 1000
+        }
+      ],
+      "subtotal": 2500,
+      "delivery_charge": 150,
+      "total": 2650
+    },
+    {
+      "order_id": "3L8Y6K",
+      "order_date": "2026-10-14T10:55:32+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "পারভীন সুলতানা",
+        "phone": "01474231***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-২৮, ফায়দাবাদ, দক্ষিণখান"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 2,
+          "line_total": 1200
+        },
+        {
+          "product_id": "P109",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 2100,
+      "delivery_charge": 60,
+      "total": 2160
+    },
+    {
+      "order_id": "9DEE75",
+      "order_date": "2026-10-14T12:33:00+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Tania",
+        "phone": "01737865***",
+        "address": {
+          "division": "রাজশাহী",
+          "district": "রাজশাহী",
+          "upazila": "বাগমারা",
+          "location": "ভবানীগঞ্জ বাজার, মাদ্রাসার পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        }
+      ],
+      "subtotal": 600,
+      "delivery_charge": 150,
+      "total": 750
+    },
+    {
+      "order_id": "J35F8T",
+      "order_date": "2026-10-14T15:42:01+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Rina Akter",
+        "phone": "01683830***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-১৭, রোড-১২, মধ্য বাড্ডা, বাজারের কাছে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        }
+      ],
+      "subtotal": 600,
+      "delivery_charge": 60,
+      "total": 660
+    },
+    {
+      "order_id": "3AV63H",
+      "order_date": "2026-10-14T16:41:42+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Shuvo Roy",
+        "phone": "01863932***",
+        "address": {
+          "division": "চট্টগ্রাম",
+          "district": "চট্টগ্রাম",
+          "upazila": "সাতকানিয়া",
+          "location": "কেরানীহাট, বাজারের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P105",
+          "name": "Hand Print Saari",
+          "unit_price": 1000,
+          "quantity": 1,
+          "line_total": 1000
+        }
+      ],
+      "subtotal": 1000,
+      "delivery_charge": 150,
+      "total": 1150
+    },
+    {
+      "order_id": "P67JL3",
+      "order_date": "2026-10-15T10:15:50+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "আসমা খাতুন",
+        "phone": "01326464***",
+        "address": {
+          "division": "বরিশাল",
+          "district": "বরিশাল",
+          "upazila": "বরিশাল সদর",
+          "location": "নথুল্লাবাদ বাসস্ট্যান্ড, বাজারের কাছে"
         }
       },
       "items": [
@@ -2659,8 +2392,123 @@ const orderHistory = {
         }
       ],
       "subtotal": 1300,
+      "delivery_charge": 150,
+      "total": 1450
+    },
+    {
+      "order_id": "75QS6E",
+      "order_date": "2026-10-15T15:37:28+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Lamia Haque",
+        "phone": "01846201***",
+        "address": {
+          "division": "ময়মনসিংহ",
+          "district": "ময়মনসিংহ",
+          "upazila": "তারাকান্দা",
+          "location": "তারাকান্দা বাজার, স্কুলের সামনে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        },
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        }
+      ],
+      "subtotal": 1500,
+      "delivery_charge": 150,
+      "total": 1650
+    },
+    {
+      "order_id": "88GF5D",
+      "order_date": "2026-10-15T16:21:45+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Puspita Das",
+        "phone": "01548347***",
+        "address": {
+          "division": "চট্টগ্রাম",
+          "district": "নোয়াখালী",
+          "upazila": "সোনাইমুড়ী",
+          "location": "বজরা বাজার, ওয়ার্ড-৬"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P101",
+          "name": "Premium Stylish Skirt Set",
+          "unit_price": 1300,
+          "quantity": 1,
+          "line_total": 1300
+        }
+      ],
+      "subtotal": 1300,
+      "delivery_charge": 150,
+      "total": 1450
+    },
+    {
+      "order_id": "J2X9L5",
+      "order_date": "2026-10-15T17:01:03+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "Ador",
+        "phone": "01927958***",
+        "address": {
+          "division": "রাজশাহী",
+          "district": "রাজশাহী",
+          "upazila": "গোদাগাড়ী",
+          "location": "মহিষালবাড়ী, বাজারের পাশে"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P108",
+          "name": "Hand Print Half Silk Sharee",
+          "unit_price": 900,
+          "quantity": 1,
+          "line_total": 900
+        }
+      ],
+      "subtotal": 900,
+      "delivery_charge": 150,
+      "total": 1050
+    },
+    {
+      "order_id": "79FLP7",
+      "order_date": "2026-10-15T22:08:34+06:00",
+      "payment_method": "Cash on Delivery",
+      "customer": {
+        "name": "সুরাইয়া",
+        "phone": "01425738***",
+        "address": {
+          "division": "ঢাকা",
+          "district": "ঢাকা",
+          "upazila": "ঢাকা সিটি (উত্তর/দক্ষিণ সিটি কর্পোরেশন)",
+          "location": "বাসা-৩৮, রোড-৪, ধানমন্ডি"
+        }
+      },
+      "items": [
+        {
+          "product_id": "P107",
+          "name": "Printed Cotton Three Piece",
+          "unit_price": 600,
+          "quantity": 1,
+          "line_total": 600
+        }
+      ],
+      "subtotal": 600,
       "delivery_charge": 60,
-      "total": 1360
+      "total": 660
     }
   ]
 };
